@@ -1,0 +1,54 @@
+{
+    "title": "armory.unitable.Table",
+    "description": "动态table的元信息",
+    "type": "object",
+    "properties": {
+        "columns": {
+            "title": "mojo.core.Array",
+            "description": "表单包含的列的元信息",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.unitable.Column"
+            }
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "database": {
+            "title": "mojo.core.String",
+            "description": "表单所在的数据库名",
+            "type": "string"
+        },
+        "deleteTime": {
+            "$ref": "#/components/schemas/mojo.db.DeleteTime"
+        },
+        "displayName": {
+            "title": "mojo.core.String",
+            "description": "可以是显示中文的名称",
+            "type": "string"
+        },
+        "exportName": {
+            "title": "mojo.core.String",
+            "description": "导出时使用的名称，比如Excel导出时，作为sheet名称",
+            "type": "string"
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "description": "表单ID",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "description": "表单名",
+            "type": "string"
+        },
+        "tenant": {
+            "title": "mojo.core.String",
+            "description": "租户名",
+            "type": "string"
+        },
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        }
+    }
+}

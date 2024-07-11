@@ -1,0 +1,6 @@
+FROM centos:8
+
+ADD v1-authing-server /v1-authing-server
+
+WORKDIR /
+ENTRYPOINT [ "/v1-authing-server" ]

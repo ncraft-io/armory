@@ -1,0 +1,806 @@
+components:
+  schemas:
+    armory.unitable.Column:
+      description: unitable的列的元信息
+      properties:
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        database:
+          description: 所属的表单所在的数据库名称
+          title: mojo.core.String
+          type: string
+        deleteTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        dimensional:
+          description: 是否是维度相关的，即可枚举的值
+          title: mojo.core.Bool
+          type: boolean
+        displayName:
+          description: 可以是显示中文的名称
+          title: mojo.core.String
+          type: string
+        editable:
+          description: 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限
+          title: mojo.core.Bool
+          type: boolean
+        exportName:
+          description: 导出时使用的名称，比如Excel导出时
+          title: mojo.core.String
+          type: string
+        filterable:
+          description: 字段能够进行过滤操作
+          title: mojo.core.Bool
+          type: boolean
+        format:
+          description: 当列为String时，指定更详细的类型，比如时间、几何等
+          title: mojo.core.String
+          type: string
+        groupDisplayName:
+          description: 所属的列的组合名称
+          title: mojo.core.String
+          type: string
+        id:
+          description: 列的ID
+          title: mojo.core.String
+          type: string
+        indexed:
+          description: 是否需要被索引
+          title: mojo.core.Bool
+          type: boolean
+        name:
+          description: 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格
+          title: mojo.core.String
+          type: string
+        referenced:
+          description: 是否为引用字段，可以设置是否自动join
+          title: mojo.core.String
+          type: string
+        show:
+          description: 是否需要显示
+          title: mojo.core.Bool
+          type: boolean
+        table:
+          description: 所属的表单名
+          title: mojo.core.String
+          type: string
+        temporal:
+          description: 是否是临时的
+          title: mojo.core.Bool
+          type: boolean
+        type:
+          description: 列的数据库类型 "integer", "number", "string"
+          title: mojo.core.String
+          type: string
+        unique:
+          description: 是否需要在表内是唯一的
+          title: mojo.core.Bool
+          type: boolean
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.unitable.Column
+      type: object
+    armory.unitable.Table:
+      description: 动态table的元信息
+      properties:
+        columns:
+          description: 表单包含的列的元信息
+          items:
+            $ref: '#/components/schemas/armory.unitable.Column'
+          title: mojo.core.Array
+          type: array
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        database:
+          description: 表单所在的数据库名
+          title: mojo.core.String
+          type: string
+        deleteTime:
+          $ref: '#/components/schemas/mojo.db.DeleteTime'
+        displayName:
+          description: 可以是显示中文的名称
+          title: mojo.core.String
+          type: string
+        exportName:
+          description: 导出时使用的名称，比如Excel导出时，作为sheet名称
+          title: mojo.core.String
+          type: string
+        id:
+          description: 表单ID
+          title: mojo.core.String
+          type: string
+        name:
+          description: 表单名
+          title: mojo.core.String
+          type: string
+        tenant:
+          description: 租户名
+          title: mojo.core.String
+          type: string
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.unitable.Table
+      type: object
+    mojo.core.Object:
+      description: Object type
+      title: mojo.core.Object
+      type: object
+    mojo.core.Timestamp:
+      description: ""
+      format: Timestamp
+      title: mojo.core.Timestamp
+      type: string
+    mojo.db.DeleteTime:
+      description: |-
+        Wrapper type for the Generic T type
+
+        实例化名称规格， TValue  TValues  TValuesMap
+      format: Timestamp
+      title: mojo.db.DeleteTime
+      type: string
+info:
+  description: ""
+  title: 统一表单服务
+  version: 0.1.0
+openapi: 3.0.3
+paths:
+  /armory/unitable/v1/databases/{database}/tables:
+    get:
+      description: ""
+      operationId: list_tables
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.unitable.Table'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 查询表单
+    post:
+      description: ""
+      operationId: create_table
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.Table'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.Table'
+          description: OK
+      summary: 创建表单
+  /armory/unitable/v1/databases/{database}/tables/{id}:
+    delete:
+      description: ""
+      operationId: delete_table
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: force
+        schema:
+          title: mojo.core.Bool
+          type: boolean
+      responses:
+        "200":
+          description: OK
+      summary: 删除表单
+    get:
+      description: ""
+      operationId: get_table
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.Table'
+          description: OK
+      summary: 获取表单
+    put:
+      description: ""
+      operationId: update_table
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.Table'
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 更新表单
+  /armory/unitable/v1/databases/{database}/tables/{id}:sync:
+    post:
+      description: ""
+      operationId: sync_table
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.Table'
+          description: OK
+      summary: 直接从数据库中同步指定的表
+  /armory/unitable/v1/databases/{database}/tables/{table}/columns:
+    get:
+      description: ""
+      operationId: list_columns
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.unitable.Column'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 在指定的表内查找列
+    post:
+      description: ""
+      operationId: create_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.Column'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.Column'
+          description: OK
+      summary: 在指定的表内创建列
+  /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}:
+    delete:
+      description: ""
+      operationId: delete_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内删除列
+    get:
+      description: ""
+      operationId: get_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.Column'
+          description: OK
+      summary: 在指定的表内获取列
+    put:
+      description: ""
+      operationId: update_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.Column'
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内更新列
+  /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch:
+    delete:
+      description: ""
+      operationId: batch_delete_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: ids
+        schema:
+          items:
+            title: mojo.core.String
+            type: string
+          title: mojo.core.Array
+          type: array
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内批量删除列
+    post:
+      description: ""
+      operationId: batch_create_columns
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/armory.unitable.Column'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内批量创建列
+    put:
+      description: ""
+      operationId: batch_update_column
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/armory.unitable.Column'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内批量更新列
+  /armory/unitable/v1/databases/{database}/tables/{table}/rows:
+    get:
+      description: ""
+      operationId: list_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 查询行
+    post:
+      description: ""
+      operationId: create_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mojo.core.Object'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mojo.core.Object'
+          description: OK
+      summary: 在指定的表内新增数据
+  /armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}:
+    delete:
+      description: ""
+      operationId: delete_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          description: OK
+      summary: 删除指定某一行
+    get:
+      description: ""
+      operationId: get_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mojo.core.Object'
+          description: OK
+      summary: 在指定的表内获取某一行数据
+    put:
+      description: ""
+      operationId: update_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mojo.core.Object'
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 在指定的表内更新指定ID的数据
+  /armory/unitable/v1/databases/{database}/tables/{table}/rows:batch:
+    delete:
+      description: ""
+      operationId: batch_delete_rows
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: ids
+        schema:
+          items:
+            title: mojo.core.String
+            type: string
+          title: mojo.core.Array
+          type: array
+      responses:
+        "200":
+          description: OK
+      summary: 批量删除行
+    post:
+      description: ""
+      operationId: batch_create_rows
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/mojo.core.Object'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 批量创建行数据
+    put:
+      description: ""
+      operationId: batch_update_rows
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/mojo.core.Object'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 批量更新行数据
+  /armory/unitable/v1/databases/{database}/tables/{table}/rows:export:
+    get:
+      description: ""
+      operationId: export_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 导出行(实现不同的权限控制)

@@ -1,0 +1,6 @@
+FROM centos:8
+
+ADD v1-unitable-server /v1-unitable-server
+
+WORKDIR /
+ENTRYPOINT [ "/v1-unitable-server" ]

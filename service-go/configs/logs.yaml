@@ -1,0 +1,11 @@
+logs:
+  level: debug
+  encode: console #json or console
+  initFields:
+    package: armory.unitable.v1
+    server: unitable-server
+    version: 0.1.0
+  file:
+    maxSize: 100
+    maxBackups: 10
+    maxAge: 28
