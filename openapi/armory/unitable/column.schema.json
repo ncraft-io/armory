@@ -11,9 +11,6 @@
             "description": "所属的表单所在的数据库名称",
             "type": "string"
         },
-        "deleteTime": {
-            "$ref": "#/components/schemas/mojo.core.Timestamp"
-        },
         "dimensional": {
             "title": "mojo.core.Bool",
             "description": "是否是维度相关的，即可枚举的值",
@@ -74,7 +71,7 @@
             "description": "是否需要显示",
             "type": "boolean"
         },
-        "table": {
+        "tableId": {
             "title": "mojo.core.String",
             "description": "所属的表单名",
             "type": "string"

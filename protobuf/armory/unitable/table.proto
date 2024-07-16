@@ -6,7 +6,6 @@ package armory.unitable;
 
 import "armory/unitable/column.proto";
 import "mojo/core/time.proto";
-import "mojo/db/delete_time.proto";
 import "mojo/mojo.proto";
 
 option go_package = "github.com/ncraft-io/armory/go/pkg/armory/unitable;unitable";
@@ -24,5 +23,4 @@ message Table {
     repeated Column columns = 15 [(mojo.reference)=""];
     mojo.core.Timestamp create_time = 100;
     mojo.core.Timestamp update_time = 101;
-    mojo.db.DeleteTime delete_time = 102;
 }

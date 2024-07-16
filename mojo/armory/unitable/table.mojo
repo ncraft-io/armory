@@ -15,5 +15,4 @@ type Table {
 
     create_time: Timestamp @100 //< 表单创建时间
     update_time: Timestamp @101 //< 表单更新时间
-    delete_time: db.DeleteTime @102 //< 表单删除时间
 }

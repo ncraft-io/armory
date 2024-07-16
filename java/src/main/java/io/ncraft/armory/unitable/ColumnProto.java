@@ -30,18 +30,17 @@ public final class ColumnProto {
     java.lang.String[] descriptorData = {
       "\n\034armory/unitable/column.proto\022\017armory.u" +
       "nitable\032\024mojo/core/time.proto\032\017mojo/mojo" +
-      ".proto\"\313\003\n\006Column\022\n\n\002id\030\001 \001(\t\022\026\n\010databas" +
-      "e\030\002 \001(\tB\004\212\326$\000\022\023\n\005table\030\003 \001(\tB\004\212\326$\000\022\022\n\004na" +
-      "me\030\004 \001(\tB\004\212\326$\000\022\024\n\014display_name\030\005 \001(\t\022\023\n\013" +
-      "export_name\030\006 \001(\t\022\032\n\022group_display_name\030" +
-      "\007 \001(\t\022\014\n\004type\030\010 \001(\t\022\016\n\006format\030\t \001(\t\022\017\n\007i" +
-      "ndexed\030\n \001(\010\022\016\n\006unique\030\013 \001(\010\022\014\n\004show\030\014 \001" +
-      "(\010\022\020\n\010editable\030\r \001(\010\022\022\n\nfilterable\030\016 \001(\010" +
-      "\022\020\n\010temporal\030\017 \001(\010\022\023\n\013dimensional\030\020 \001(\010\022" +
-      "\022\n\nreferenced\030\024 \001(\t\022)\n\013create_time\030d \001(\013" +
-      "2\024.mojo.core.Timestamp\022)\n\013update_time\030e " +
-      "\001(\0132\024.mojo.core.Timestamp\022)\n\013delete_time" +
-      "\030f \001(\0132\024.mojo.core.TimestampBg\n\031io.ncraf" +
+      ".proto\"\243\003\n\006Column\022\n\n\002id\030\001 \001(\t\022\026\n\010databas" +
+      "e\030\002 \001(\tB\004\212\326$\000\022\026\n\010table_id\030\003 \001(\tB\004\212\326$\000\022\022\n" +
+      "\004name\030\004 \001(\tB\004\212\326$\000\022\024\n\014display_name\030\005 \001(\t\022" +
+      "\023\n\013export_name\030\006 \001(\t\022\032\n\022group_display_na" +
+      "me\030\007 \001(\t\022\014\n\004type\030\010 \001(\t\022\016\n\006format\030\t \001(\t\022\017" +
+      "\n\007indexed\030\n \001(\010\022\016\n\006unique\030\013 \001(\010\022\014\n\004show\030" +
+      "\014 \001(\010\022\020\n\010editable\030\r \001(\010\022\022\n\nfilterable\030\016 " +
+      "\001(\010\022\020\n\010temporal\030\017 \001(\010\022\023\n\013dimensional\030\020 \001" +
+      "(\010\022\022\n\nreferenced\030\024 \001(\t\022)\n\013create_time\030d " +
+      "\001(\0132\024.mojo.core.Timestamp\022)\n\013update_time" +
+      "\030e \001(\0132\024.mojo.core.TimestampBg\n\031io.ncraf" +
       "t.armory.unitableB\013ColumnProtoP\001Z;github" +
       ".com/ncraft-io/armory/go/pkg/armory/unit" +
       "able;unitableb\006proto3"
@@ -57,7 +56,7 @@ public final class ColumnProto {
     internal_static_armory_unitable_Column_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_armory_unitable_Column_descriptor,
-        new java.lang.String[] { "Id", "Database", "Table", "Name", "DisplayName", "ExportName", "GroupDisplayName", "Type", "Format", "Indexed", "Unique", "Show", "Editable", "Filterable", "Temporal", "Dimensional", "Referenced", "CreateTime", "UpdateTime", "DeleteTime", });
+        new java.lang.String[] { "Id", "Database", "TableId", "Name", "DisplayName", "ExportName", "GroupDisplayName", "Type", "Format", "Indexed", "Unique", "Show", "Editable", "Filterable", "Temporal", "Dimensional", "Referenced", "CreateTime", "UpdateTime", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(org.mojolang.mojo.MojoProtos.dbIndex);

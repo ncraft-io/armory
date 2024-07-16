@@ -15,7 +15,7 @@ option java_package = "io.ncraft.armory.unitable";
 message Column {
     string id = 1;
     string database = 2 [(mojo.db_index)=""];
-    string table = 3 [(mojo.db_index)=""];
+    string table_id = 3 [(mojo.db_index)=""];
     string name = 4 [(mojo.db_index)=""];
     string display_name = 5;
     string export_name = 6;
@@ -32,5 +32,4 @@ message Column {
     string referenced = 20;
     mojo.core.Timestamp create_time = 100;
     mojo.core.Timestamp update_time = 101;
-    mojo.core.Timestamp delete_time = 102;
 }

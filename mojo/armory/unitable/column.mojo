@@ -26,5 +26,4 @@ type Column {
 
     create_time: Timestamp @100 //< 表单列创建时间
     update_time: Timestamp @101 //< 表单列更新时间
-    delete_time: Timestamp @102 //< 表单列删除时间
 }

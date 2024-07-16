@@ -132,19 +132,4 @@ public interface TableOrBuilder extends
    * <code>.mojo.core.Timestamp update_time = 101;</code>
    */
   org.mojolang.mojo.core.TimestampOrBuilder getUpdateTimeOrBuilder();
-
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   * @return Whether the deleteTime field is set.
-   */
-  boolean hasDeleteTime();
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   * @return The deleteTime.
-   */
-  org.mojolang.mojo.db.DeleteTime getDeleteTime();
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   */
-  org.mojolang.mojo.db.DeleteTimeOrBuilder getDeleteTimeOrBuilder();
 }

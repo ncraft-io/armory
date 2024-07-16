@@ -19,9 +19,6 @@
             "description": "表单所在的数据库名",
             "type": "string"
         },
-        "deleteTime": {
-            "$ref": "#/components/schemas/mojo.db.DeleteTime"
-        },
         "displayName": {
             "title": "mojo.core.String",
             "description": "可以是显示中文的名称",

@@ -18,7 +18,7 @@ private static final long serialVersionUID = 0L;
   private Column() {
     id_ = "";
     database_ = "";
-    table_ = "";
+    tableId_ = "";
     name_ = "";
     displayName_ = "";
     exportName_ = "";
@@ -129,38 +129,38 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int TABLE_FIELD_NUMBER = 3;
-  private volatile java.lang.Object table_;
+  public static final int TABLE_ID_FIELD_NUMBER = 3;
+  private volatile java.lang.Object tableId_;
   /**
-   * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-   * @return The table.
+   * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+   * @return The tableId.
    */
   @java.lang.Override
-  public java.lang.String getTable() {
-    java.lang.Object ref = table_;
+  public java.lang.String getTableId() {
+    java.lang.Object ref = tableId_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      table_ = s;
+      tableId_ = s;
       return s;
     }
   }
   /**
-   * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-   * @return The bytes for table.
+   * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+   * @return The bytes for tableId.
    */
   @java.lang.Override
   public com.google.protobuf.ByteString
-      getTableBytes() {
-    java.lang.Object ref = table_;
+      getTableIdBytes() {
+    java.lang.Object ref = tableId_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      table_ = b;
+      tableId_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -562,32 +562,6 @@ private static final long serialVersionUID = 0L;
     return getUpdateTime();
   }
 
-  public static final int DELETE_TIME_FIELD_NUMBER = 102;
-  private org.mojolang.mojo.core.Timestamp deleteTime_;
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   * @return Whether the deleteTime field is set.
-   */
-  @java.lang.Override
-  public boolean hasDeleteTime() {
-    return deleteTime_ != null;
-  }
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   * @return The deleteTime.
-   */
-  @java.lang.Override
-  public org.mojolang.mojo.core.Timestamp getDeleteTime() {
-    return deleteTime_ == null ? org.mojolang.mojo.core.Timestamp.getDefaultInstance() : deleteTime_;
-  }
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   */
-  @java.lang.Override
-  public org.mojolang.mojo.core.TimestampOrBuilder getDeleteTimeOrBuilder() {
-    return getDeleteTime();
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -608,8 +582,8 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(database_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, database_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, table_);
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tableId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, tableId_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, name_);
@@ -659,9 +633,6 @@ private static final long serialVersionUID = 0L;
     if (updateTime_ != null) {
       output.writeMessage(101, getUpdateTime());
     }
-    if (deleteTime_ != null) {
-      output.writeMessage(102, getDeleteTime());
-    }
     getUnknownFields().writeTo(output);
   }
 
@@ -677,8 +648,8 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(database_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, database_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, table_);
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tableId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, tableId_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, name_);
@@ -737,10 +708,6 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(101, getUpdateTime());
     }
-    if (deleteTime_ != null) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(102, getDeleteTime());
-    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -760,8 +727,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getId())) return false;
     if (!getDatabase()
         .equals(other.getDatabase())) return false;
-    if (!getTable()
-        .equals(other.getTable())) return false;
+    if (!getTableId()
+        .equals(other.getTableId())) return false;
     if (!getName()
         .equals(other.getName())) return false;
     if (!getDisplayName()
@@ -800,11 +767,6 @@ private static final long serialVersionUID = 0L;
       if (!getUpdateTime()
           .equals(other.getUpdateTime())) return false;
     }
-    if (hasDeleteTime() != other.hasDeleteTime()) return false;
-    if (hasDeleteTime()) {
-      if (!getDeleteTime()
-          .equals(other.getDeleteTime())) return false;
-    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -820,8 +782,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getId().hashCode();
     hash = (37 * hash) + DATABASE_FIELD_NUMBER;
     hash = (53 * hash) + getDatabase().hashCode();
-    hash = (37 * hash) + TABLE_FIELD_NUMBER;
-    hash = (53 * hash) + getTable().hashCode();
+    hash = (37 * hash) + TABLE_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getTableId().hashCode();
     hash = (37 * hash) + NAME_FIELD_NUMBER;
     hash = (53 * hash) + getName().hashCode();
     hash = (37 * hash) + DISPLAY_NAME_FIELD_NUMBER;
@@ -864,10 +826,6 @@ private static final long serialVersionUID = 0L;
     if (hasUpdateTime()) {
       hash = (37 * hash) + UPDATE_TIME_FIELD_NUMBER;
       hash = (53 * hash) + getUpdateTime().hashCode();
-    }
-    if (hasDeleteTime()) {
-      hash = (37 * hash) + DELETE_TIME_FIELD_NUMBER;
-      hash = (53 * hash) + getDeleteTime().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1001,7 +959,7 @@ private static final long serialVersionUID = 0L;
 
       database_ = "";
 
-      table_ = "";
+      tableId_ = "";
 
       name_ = "";
 
@@ -1043,12 +1001,6 @@ private static final long serialVersionUID = 0L;
         updateTime_ = null;
         updateTimeBuilder_ = null;
       }
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = null;
-      } else {
-        deleteTime_ = null;
-        deleteTimeBuilder_ = null;
-      }
       return this;
     }
 
@@ -1077,7 +1029,7 @@ private static final long serialVersionUID = 0L;
       io.ncraft.armory.unitable.Column result = new io.ncraft.armory.unitable.Column(this);
       result.id_ = id_;
       result.database_ = database_;
-      result.table_ = table_;
+      result.tableId_ = tableId_;
       result.name_ = name_;
       result.displayName_ = displayName_;
       result.exportName_ = exportName_;
@@ -1101,11 +1053,6 @@ private static final long serialVersionUID = 0L;
         result.updateTime_ = updateTime_;
       } else {
         result.updateTime_ = updateTimeBuilder_.build();
-      }
-      if (deleteTimeBuilder_ == null) {
-        result.deleteTime_ = deleteTime_;
-      } else {
-        result.deleteTime_ = deleteTimeBuilder_.build();
       }
       onBuilt();
       return result;
@@ -1163,8 +1110,8 @@ private static final long serialVersionUID = 0L;
         database_ = other.database_;
         onChanged();
       }
-      if (!other.getTable().isEmpty()) {
-        table_ = other.table_;
+      if (!other.getTableId().isEmpty()) {
+        tableId_ = other.tableId_;
         onChanged();
       }
       if (!other.getName().isEmpty()) {
@@ -1222,9 +1169,6 @@ private static final long serialVersionUID = 0L;
       if (other.hasUpdateTime()) {
         mergeUpdateTime(other.getUpdateTime());
       }
-      if (other.hasDeleteTime()) {
-        mergeDeleteTime(other.getDeleteTime());
-      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1262,7 +1206,7 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 18
             case 26: {
-              table_ = input.readStringRequireUtf8();
+              tableId_ = input.readStringRequireUtf8();
 
               break;
             } // case 26
@@ -1350,13 +1294,6 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 810
-            case 818: {
-              input.readMessage(
-                  getDeleteTimeFieldBuilder().getBuilder(),
-                  extensionRegistry);
-
-              break;
-            } // case 818
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1525,78 +1462,78 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object table_ = "";
+    private java.lang.Object tableId_ = "";
     /**
-     * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-     * @return The table.
+     * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+     * @return The tableId.
      */
-    public java.lang.String getTable() {
-      java.lang.Object ref = table_;
+    public java.lang.String getTableId() {
+      java.lang.Object ref = tableId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        table_ = s;
+        tableId_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-     * @return The bytes for table.
+     * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+     * @return The bytes for tableId.
      */
     public com.google.protobuf.ByteString
-        getTableBytes() {
-      java.lang.Object ref = table_;
+        getTableIdBytes() {
+      java.lang.Object ref = tableId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        table_ = b;
+        tableId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-     * @param value The table to set.
+     * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+     * @param value The tableId to set.
      * @return This builder for chaining.
      */
-    public Builder setTable(
+    public Builder setTableId(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      table_ = value;
+      tableId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string table = 3 [(.mojo.db_index) = ""];</code>
+     * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
      * @return This builder for chaining.
      */
-    public Builder clearTable() {
+    public Builder clearTableId() {
       
-      table_ = getDefaultInstance().getTable();
+      tableId_ = getDefaultInstance().getTableId();
       onChanged();
       return this;
     }
     /**
-     * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-     * @param value The bytes for table to set.
+     * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+     * @param value The bytes for tableId to set.
      * @return This builder for chaining.
      */
-    public Builder setTableBytes(
+    public Builder setTableIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      table_ = value;
+      tableId_ = value;
       onChanged();
       return this;
     }
@@ -2586,125 +2523,6 @@ private static final long serialVersionUID = 0L;
         updateTime_ = null;
       }
       return updateTimeBuilder_;
-    }
-
-    private org.mojolang.mojo.core.Timestamp deleteTime_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.mojolang.mojo.core.Timestamp, org.mojolang.mojo.core.Timestamp.Builder, org.mojolang.mojo.core.TimestampOrBuilder> deleteTimeBuilder_;
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     * @return Whether the deleteTime field is set.
-     */
-    public boolean hasDeleteTime() {
-      return deleteTimeBuilder_ != null || deleteTime_ != null;
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     * @return The deleteTime.
-     */
-    public org.mojolang.mojo.core.Timestamp getDeleteTime() {
-      if (deleteTimeBuilder_ == null) {
-        return deleteTime_ == null ? org.mojolang.mojo.core.Timestamp.getDefaultInstance() : deleteTime_;
-      } else {
-        return deleteTimeBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public Builder setDeleteTime(org.mojolang.mojo.core.Timestamp value) {
-      if (deleteTimeBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        deleteTime_ = value;
-        onChanged();
-      } else {
-        deleteTimeBuilder_.setMessage(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public Builder setDeleteTime(
-        org.mojolang.mojo.core.Timestamp.Builder builderForValue) {
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = builderForValue.build();
-        onChanged();
-      } else {
-        deleteTimeBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public Builder mergeDeleteTime(org.mojolang.mojo.core.Timestamp value) {
-      if (deleteTimeBuilder_ == null) {
-        if (deleteTime_ != null) {
-          deleteTime_ =
-            org.mojolang.mojo.core.Timestamp.newBuilder(deleteTime_).mergeFrom(value).buildPartial();
-        } else {
-          deleteTime_ = value;
-        }
-        onChanged();
-      } else {
-        deleteTimeBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public Builder clearDeleteTime() {
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = null;
-        onChanged();
-      } else {
-        deleteTime_ = null;
-        deleteTimeBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public org.mojolang.mojo.core.Timestamp.Builder getDeleteTimeBuilder() {
-      
-      onChanged();
-      return getDeleteTimeFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    public org.mojolang.mojo.core.TimestampOrBuilder getDeleteTimeOrBuilder() {
-      if (deleteTimeBuilder_ != null) {
-        return deleteTimeBuilder_.getMessageOrBuilder();
-      } else {
-        return deleteTime_ == null ?
-            org.mojolang.mojo.core.Timestamp.getDefaultInstance() : deleteTime_;
-      }
-    }
-    /**
-     * <code>.mojo.core.Timestamp delete_time = 102;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.mojolang.mojo.core.Timestamp, org.mojolang.mojo.core.Timestamp.Builder, org.mojolang.mojo.core.TimestampOrBuilder> 
-        getDeleteTimeFieldBuilder() {
-      if (deleteTimeBuilder_ == null) {
-        deleteTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.mojolang.mojo.core.Timestamp, org.mojolang.mojo.core.Timestamp.Builder, org.mojolang.mojo.core.TimestampOrBuilder>(
-                getDeleteTime(),
-                getParentForChildren(),
-                isClean());
-        deleteTime_ = null;
-      }
-      return deleteTimeBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

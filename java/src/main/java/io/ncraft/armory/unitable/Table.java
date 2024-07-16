@@ -370,32 +370,6 @@ private static final long serialVersionUID = 0L;
     return getUpdateTime();
   }
 
-  public static final int DELETE_TIME_FIELD_NUMBER = 102;
-  private org.mojolang.mojo.db.DeleteTime deleteTime_;
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   * @return Whether the deleteTime field is set.
-   */
-  @java.lang.Override
-  public boolean hasDeleteTime() {
-    return deleteTime_ != null;
-  }
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   * @return The deleteTime.
-   */
-  @java.lang.Override
-  public org.mojolang.mojo.db.DeleteTime getDeleteTime() {
-    return deleteTime_ == null ? org.mojolang.mojo.db.DeleteTime.getDefaultInstance() : deleteTime_;
-  }
-  /**
-   * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-   */
-  @java.lang.Override
-  public org.mojolang.mojo.db.DeleteTimeOrBuilder getDeleteTimeOrBuilder() {
-    return getDeleteTime();
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -437,9 +411,6 @@ private static final long serialVersionUID = 0L;
     if (updateTime_ != null) {
       output.writeMessage(101, getUpdateTime());
     }
-    if (deleteTime_ != null) {
-      output.writeMessage(102, getDeleteTime());
-    }
     getUnknownFields().writeTo(output);
   }
 
@@ -478,10 +449,6 @@ private static final long serialVersionUID = 0L;
     if (updateTime_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(101, getUpdateTime());
-    }
-    if (deleteTime_ != null) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(102, getDeleteTime());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -522,11 +489,6 @@ private static final long serialVersionUID = 0L;
       if (!getUpdateTime()
           .equals(other.getUpdateTime())) return false;
     }
-    if (hasDeleteTime() != other.hasDeleteTime()) return false;
-    if (hasDeleteTime()) {
-      if (!getDeleteTime()
-          .equals(other.getDeleteTime())) return false;
-    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -561,10 +523,6 @@ private static final long serialVersionUID = 0L;
     if (hasUpdateTime()) {
       hash = (37 * hash) + UPDATE_TIME_FIELD_NUMBER;
       hash = (53 * hash) + getUpdateTime().hashCode();
-    }
-    if (hasDeleteTime()) {
-      hash = (37 * hash) + DELETE_TIME_FIELD_NUMBER;
-      hash = (53 * hash) + getDeleteTime().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -725,12 +683,6 @@ private static final long serialVersionUID = 0L;
         updateTime_ = null;
         updateTimeBuilder_ = null;
       }
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = null;
-      } else {
-        deleteTime_ = null;
-        deleteTimeBuilder_ = null;
-      }
       return this;
     }
 
@@ -782,11 +734,6 @@ private static final long serialVersionUID = 0L;
         result.updateTime_ = updateTime_;
       } else {
         result.updateTime_ = updateTimeBuilder_.build();
-      }
-      if (deleteTimeBuilder_ == null) {
-        result.deleteTime_ = deleteTime_;
-      } else {
-        result.deleteTime_ = deleteTimeBuilder_.build();
       }
       onBuilt();
       return result;
@@ -892,9 +839,6 @@ private static final long serialVersionUID = 0L;
       if (other.hasUpdateTime()) {
         mergeUpdateTime(other.getUpdateTime());
       }
-      if (other.hasDeleteTime()) {
-        mergeDeleteTime(other.getDeleteTime());
-      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -978,13 +922,6 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 810
-            case 818: {
-              input.readMessage(
-                  getDeleteTimeFieldBuilder().getBuilder(),
-                  extensionRegistry);
-
-              break;
-            } // case 818
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1934,125 +1871,6 @@ private static final long serialVersionUID = 0L;
         updateTime_ = null;
       }
       return updateTimeBuilder_;
-    }
-
-    private org.mojolang.mojo.db.DeleteTime deleteTime_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.mojolang.mojo.db.DeleteTime, org.mojolang.mojo.db.DeleteTime.Builder, org.mojolang.mojo.db.DeleteTimeOrBuilder> deleteTimeBuilder_;
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     * @return Whether the deleteTime field is set.
-     */
-    public boolean hasDeleteTime() {
-      return deleteTimeBuilder_ != null || deleteTime_ != null;
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     * @return The deleteTime.
-     */
-    public org.mojolang.mojo.db.DeleteTime getDeleteTime() {
-      if (deleteTimeBuilder_ == null) {
-        return deleteTime_ == null ? org.mojolang.mojo.db.DeleteTime.getDefaultInstance() : deleteTime_;
-      } else {
-        return deleteTimeBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public Builder setDeleteTime(org.mojolang.mojo.db.DeleteTime value) {
-      if (deleteTimeBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        deleteTime_ = value;
-        onChanged();
-      } else {
-        deleteTimeBuilder_.setMessage(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public Builder setDeleteTime(
-        org.mojolang.mojo.db.DeleteTime.Builder builderForValue) {
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = builderForValue.build();
-        onChanged();
-      } else {
-        deleteTimeBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public Builder mergeDeleteTime(org.mojolang.mojo.db.DeleteTime value) {
-      if (deleteTimeBuilder_ == null) {
-        if (deleteTime_ != null) {
-          deleteTime_ =
-            org.mojolang.mojo.db.DeleteTime.newBuilder(deleteTime_).mergeFrom(value).buildPartial();
-        } else {
-          deleteTime_ = value;
-        }
-        onChanged();
-      } else {
-        deleteTimeBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public Builder clearDeleteTime() {
-      if (deleteTimeBuilder_ == null) {
-        deleteTime_ = null;
-        onChanged();
-      } else {
-        deleteTime_ = null;
-        deleteTimeBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public org.mojolang.mojo.db.DeleteTime.Builder getDeleteTimeBuilder() {
-      
-      onChanged();
-      return getDeleteTimeFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    public org.mojolang.mojo.db.DeleteTimeOrBuilder getDeleteTimeOrBuilder() {
-      if (deleteTimeBuilder_ != null) {
-        return deleteTimeBuilder_.getMessageOrBuilder();
-      } else {
-        return deleteTime_ == null ?
-            org.mojolang.mojo.db.DeleteTime.getDefaultInstance() : deleteTime_;
-      }
-    }
-    /**
-     * <code>.mojo.db.DeleteTime delete_time = 102;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.mojolang.mojo.db.DeleteTime, org.mojolang.mojo.db.DeleteTime.Builder, org.mojolang.mojo.db.DeleteTimeOrBuilder> 
-        getDeleteTimeFieldBuilder() {
-      if (deleteTimeBuilder_ == null) {
-        deleteTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.mojolang.mojo.db.DeleteTime, org.mojolang.mojo.db.DeleteTime.Builder, org.mojolang.mojo.db.DeleteTimeOrBuilder>(
-                getDeleteTime(),
-                getParentForChildren(),
-                isClean());
-        deleteTime_ = null;
-      }
-      return deleteTimeBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -48,9 +48,13 @@ GET /armory/unitable/v1/databases/{database}/tables
 #### Query 参数
 | 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
 |---|---|---|---|---|---|
-| `page_size` | `integer` | `Int32` | 否 |  |  |
-| `page_token` | `string` |  | 否 |  |  |
-| `skip` | `integer` | `Int32` | 否 |  |  |
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
 
 
 ### 返回值
@@ -66,7 +70,6 @@ GET /armory/unitable/v1/databases/{database}/tables
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -79,7 +82,7 @@ GET /armory/unitable/v1/databases/{database}/tables
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -89,16 +92,6 @@ GET /armory/unitable/v1/databases/{database}/tables
 #### `armory.unitable.Table`
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
-| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
-| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
-| `database` | `string` |  | N |  | 表单所在的数据库名 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单删除时间 |
-| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
-| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
-| `id` | `string` |  | N |  | 表单ID |
-| `name` | `string` |  | N |  | 表单名 |
-| `tenant` | `string` |  | N |  | 租户名 |
-| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 ## 创建表单
@@ -120,6 +113,15 @@ POST /armory/unitable/v1/databases/{database}/tables
 #### Body 请求对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -127,7 +129,6 @@ POST /armory/unitable/v1/databases/{database}/tables
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -140,7 +141,7 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -159,7 +160,6 @@ POST /armory/unitable/v1/databases/{database}/tables
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -172,7 +172,7 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -201,16 +201,6 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 #### 返回对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
-| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
-| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
-| `database` | `string` |  | N |  | 表单所在的数据库名 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单删除时间 |
-| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
-| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
-| `id` | `string` |  | N |  | 表单ID |
-| `name` | `string` |  | N |  | 表单名 |
-| `tenant` | `string` |  | N |  | 租户名 |
-| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -218,7 +208,6 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -231,7 +220,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -258,6 +247,15 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 #### Body 请求对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -265,7 +263,6 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -278,7 +275,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -340,6 +337,15 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 #### 返回对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -347,7 +353,6 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -360,7 +365,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -387,9 +392,13 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 #### Query 参数
 | 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
 |---|---|---|---|---|---|
-| `page_size` | `integer` | `Int32` | 否 |  |  |
-| `page_token` | `string` |  | 否 |  |  |
-| `skip` | `integer` | `Int32` | 否 |  |  |
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
 
 
 ### 返回值
@@ -405,7 +414,6 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -418,7 +426,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -447,7 +455,6 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -460,7 +467,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -474,7 +481,6 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -487,7 +493,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -519,7 +525,6 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -532,7 +537,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -562,7 +567,6 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -575,7 +579,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -638,7 +642,6 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -651,7 +654,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -691,7 +694,6 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 |---|---|---|---|---|---|
 | `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
 | `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
-| `deleteTime` | `string` | `Timestamp` | N |  | 表单列删除时间 |
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
@@ -704,7 +706,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
-| `table` | `string` |  | N |  | 所属的表单名 |
+| `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
@@ -764,9 +766,13 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/rows
 #### Query 参数
 | 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
 |---|---|---|---|---|---|
-| `page_size` | `integer` | `Int32` | 否 |  |  |
-| `page_token` | `string` |  | 否 |  |  |
-| `skip` | `integer` | `Int32` | 否 |  |  |
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
 
 
 ### 返回值
@@ -974,9 +980,13 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/rows:export
 #### Query 参数
 | 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
 |---|---|---|---|---|---|
-| `page_size` | `integer` | `Int32` | 否 |  |  |
-| `page_token` | `string` |  | 否 |  |  |
-| `skip` | `integer` | `Int32` | 否 |  |  |
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
 
 
 ### 返回值

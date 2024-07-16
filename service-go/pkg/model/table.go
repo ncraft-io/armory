@@ -67,10 +67,13 @@ func (a *Table) BatchGet(ctx context.Context, ids []string) ([]*unitable.Table, 
 	return tables, a.DB.WithContext(ctx).Find(&tables, ids).Error
 }
 
-func (a *Table) Query(ctx context.Context) ([]*unitable.Table, error) {
+func (a *Table) Query(ctx context.Context, query *db.Query) ([]*unitable.Table, error) {
 	var tables []*unitable.Table
 
 	tx := a.DB.DB.WithContext(ctx)
+	if query != nil {
+		tx = query.Apply(tx)
+	}
 
 	return tables, tx.Find(&tables).Error
 }

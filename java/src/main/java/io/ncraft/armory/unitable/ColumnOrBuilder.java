@@ -32,16 +32,16 @@ public interface ColumnOrBuilder extends
       getDatabaseBytes();
 
   /**
-   * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-   * @return The table.
+   * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+   * @return The tableId.
    */
-  java.lang.String getTable();
+  java.lang.String getTableId();
   /**
-   * <code>string table = 3 [(.mojo.db_index) = ""];</code>
-   * @return The bytes for table.
+   * <code>string table_id = 3 [(.mojo.db_index) = ""];</code>
+   * @return The bytes for tableId.
    */
   com.google.protobuf.ByteString
-      getTableBytes();
+      getTableIdBytes();
 
   /**
    * <code>string name = 4 [(.mojo.db_index) = ""];</code>
@@ -198,19 +198,4 @@ public interface ColumnOrBuilder extends
    * <code>.mojo.core.Timestamp update_time = 101;</code>
    */
   org.mojolang.mojo.core.TimestampOrBuilder getUpdateTimeOrBuilder();
-
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   * @return Whether the deleteTime field is set.
-   */
-  boolean hasDeleteTime();
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   * @return The deleteTime.
-   */
-  org.mojolang.mojo.core.Timestamp getDeleteTime();
-  /**
-   * <code>.mojo.core.Timestamp delete_time = 102;</code>
-   */
-  org.mojolang.mojo.core.TimestampOrBuilder getDeleteTimeOrBuilder();
 }
