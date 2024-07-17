@@ -22,8 +22,8 @@ import io.ncraft.armory.auth.v1.factory.AuthingHttpFallbackFactory;
 @ConditionalOnMissingClass("io.ncraft.armory.auth.service.AuthingHttpImpl")
 public interface AuthingHttp {
     
-    
+    @ResponseBody
     @PostMapping("armory/auth/v1/accounts")
-    Result<Null> createAccount(String database, String table);
+    Result<Account> createAccount(@RequestParam String database, @RequestParam String table);
     
 }

@@ -46,6 +46,8 @@ import (
 
 var _ nclient.Config
 
+const FullServiceName = "armory.unitable.v1.Unitable"
+
 func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 	// Business domain.
 	var service pb.UnitableServer
@@ -115,8 +117,6 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 }
 
 func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server) svc.Endpoints {
-	const FullServiceName = "unitable.Unitable"
-
 	// tracing init
 	tracer, c := tracing.New(FullServiceName)
 	if c != nil {
@@ -151,22 +151,6 @@ func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server) svc.Endp
 		options["count"] = count
 		options["latency"] = latency
 	}
-
-	sdConfig := sd.NewConfig("sd")
-	sdClient := sd.New(sdConfig, logger)
-
-	if sdClient != nil {
-		url := "etcd://" + network.GetHost() + ":" + getGrpcPort(cfg.GrpcAddr)
-		err := sdClient.Register(url, FullServiceName, []string{})
-		if err != nil {
-			panic(err)
-		}
-		defer sdClient.Deregister()
-	}
-
-	// required service clients ...
-	//xxClient := xx_client.New(nclient.NewConfig("xx"), sdClient.Instancer(FullServiceName), tracer, logger)
-	//defer xxClient.Close()
 
 	endpoints := NewEndpoints(options)
 
@@ -242,6 +226,21 @@ func Run(cfg nserver.Config) {
 	//}
 	_ = endpoints
 
+	sdConfig := sd.NewConfig("sd")
+	sdClient := sd.New(sdConfig, kit.Logger())
+	if sdClient != nil {
+		addr := cfg.GrpcAddr
+		if strings.ToLower(sdConfig.Transport) == "http" {
+			addr = cfg.HttpAddr
+		}
+		url := network.GetHost() + ":" + getServerPort(addr)
+		err := sdClient.Register(url, FullServiceName, []string{})
+		if err != nil {
+			panic(err)
+		}
+		defer sdClient.Deregister()
+	}
+
 	// Run!
 	logs.Info("unitable.UnitableServer", " started.")
 	logs.Info("unitable.UnitableServer", <-errc)
@@ -249,7 +248,7 @@ func Run(cfg nserver.Config) {
 	logs.Info("unitable.UnitableServer", " closed.")
 }
 
-func getGrpcPort(addr string) string {
+func getServerPort(addr string) string {
 	host := strings.Split(addr, ":")
 	if len(host) < 2 {
 		panic("host name is invalid (" + addr + ")")

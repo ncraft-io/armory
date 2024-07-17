@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package armory.auth.v1;
 
-import "mojo/core/null.proto";
+import "armory/auth/account.proto";
 
 option go_package = "github.com/ncraft-io/armory/go/pkg/armory/auth/v1;auth";
 option java_multiple_files = true;
@@ -17,5 +17,5 @@ message CreateAccountRequest {
 }
 
 service Authing {
-    rpc create_account(CreateAccountRequest) returns (mojo.core.Null);
+    rpc create_account(CreateAccountRequest) returns (armory.auth.Account);
 }

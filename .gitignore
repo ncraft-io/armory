@@ -208,4 +208,6 @@ target/
 java/target/
 java/mojo/target/
 
+service-go/run/
+
 # End of https://www.gitignore.io/api/go,c++,java,cmake,intellij+all,visualstudiocode

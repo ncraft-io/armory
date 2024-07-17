@@ -19,14 +19,14 @@ import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/ncraft-io/armory/go/pkg/armory/auth"
 
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/auth/v1"
 )
 
 var (
-	_ = core.Null{}
+	_ = auth.Account{}
 )
 
 // MakeGRPCServer makes a set of endpoints available as a gRPC AuthingServer.
@@ -65,12 +65,12 @@ type grpcServer struct {
 
 // Methods for grpcServer to implement AuthingServer interface
 
-func (s *grpcServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*core.Null, error) {
+func (s *grpcServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*auth.Account, error) {
 	_, rep, err := s.createAccount.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*core.Null), nil
+	return rep.(*auth.Account), nil
 }
 
 // Server Decode
@@ -87,7 +87,7 @@ func DecodeGRPCCreateAccountRequest(_ context.Context, grpcReq interface{}) (int
 // EncodeGRPCCreateAccountResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain CreateAccount response to a gRPC CreateAccount reply. Primarily useful in a server.
 func EncodeGRPCCreateAccountResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*core.Null)
+	resp := response.(*auth.Account)
 	return resp, nil
 }
 

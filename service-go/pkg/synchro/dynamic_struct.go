@@ -28,7 +28,7 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 			field.Type = reflect.TypeOf(float64(0))
 		case "string":
 			switch col.Format {
-			case "time":
+			case "datetime", "time":
 				field.Type = reflect.TypeOf(time.Time{})
 			default:
 				field.Type = reflect.TypeOf("")

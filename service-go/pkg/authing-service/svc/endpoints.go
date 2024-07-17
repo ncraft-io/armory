@@ -16,14 +16,14 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/ncraft-io/armory/go/pkg/armory/auth"
 
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/auth/v1"
 )
 
 var (
-	_ = core.Null{}
+	_ = auth.Account{}
 )
 
 // Endpoints collects all of the endpoints that compose an add service. It's
@@ -45,12 +45,12 @@ type Endpoints struct {
 
 // Endpoints
 
-func (e Endpoints) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*core.Null, error) {
+func (e Endpoints) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*auth.Account, error) {
 	response, err := e.CreateAccountEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*core.Null), nil
+	return response.(*auth.Account), nil
 }
 
 // Make Endpoints

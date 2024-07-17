@@ -1,6 +1,7 @@
 sd:
-    mode: direct
-    url: 172.3.0.98:2379
+    mode: nacos
+    url: 127.0.0.1:8848
+    transport: http
     retry:
         enable: true
         timeout: 1000
@@ -8,6 +9,9 @@ sd:
     etcd:
         dialTimeout: 3
         dialKeepAlive: 3
+    nacos:
+        clientConfig:
+            NamespaceId: 01c814ba-73c2-427d-94a2-0778efc14721
     direct:
         armory.barrack.v1.User:
             urls:

@@ -26,7 +26,7 @@ public class AuthingHttpFallbackFactory implements FallbackFactory<AuthingHttp> 
         return new AuthingHttp() {
             
             @Override
-            public Result<Null> createAccount(String database, String table) {
+            public Result<Account> createAccount(String database, String table) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to create_account."));
             }
             

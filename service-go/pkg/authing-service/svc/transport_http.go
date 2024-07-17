@@ -37,6 +37,8 @@ import (
 
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 
+	"github.com/ncraft-io/armory/go/pkg/armory/auth"
+
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/auth/v1"
 )
@@ -56,7 +58,7 @@ var (
 )
 
 var (
-	_ = core.Null{}
+	_ = auth.Account{}
 )
 
 var cfg *nhttp.Config

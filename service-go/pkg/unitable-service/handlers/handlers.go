@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/golang/protobuf/proto"
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
@@ -53,11 +54,19 @@ func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableReque
 	if len(in.Table.Columns) == 0 {
 		return nil, core.NewInvalidArgumentError("the table has no columns in request")
 	}
+	for i, col := range in.Table.Columns {
+		if len(col.Name) == 0 {
+			return nil, core.NewInvalidArgumentError("the No. %d column in table has not set name", i)
+		}
+		if col.IsTypeValid() {
+			return nil, core.NewInvalidArgumentError("the No. %d column (%s) in table type %s is invalid", i, col.Name, col.Type)
+		}
+	}
 
 	in.Table.Id = in.Table.Name
 	in.Table.CreateTime = core.Now()
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.CreateTable(ctx, in.Table); err != nil {
+	if err := s.Synchro.MigrateTable(ctx, in.Table, nil); err != nil {
 		return nil, core.NewInternalError("failed to create table in %s", in.Table.Database)
 	}
 
@@ -82,10 +91,21 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 		return nil, core.NewInvalidArgumentError("not set the table body in request")
 	}
 	if len(in.Table.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database in request")
+		if len(in.Database) > 0 {
+			in.Table.Database = in.Database
+		} else {
+			return nil, core.NewInvalidArgumentError("not set the database in request")
+		}
 	}
 	if len(in.Table.Name) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the table name in request")
+		if len(in.Id) > 0 {
+			in.Table.Id = in.Id
+			in.Table.Name = in.Id
+		} else if len(in.Table.Id) > 0 {
+			in.Table.Name = in.Table.Id
+		} else {
+			return nil, core.NewInvalidArgumentError("not set the table name or id in request")
+		}
 	}
 	if !nameRegex.MatchString(in.Table.Name) {
 		return nil, core.NewInvalidArgumentError("the table name (%s) is invalid in request", in.Table.Name)
@@ -94,17 +114,60 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 		return nil, core.NewInvalidArgumentError("the table has no columns in request")
 	}
 
-	in.Table.Id = in.Table.Name
+	if len(in.Table.Id) == 0 {
+		in.Table.Id = in.Table.Name
+	}
+
+	renamedCols := make(map[string]string)
+	if old, err := model.GetTableModel().Get(ctx, in.Table.Id); err != nil {
+		return nil, core.NewInvalidArgumentError("the table %s not found, err: %s", in.Table.Id, err.Error())
+	} else {
+		columns := make(map[string]*unitable.Column)
+		for _, col := range old.Columns {
+			columns[col.Id] = col
+		}
+
+		for _, col := range in.Table.Columns {
+			if len(col.Id) == 0 {
+				col.Id = ksuid.New().String()
+				col.CreateTime = core.Now()
+				col.UpdateTime = core.Now()
+			} else {
+				if c, ok := columns[col.Id]; ok {
+					if len(col.Name) > 0 && len(c.Name) > 0 && col.Name != c.Name {
+						renamedCols[c.Name] = col.Name
+					}
+
+					proto.Merge(col, c)
+					col.UpdateTime = core.Now()
+				} else {
+					if col.CreateTime == nil {
+						col.CreateTime = core.Now()
+					}
+					if col.UpdateTime == nil {
+						col.UpdateTime = core.Now()
+					}
+				}
+			}
+
+			col.TableId = in.Table.Id
+			if len(col.Type) == 0 {
+				return nil, core.NewInvalidArgumentError("the column %s in table %s has not type set", col.Name, in.Table.Id)
+			}
+		}
+	}
+
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.MigrateTable(ctx, in.Table); err != nil {
+	if err := s.Synchro.MigrateTable(ctx, in.Table, renamedCols); err != nil {
 		return nil, core.NewInternalError("failed to update table in %s", in.Table.Database)
 	}
 
-	for _, col := range in.Table.Columns {
-		if len(col.Id) == 0 {
-			col.Id = ksuid.New().String()
-		}
+	columns := in.Table.Columns
+	in.Table.Columns = nil
+	if _, err := model.GetColumnModel().Create(ctx, columns...); err != nil {
+		return nil, err
 	}
+
 	if _, err := model.GetTableModel().Update(ctx, in.Table); err != nil {
 		return nil, err
 	}
@@ -130,7 +193,12 @@ func (s unitableServer) ListTables(ctx context.Context, in *pb.ListTablesRequest
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 
-	tables, err := model.GetTableModel().Query(ctx)
+	query, err := ParseQuery(in)
+	if err != nil {
+		return nil, err
+	}
+
+	tables, err := model.GetTableModel().Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -361,22 +429,50 @@ func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) 
 
 // ListRow implements Interface.
 func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb.ListRowResponse, error) {
-	resp := &pb.ListRowResponse{
-		// Objects:
-		// TotalCount:
-		// NextPageToken:
+	if len(in.Database) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the database")
 	}
-	return resp, nil
+	if len(in.Table) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the table name")
+	}
+
+	query, err := ParseQuery(in)
+	if err != nil {
+		return nil, err
+	}
+
+	if rows, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
+		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
+	} else {
+		return &pb.ListRowResponse{
+			Objects:    rows,
+			TotalCount: int32(len(rows)),
+		}, nil
+	}
 }
 
 // ExportRow implements Interface.
 func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
-	resp := &pb.ExportRowResponse{
-		// Objects:
-		// TotalCount:
-		// NextPageToken:
+	if len(in.Database) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the database")
 	}
-	return resp, nil
+	if len(in.Table) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the table name")
+	}
+
+	query, err := ParseQuery(in)
+	if err != nil {
+		return nil, err
+	}
+
+	if rows, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
+		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
+	} else {
+		return &pb.ExportRowResponse{
+			Objects:    rows,
+			TotalCount: int32(len(rows)),
+		}, nil
+	}
 }
 
 // BatchCreateRows implements Interface.

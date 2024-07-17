@@ -26,20 +26,23 @@ func New() *Synchro {
 	}
 }
 
-func (s *Synchro) GetMetaTable(table string) *MetaTable {
-	if mt, ok := s.Tables[table]; !ok {
-		t, err := model.GetTableModel().Get(context.Background(), table)
-		if err != nil {
-			logs.ErrLogw("failed to get the table", "name", table, "error", err)
-			return nil
+func (s *Synchro) GetMetaTable(tableName string, table *unitable.Table) *MetaTable {
+	if mt, ok := s.Tables[tableName]; !ok {
+		if table == nil {
+			t, err := model.GetTableModel().Get(context.Background(), tableName)
+			if err != nil {
+				logs.ErrLogw("failed to get the table", "name", table, "error", err)
+				return nil
+			}
+			table = t
 		}
 
 		meta := &MetaTable{
-			Table:  t,
-			Struct: NewDynamicStruct(t),
+			Table:  table,
+			Struct: NewDynamicStruct(table),
 		}
 
-		s.Tables[table] = meta
+		s.Tables[tableName] = meta
 		return meta
 	} else {
 		return mt
@@ -56,18 +59,29 @@ func (s *Synchro) CreateTable(ctx context.Context, table *unitable.Table) error 
 	return nil
 }
 
-func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table) error {
-	meta := s.GetMetaTable(table.Id)
+func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renamedCols map[string]string) error {
+	meta := s.GetMetaTable(table.Id, table)
 	if meta == nil {
 		return core.NewNotFoundError("the table %s is not exist", table.Name)
 	}
 
 	delete(s.Tables, table.Id)
+
+	if renamedCols != nil {
+		obj := meta.Struct.New()
+		tx := GetDataDB().WithContext(ctx).Table(table.Id)
+		for k, v := range renamedCols {
+			if err := tx.Migrator().RenameColumn(obj, k, v); err != nil {
+				return err
+			}
+		}
+	}
+
 	return GetDataDB().WithContext(ctx).Table(table.Id).AutoMigrate(meta.Struct.New())
 }
 
 func (s *Synchro) DropTable(ctx context.Context, table *unitable.Table) error {
-	meta := s.GetMetaTable(table.Id)
+	meta := s.GetMetaTable(table.Id, nil)
 	if meta == nil {
 		return core.NewNotFoundError("the table %s is not exist", table.Id)
 	}
@@ -78,7 +92,7 @@ func (s *Synchro) DropTable(ctx context.Context, table *unitable.Table) error {
 }
 
 func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Object, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return nil, core.NewNotFoundError("the table %s is not exist", table)
 	}
@@ -97,12 +111,44 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 	return obj, nil
 }
 
-func (s *Synchro) QueryRows(ctx context.Context, table string) ([]*core.Object, error) {
-	return nil, nil
+func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) ([]*core.Object, error) {
+	meta := s.GetMetaTable(table, nil)
+	if meta == nil {
+		return nil, core.NewNotFoundError("the table %s is not exist", table)
+	}
+
+	tx := GetDataDB().WithContext(ctx).Table(table)
+	if query != nil {
+		tx = query.Apply(tx)
+	} else {
+		tx = tx.Select("*")
+	}
+
+	rows, err := tx.Rows()
+	defer rows.Close()
+	if err != nil {
+		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
+	}
+
+	var objs []*core.Object
+	for rows.Next() {
+		row := meta.Struct.New()
+		if err = GetDataDB().ScanRows(rows, row); err != nil {
+			return nil, err
+		}
+
+		obj, err := ParseObject(row)
+		if err != nil {
+			return nil, err
+		}
+		objs = append(objs, obj)
+	}
+
+	return objs, nil
 }
 
 func (s *Synchro) InsertRow(ctx context.Context, table string, row *core.Object) (int64, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
@@ -117,7 +163,7 @@ func (s *Synchro) InsertRow(ctx context.Context, table string, row *core.Object)
 }
 
 func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
@@ -136,7 +182,7 @@ func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Ob
 }
 
 func (s *Synchro) UpdateRow(ctx context.Context, table string, row *core.Object) (int64, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
@@ -151,7 +197,7 @@ func (s *Synchro) UpdateRow(ctx context.Context, table string, row *core.Object)
 }
 
 func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Object) (int64, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
@@ -184,7 +230,7 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 }
 
 func (s *Synchro) DeleteRows(ctx context.Context, table string, ids ...string) (int64, error) {
-	meta := s.GetMetaTable(table)
+	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}

@@ -16,28 +16,28 @@ public final class AuthingGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.CreateAccountRequest,
-      org.mojolang.mojo.core.Null> getCreateAccountMethod;
+      io.ncraft.armory.auth.Account> getCreateAccountMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "create_account",
       requestType = io.ncraft.armory.auth.v1.CreateAccountRequest.class,
-      responseType = org.mojolang.mojo.core.Null.class,
+      responseType = io.ncraft.armory.auth.Account.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.CreateAccountRequest,
-      org.mojolang.mojo.core.Null> getCreateAccountMethod() {
-    io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.CreateAccountRequest, org.mojolang.mojo.core.Null> getCreateAccountMethod;
+      io.ncraft.armory.auth.Account> getCreateAccountMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.CreateAccountRequest, io.ncraft.armory.auth.Account> getCreateAccountMethod;
     if ((getCreateAccountMethod = AuthingGrpc.getCreateAccountMethod) == null) {
       synchronized (AuthingGrpc.class) {
         if ((getCreateAccountMethod = AuthingGrpc.getCreateAccountMethod) == null) {
           AuthingGrpc.getCreateAccountMethod = getCreateAccountMethod =
-              io.grpc.MethodDescriptor.<io.ncraft.armory.auth.v1.CreateAccountRequest, org.mojolang.mojo.core.Null>newBuilder()
+              io.grpc.MethodDescriptor.<io.ncraft.armory.auth.v1.CreateAccountRequest, io.ncraft.armory.auth.Account>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "create_account"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.ncraft.armory.auth.v1.CreateAccountRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.mojolang.mojo.core.Null.getDefaultInstance()))
+                  io.ncraft.armory.auth.Account.getDefaultInstance()))
               .setSchemaDescriptor(new AuthingMethodDescriptorSupplier("create_account"))
               .build();
         }
@@ -97,7 +97,7 @@ public final class AuthingGrpc {
     /**
      */
     default void createAccount(io.ncraft.armory.auth.v1.CreateAccountRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.auth.Account> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getCreateAccountMethod(), responseObserver);
     }
   }
@@ -132,7 +132,7 @@ public final class AuthingGrpc {
     /**
      */
     public void createAccount(io.ncraft.armory.auth.v1.CreateAccountRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.auth.Account> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getCreateAccountMethod(), getCallOptions()), request, responseObserver);
     }
@@ -156,7 +156,7 @@ public final class AuthingGrpc {
 
     /**
      */
-    public org.mojolang.mojo.core.Null createAccount(io.ncraft.armory.auth.v1.CreateAccountRequest request) {
+    public io.ncraft.armory.auth.Account createAccount(io.ncraft.armory.auth.v1.CreateAccountRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getCreateAccountMethod(), getCallOptions(), request);
     }
@@ -180,7 +180,7 @@ public final class AuthingGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.mojolang.mojo.core.Null> createAccount(
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.auth.Account> createAccount(
         io.ncraft.armory.auth.v1.CreateAccountRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getCreateAccountMethod(), getCallOptions()), request);
@@ -208,7 +208,7 @@ public final class AuthingGrpc {
       switch (methodId) {
         case METHODID_CREATE_ACCOUNT:
           serviceImpl.createAccount((io.ncraft.armory.auth.v1.CreateAccountRequest) request,
-              (io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null>) responseObserver);
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.auth.Account>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -233,7 +233,7 @@ public final class AuthingGrpc {
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
               io.ncraft.armory.auth.v1.CreateAccountRequest,
-              org.mojolang.mojo.core.Null>(
+              io.ncraft.armory.auth.Account>(
                 service, METHODID_CREATE_ACCOUNT)))
         .build();
   }

@@ -10,7 +10,7 @@ package auth
 
 import (
 	context "context"
-	core "github.com/mojo-lang/core/go/pkg/mojo/core"
+	auth "github.com/ncraft-io/armory/go/pkg/armory/auth"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -29,7 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthingClient interface {
-	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*core.Null, error)
+	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*auth.Account, error)
 }
 
 type authingClient struct {
@@ -40,8 +40,8 @@ func NewAuthingClient(cc grpc.ClientConnInterface) AuthingClient {
 	return &authingClient{cc}
 }
 
-func (c *authingClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*core.Null, error) {
-	out := new(core.Null)
+func (c *authingClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*auth.Account, error) {
+	out := new(auth.Account)
 	err := c.cc.Invoke(ctx, Authing_CreateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (c *authingClient) CreateAccount(ctx context.Context, in *CreateAccountRequ
 // All implementations must embed UnimplementedAuthingServer
 // for forward compatibility
 type AuthingServer interface {
-	CreateAccount(context.Context, *CreateAccountRequest) (*core.Null, error)
+	CreateAccount(context.Context, *CreateAccountRequest) (*auth.Account, error)
 	mustEmbedUnimplementedAuthingServer()
 }
 
@@ -61,7 +61,7 @@ type AuthingServer interface {
 type UnimplementedAuthingServer struct {
 }
 
-func (UnimplementedAuthingServer) CreateAccount(context.Context, *CreateAccountRequest) (*core.Null, error) {
+func (UnimplementedAuthingServer) CreateAccount(context.Context, *CreateAccountRequest) (*auth.Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
 func (UnimplementedAuthingServer) mustEmbedUnimplementedAuthingServer() {}

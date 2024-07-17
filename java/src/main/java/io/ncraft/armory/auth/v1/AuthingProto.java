@@ -29,18 +29,19 @@ public final class AuthingProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\034armory/auth/v1/authing.proto\022\016armory.a" +
-      "uth.v1\032\024mojo/core/null.proto\"7\n\024CreateAc" +
-      "countRequest\022\020\n\010database\030\001 \001(\t\022\r\n\005table\030" +
-      "\002 \001(\t2R\n\007Authing\022G\n\016create_account\022$.arm" +
-      "ory.auth.v1.CreateAccountRequest\032\017.mojo." +
-      "core.NullBb\n\030io.ncraft.armory.auth.v1B\014A" +
-      "uthingProtoP\001Z6github.com/ncraft-io/armo" +
-      "ry/go/pkg/armory/auth/v1;authb\006proto3"
+      "uth.v1\032\031armory/auth/account.proto\"7\n\024Cre" +
+      "ateAccountRequest\022\020\n\010database\030\001 \001(\t\022\r\n\005t" +
+      "able\030\002 \001(\t2W\n\007Authing\022L\n\016create_account\022" +
+      "$.armory.auth.v1.CreateAccountRequest\032\024." +
+      "armory.auth.AccountBb\n\030io.ncraft.armory." +
+      "auth.v1B\014AuthingProtoP\001Z6github.com/ncra" +
+      "ft-io/armory/go/pkg/armory/auth/v1;authb" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          org.mojolang.mojo.core.NullProto.getDescriptor(),
+          io.ncraft.armory.auth.AccountProto.getDescriptor(),
         });
     internal_static_armory_auth_v1_CreateAccountRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -48,7 +49,7 @@ public final class AuthingProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_armory_auth_v1_CreateAccountRequest_descriptor,
         new java.lang.String[] { "Database", "Table", });
-    org.mojolang.mojo.core.NullProto.getDescriptor();
+    io.ncraft.armory.auth.AccountProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

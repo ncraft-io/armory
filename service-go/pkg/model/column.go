@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"gorm.io/gorm/clause"
 	"sync"
 
 	"github.com/mojo-lang/db/go/pkg/mojo/db"
@@ -43,10 +44,9 @@ func (a *Column) Create(ctx context.Context, columns ...*unitable.Column) (int64
 	if columnsLen == 0 {
 		return 0, nil
 	} else if columnsLen == 1 {
-		//executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).Create(columns[0])
-		executionResult = a.DB.WithContext(ctx).Create(columns[0])
+		executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).Create(columns[0])
 	} else {
-		executionResult = a.DB.WithContext(ctx).CreateInBatches(columns, len(columns))
+		executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).CreateInBatches(columns, len(columns))
 	}
 
 	return executionResult.RowsAffected, executionResult.Error

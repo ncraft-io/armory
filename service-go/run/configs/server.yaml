@@ -2,3 +2,7 @@ server:
   httpAddr: :21101
   grpcAddr: :21102
   debugAddr: :21103
+
+transport:
+  http:
+    style: envelope

@@ -57,6 +57,11 @@ func (a *Table) Create(ctx context.Context, tables ...*unitable.Table) (int64, e
 	return executionResult.RowsAffected, executionResult.Error
 }
 
+func (a *Table) Update(ctx context.Context, table *unitable.Table) (int64, error) {
+	executionResult := a.DB.WithContext(ctx).Updates(table)
+	return executionResult.RowsAffected, executionResult.Error
+}
+
 func (a *Table) Get(ctx context.Context, uid string) (*unitable.Table, error) {
 	table := &unitable.Table{}
 	return table, a.DB.WithContext(ctx).Preload("Columns").First(table, "id = ?", uid).Error
@@ -85,10 +90,5 @@ func (a *Table) Delete(ctx context.Context, uid string) (int64, error) {
 
 func (a *Table) BatchDelete(ctx context.Context, ids ...string) (int64, error) {
 	executionResult := a.DB.WithContext(ctx).Delete(&unitable.Table{}, ids)
-	return executionResult.RowsAffected, executionResult.Error
-}
-
-func (a *Table) Update(ctx context.Context, table *unitable.Table) (int64, error) {
-	executionResult := a.DB.WithContext(ctx).Updates(table)
 	return executionResult.RowsAffected, executionResult.Error
 }
