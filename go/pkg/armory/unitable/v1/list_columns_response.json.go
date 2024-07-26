@@ -35,5 +35,7 @@ func (codec *ListColumnsResponseCodec) Encode(ptr unsafe.Pointer, stream *jsonit
 	listColumnsResponse := (*ListColumnsResponse)(ptr)
 	if len(listColumnsResponse.Columns) > 0 {
 		stream.WriteVal(listColumnsResponse.Columns)
+	} else {
+		stream.WriteRaw("[]")
 	}
 }

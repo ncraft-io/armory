@@ -18,7 +18,7 @@ import io.ncraft.armory.unitable.v1.factory.UnitableHttpFallbackFactory;
 
 
 @Component
-@FeignClient(contextId = "unitableRemoteAPI", value = ServiceNameConstants.SERVICE_UNITABLE, fallbackFactory = UnitableHttpFallbackFactory.class)
+@FeignClient(contextId = "unitableHttpClient", value = ServiceNameConstants.SERVICE_UNITABLE, fallbackFactory = UnitableHttpFallbackFactory.class, configuration = FeignClientConfig.class)
 @ConditionalOnMissingClass("io.ncraft.armory.unitable.service.UnitableHttpImpl")
 public interface UnitableHttp {
     
@@ -36,11 +36,11 @@ public interface UnitableHttp {
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables")
-    Pagination<Table> listTables(@PathVariable("database") String database, @RequestParam int pageSize, @RequestParam String pageToken, @RequestParam int skip, @RequestParam String filter, @RequestParam String order, @RequestParam String fieldMask, @RequestParam boolean unique);
+    Pagination<Table> listTables(@PathVariable("database") String database, @RequestParam(name = "page_size", required = false) int pageSize, @RequestParam(name = "page_token", required = false) String pageToken, @RequestParam(name = "skip", required = false) int skip, @RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "order", required = false) String order, @RequestParam(name = "field_mask", required = false) String fieldMask, @RequestParam(name = "unique", required = false) boolean unique);
     
     
     @DeleteMapping("/armory/unitable/v1/databases/{database}/tables/{id}")
-    Result<Null> deleteTable(@PathVariable("database") String database, @PathVariable("id") String id, @RequestParam boolean force);
+    Result<Null> deleteTable(@PathVariable("database") String database, @PathVariable("id") String id, @RequestParam(name = "force", required = false) boolean force);
     
     @ResponseBody
     @PostMapping("/armory/unitable/v1/databases/{database}/tables/{id}:sync")
@@ -64,7 +64,7 @@ public interface UnitableHttp {
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/columns")
-    Pagination<Column> listColumns(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam int pageSize, @RequestParam String pageToken, @RequestParam int skip, @RequestParam String filter, @RequestParam String order, @RequestParam String fieldMask, @RequestParam boolean unique);
+    Pagination<Column> listColumns(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam(name = "page_size", required = false) int pageSize, @RequestParam(name = "page_token", required = false) String pageToken, @RequestParam(name = "skip", required = false) int skip, @RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "order", required = false) String order, @RequestParam(name = "field_mask", required = false) String fieldMask, @RequestParam(name = "unique", required = false) boolean unique);
     
     
     @PostMapping("/armory/unitable/v1/databases/{database}/tables/{table}/columns:batch")
@@ -76,7 +76,7 @@ public interface UnitableHttp {
     
     
     @DeleteMapping("/armory/unitable/v1/databases/{database}/tables/{table}/columns:batch")
-    Result<Null> batchDeleteColumn(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam List<String> ids);
+    Result<Null> batchDeleteColumn(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam(name = "ids", required = false) List<String> ids);
     
     @ResponseBody
     @PostMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows")
@@ -96,11 +96,11 @@ public interface UnitableHttp {
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows")
-    Pagination<org.mojolang.mojo.core.Object> listRow(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam int pageSize, @RequestParam String pageToken, @RequestParam int skip, @RequestParam String filter, @RequestParam String order, @RequestParam String fieldMask, @RequestParam boolean unique);
+    Pagination<org.mojolang.mojo.core.Object> listRow(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam(name = "page_size", required = false) int pageSize, @RequestParam(name = "page_token", required = false) String pageToken, @RequestParam(name = "skip", required = false) int skip, @RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "order", required = false) String order, @RequestParam(name = "field_mask", required = false) String fieldMask, @RequestParam(name = "unique", required = false) boolean unique);
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export")
-    Pagination<org.mojolang.mojo.core.Object> exportRow(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam int pageSize, @RequestParam String pageToken, @RequestParam int skip, @RequestParam String filter, @RequestParam String order, @RequestParam String fieldMask, @RequestParam boolean unique);
+    Pagination<org.mojolang.mojo.core.Object> exportRow(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam(name = "page_size", required = false) int pageSize, @RequestParam(name = "page_token", required = false) String pageToken, @RequestParam(name = "skip", required = false) int skip, @RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "order", required = false) String order, @RequestParam(name = "field_mask", required = false) String fieldMask, @RequestParam(name = "unique", required = false) boolean unique);
     
     
     @PostMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
@@ -112,6 +112,6 @@ public interface UnitableHttp {
     
     
     @DeleteMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
-    Result<Null> batchDeleteRows(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam List<String> ids);
+    Result<Null> batchDeleteRows(@PathVariable("database") String database, @PathVariable("table") String table, @RequestParam(name = "ids", required = false) List<String> ids);
     
 }

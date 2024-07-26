@@ -35,5 +35,7 @@ func (codec *ListRowResponseCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.S
 	listRowResponse := (*ListRowResponse)(ptr)
 	if len(listRowResponse.Objects) > 0 {
 		stream.WriteVal(listRowResponse.Objects)
+	} else {
+		stream.WriteRaw("[]")
 	}
 }

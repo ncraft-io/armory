@@ -18,12 +18,12 @@ import io.ncraft.armory.auth.v1.factory.AuthingHttpFallbackFactory;
 
 
 @Component
-@FeignClient(contextId = "authingRemoteAPI", value = ServiceNameConstants.SERVICE_AUTHING, fallbackFactory = AuthingHttpFallbackFactory.class)
+@FeignClient(contextId = "authingHttpClient", value = ServiceNameConstants.SERVICE_AUTHING, fallbackFactory = AuthingHttpFallbackFactory.class, configuration = FeignClientConfig.class)
 @ConditionalOnMissingClass("io.ncraft.armory.auth.service.AuthingHttpImpl")
 public interface AuthingHttp {
     
     @ResponseBody
     @PostMapping("armory/auth/v1/accounts")
-    Result<Account> createAccount(@RequestParam String database, @RequestParam String table);
+    Result<Account> createAccount(@RequestParam(name = "database", required = false) String database, @RequestParam(name = "table", required = false) String table);
     
 }

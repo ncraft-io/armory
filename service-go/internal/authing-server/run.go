@@ -185,7 +185,11 @@ func Run(cfg nserver.Config) {
 	sdConfig := sd.NewConfig("sd")
 	sdClient := sd.New(sdConfig, kit.Logger())
 	if sdClient != nil {
-		url := network.GetHost() + ":" + getGrpcPort(cfg.GrpcAddr)
+		addr := cfg.GrpcAddr
+		if strings.ToLower(sdConfig.Transport) == "http" {
+			addr = cfg.HttpAddr
+		}
+		url := network.GetHost() + ":" + getServerPort(addr)
 		err := sdClient.Register(url, FullServiceName, []string{})
 		if err != nil {
 			panic(err)
@@ -200,7 +204,7 @@ func Run(cfg nserver.Config) {
 	logs.Info("auth.AuthingServer", " closed.")
 }
 
-func getGrpcPort(addr string) string {
+func getServerPort(addr string) string {
 	host := strings.Split(addr, ":")
 	if len(host) < 2 {
 		panic("host name is invalid (" + addr + ")")

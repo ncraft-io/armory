@@ -235,6 +235,10 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 		response = nil
 	}
 
+	if response == nil {
+		return nil
+	}
+
 	enveloped := nhttp.IsEnvelopeStyle(ctx, cfg.GetStyle())
 	if enveloped {
 		code := core.NewErrorCode(200)
@@ -266,29 +270,25 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 			NextPageToken: nextPageToken,
 			Data:          response,
 		}
-	}
-
-	if response == nil {
-		return nil
-	}
-
-	if p, ok := response.(pagination.Paginater); ok && !enveloped {
-		total := p.GetTotalCount()
-		if total > 0 {
-			w.Header().Set("X-Total-Count", strconv.Itoa(int(total)))
-		}
-
-		next := p.GetNextPageToken()
-		if len(next) > 0 {
-			path, _ := ctx.Value("http-request-path").(string)
-			if len(path) == 0 {
-				path = "/?next-page-token=" + next
-			} else {
-				url, _ := core.ParseUrl(path)
-				url.Query.Add("next-page-token", next)
-				path = url.Format()
+	} else {
+		if p, ok := response.(pagination.Paginater); ok {
+			total := p.GetTotalCount()
+			if total > 0 {
+				w.Header().Set("X-Total-Count", strconv.Itoa(int(total)))
 			}
-			w.Header().Set("Link", fmt.Sprintf("<%s>; rel=\"next\"", path))
+
+			next := p.GetNextPageToken()
+			if len(next) > 0 {
+				path, _ := ctx.Value("http-request-path").(string)
+				if len(path) == 0 {
+					path = "/?next-page-token=" + next
+				} else {
+					url, _ := core.ParseUrl(path)
+					url.Query.Add("next-page-token", next)
+					path = url.Format()
+				}
+				w.Header().Set("Link", fmt.Sprintf("<%s>; rel=\"next\"", path))
+			}
 		}
 	}
 

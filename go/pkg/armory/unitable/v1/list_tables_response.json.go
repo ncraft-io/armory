@@ -35,5 +35,7 @@ func (codec *ListTablesResponseCodec) Encode(ptr unsafe.Pointer, stream *jsonite
 	listTablesResponse := (*ListTablesResponse)(ptr)
 	if len(listTablesResponse.Tables) > 0 {
 		stream.WriteVal(listTablesResponse.Tables)
+	} else {
+		stream.WriteRaw("[]")
 	}
 }
