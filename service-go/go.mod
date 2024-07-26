@@ -8,14 +8,14 @@ require (
 	github.com/etherlabsio/healthcheck/v2 v2.0.0
 	github.com/go-kit/kit v0.13.0
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/golang/protobuf v1.5.4
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
-	github.com/mojo-lang/core/go v0.0.0-20240205040023-0a270faf3af3
-	github.com/mojo-lang/db/go v0.0.0-20240717081137-04f474db3557
-	github.com/mojo-lang/http/go v0.0.0-20231026054523-2cf45f147a95
+	github.com/mojo-lang/core/go v0.0.0-20240718132104-5daa639555b5
+	github.com/mojo-lang/db/go v0.0.0-20240726070542-d47965f40594
+	github.com/mojo-lang/http/go v0.0.0-20240627072315-89ee9c59b807
 	github.com/mojo-lang/mojo/go v0.0.0-20240717073727-6e3b198a6273
 	github.com/ncraft-io/armory/go v0.0.0
 	github.com/ncraft-io/ncraft-gokit v0.0.0-20240717073454-b346a2bfbe93
