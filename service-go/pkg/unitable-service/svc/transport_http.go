@@ -622,6 +622,63 @@ func DecodeHTTPListTablesZeroRequest(_ context.Context, r *http.Request) (interf
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
+	}
+
 	return &req, nil
 }
 
@@ -1084,9 +1141,66 @@ func DecodeHTTPListColumnsZeroRequest(_ context.Context, r *http.Request) (inter
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
 	}
 
 	return &req, nil
@@ -1622,9 +1736,66 @@ func DecodeHTTPListRowZeroRequest(_ context.Context, r *http.Request) (interface
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
 	}
 
 	return &req, nil
@@ -1681,9 +1852,66 @@ func DecodeHTTPExportRowZeroRequest(_ context.Context, r *http.Request) (interfa
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
 	}
 
 	return &req, nil
@@ -1897,6 +2125,10 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 		response = nil
 	}
 
+	if response == nil {
+		return nil
+	}
+
 	enveloped := nhttp.IsEnvelopeStyle(ctx, cfg.GetStyle())
 	if enveloped {
 		code := core.NewErrorCode(200)
@@ -1928,29 +2160,25 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 			NextPageToken: nextPageToken,
 			Data:          response,
 		}
-	}
-
-	if response == nil {
-		return nil
-	}
-
-	if p, ok := response.(pagination.Paginater); ok && !enveloped {
-		total := p.GetTotalCount()
-		if total > 0 {
-			w.Header().Set("X-Total-Count", strconv.Itoa(int(total)))
-		}
-
-		next := p.GetNextPageToken()
-		if len(next) > 0 {
-			path, _ := ctx.Value("http-request-path").(string)
-			if len(path) == 0 {
-				path = "/?next-page-token=" + next
-			} else {
-				url, _ := core.ParseUrl(path)
-				url.Query.Add("next-page-token", next)
-				path = url.Format()
+	} else {
+		if p, ok := response.(pagination.Paginater); ok {
+			total := p.GetTotalCount()
+			if total > 0 {
+				w.Header().Set("X-Total-Count", strconv.Itoa(int(total)))
 			}
-			w.Header().Set("Link", fmt.Sprintf("<%s>; rel=\"next\"", path))
+
+			next := p.GetNextPageToken()
+			if len(next) > 0 {
+				path, _ := ctx.Value("http-request-path").(string)
+				if len(path) == 0 {
+					path = "/?next-page-token=" + next
+				} else {
+					url, _ := core.ParseUrl(path)
+					url.Query.Add("next-page-token", next)
+					path = url.Format()
+				}
+				w.Header().Set("Link", fmt.Sprintf("<%s>; rel=\"next\"", path))
+			}
 		}
 	}
 
