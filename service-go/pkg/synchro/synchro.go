@@ -8,6 +8,7 @@ import (
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
+	"github.com/segmentio/ksuid"
 	"gorm.io/gorm"
 )
 
@@ -168,17 +169,31 @@ func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Ob
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
 
-	var data []interface{}
-	for _, row := range rows {
-		r, err := meta.Struct.NewOf(row)
-		if err != nil {
-			return 0, err
+	// Continuous session mode
+	tx := GetDataDB().WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
+	err := tx.Transaction(func(tx *gorm.DB) error {
+		for _, row := range rows {
+			data, err := meta.Struct.NewOf(row)
+			if err != nil {
+				return err
+			}
+			if err := tx.Table(table).Create(data).Error; err != nil {
+				// return any error will roll back
+				return err
+			}
 		}
-		data = append(data, r)
-	}
 
-	result := GetDataDB().WithContext(ctx).Table(table).CreateInBatches(data, len(data))
-	return result.RowsAffected, result.Error
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		return 0, err
+	}
+	return int64(len(rows)), nil
+
+	//result := GetDataDB().WithContext(ctx).Table(table).CreateInBatches(data, len(data))
+	//return result.RowsAffected, result.Error
 }
 
 func (s *Synchro) UpdateRow(ctx context.Context, table string, row *core.Object) (int64, error) {
@@ -202,19 +217,68 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
 
-	var data []interface{}
+	var datas []interface{}
 	for _, row := range rows {
 		r, err := meta.Struct.NewOf(row)
 		if err != nil {
 			return 0, err
 		}
-		data = append(data, r)
+		datas = append(datas, r)
+	}
+
+	// Continuous session mode
+	tx := GetDataDB().WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
+	err := tx.Transaction(func(tx *gorm.DB) error {
+		for _, date := range datas {
+			if err := tx.Table(table).Updates(date).Error; err != nil {
+				// return any error will roll back
+				return err
+			}
+		}
+
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	return int64(len(datas)), err
+}
+
+func (s *Synchro) UpdateInsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, error) {
+	meta := s.GetMetaTable(table, nil)
+	if meta == nil {
+		return 0, core.NewNotFoundError("the table %s is not exist", table)
+	}
+
+	var data []interface{}
+	var insertData []interface{}
+	for _, row := range rows {
+		id := row.GetString("id")
+		if len(id) == 0 {
+			row.SetString("id", ksuid.New().String())
+			r, err := meta.Struct.NewOf(row)
+			if err != nil {
+				return 0, err
+			}
+			insertData = append(insertData, r)
+		} else {
+			r, err := meta.Struct.NewOf(row)
+			if err != nil {
+				return 0, err
+			}
+			data = append(data, r)
+		}
 	}
 
 	// Continuous session mode
 	tx := GetDataDB().WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
 
 	err := tx.Transaction(func(tx *gorm.DB) error {
+		for _, d := range insertData {
+			if err := tx.Table(table).Create(d).Error; err != nil {
+				return err
+			}
+		}
+
 		for _, d := range data {
 			if err := tx.Table(table).Updates(d).Error; err != nil {
 				// return any error will roll back
@@ -226,7 +290,7 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 		return nil
 	})
 
-	return int64(len(data)), err
+	return int64(len(data) + len(insertData)), err
 }
 
 func (s *Synchro) DeleteRows(ctx context.Context, table string, ids ...string) (int64, error) {
