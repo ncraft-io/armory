@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"github.com/golang/protobuf/proto"
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
@@ -58,7 +57,7 @@ func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableReque
 		if len(col.Name) == 0 {
 			return nil, core.NewInvalidArgumentError("the No. %d column in table has not set name", i)
 		}
-		if col.IsTypeValid() {
+		if !col.IsTypeValid() {
 			return nil, core.NewInvalidArgumentError("the No. %d column (%s) in table type %s is invalid", i, col.Name, col.Type)
 		}
 	}
@@ -83,6 +82,30 @@ func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableReque
 		Id: in.Table.Id,
 	}
 	return resp, nil
+}
+
+func MergeColumn(target *unitable.Column, src *unitable.Column) {
+	if len(target.Name) == 0 {
+		target.Name = src.Name
+	}
+	if len(target.Type) == 0 {
+		target.Type = src.Type
+	}
+	if len(target.Format) == 0 {
+		target.Format = src.Format
+	}
+	if len(target.TableId) == 0 {
+		target.TableId = src.TableId
+	}
+	if len(target.Database) == 0 {
+		target.Database = src.Database
+	}
+	if len(target.DisplayName) == 0 {
+		target.DisplayName = src.DisplayName
+	}
+	if len(target.ExportName) == 0 {
+		target.ExportName = src.ExportName
+	}
 }
 
 // UpdateTable implements Interface.
@@ -138,7 +161,7 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 						renamedCols[c.Name] = col.Name
 					}
 
-					proto.Merge(col, c)
+					MergeColumn(col, c)
 					col.UpdateTime = core.Now()
 				} else {
 					if col.CreateTime == nil {
@@ -514,14 +537,14 @@ func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateR
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
-	for i, row := range in.Rows {
-		id := row.GetString("id")
-		if len(id) == 0 {
-			return nil, core.NewInvalidArgumentError("the No. %d (begin with 1) row have not set the id in batch", i+1)
-		}
-	}
+	//for i, row := range in.Rows {
+	//	id := row.GetString("id")
+	//	if len(id) == 0 {
+	//		return nil, core.NewInvalidArgumentError("the No. %d (begin with 1) row have not set the id in batch", i+1)
+	//	}
+	//}
 
-	if _, err := s.Synchro.UpdateRows(ctx, in.Table, in.Rows...); err != nil {
+	if _, err := s.Synchro.UpdateInsertRows(ctx, in.Table, in.Rows...); err != nil {
 		return nil, core.NewInternalError("failed to batch update the rows in %s, err: %s", in.Table, err.Error())
 	}
 
