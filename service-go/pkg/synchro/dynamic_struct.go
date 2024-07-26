@@ -29,7 +29,7 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 		case "string":
 			switch col.Format {
 			case "datetime", "time":
-				field.Type = reflect.TypeOf(time.Time{})
+				field.Type = reflect.TypeOf(time.Now())
 			default:
 				field.Type = reflect.TypeOf("")
 			}
