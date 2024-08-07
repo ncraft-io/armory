@@ -36,6 +36,9 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 		}
 
 		field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, strcase.ToLowerCamel(col.Name)))
+		if len(col.DisplayName) > 0 {
+			field.Tag = reflect.StructTag(string(field.Tag) + fmt.Sprintf(` gorm:"comment:%s"`, col.DisplayName))
+		}
 
 		fields = append(fields, field)
 	}
