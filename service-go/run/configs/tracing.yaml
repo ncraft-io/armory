@@ -1,3 +1,0 @@
-tracing:
-    enable: false
-    url: localhost:6831
