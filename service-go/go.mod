@@ -14,9 +14,9 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/mojo-lang/core/go v0.0.0-20240718132104-5daa639555b5
-	github.com/mojo-lang/db/go v0.0.0-20240726070542-d47965f40594
+	github.com/mojo-lang/db/go v0.0.0-20240807121857-107d18e42a06
 	github.com/mojo-lang/http/go v0.0.0-20240627072315-89ee9c59b807
-	github.com/mojo-lang/mojo/go v0.0.0-20240717073727-6e3b198a6273
+	github.com/mojo-lang/mojo/go v0.0.0-20240807122300-2fee6f63223b
 	github.com/ncraft-io/armory/go v0.0.0
 	github.com/ncraft-io/ncraft-gokit v0.0.0-20240717073454-b346a2bfbe93
 	github.com/ncraft-io/ncraft/go v0.0.0-20231130060710-4e89e62eb679
@@ -25,6 +25,7 @@ require (
 	github.com/prometheus/client_golang v1.12.2
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.4
+	github.com/zeebo/assert v1.3.0
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/grpc v1.58.2
 	gorm.io/gorm v1.25.4

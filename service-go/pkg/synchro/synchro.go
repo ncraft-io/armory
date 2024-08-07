@@ -43,7 +43,7 @@ func (s *Synchro) GetMetaTable(tableName string, table *unitable.Table) *MetaTab
 			Struct: NewDynamicStruct(table),
 		}
 
-		s.Tables[tableName] = meta
+		// s.Tables[tableName] = meta
 		return meta
 	} else {
 		return mt
@@ -112,10 +112,10 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 	return obj, nil
 }
 
-func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) ([]*core.Object, error) {
+func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) ([]*core.Object, int, error) {
 	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
-		return nil, core.NewNotFoundError("the table %s is not exist", table)
+		return nil, 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
 
 	tx := GetDataDB().WithContext(ctx).Table(table)
@@ -128,24 +128,40 @@ func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) 
 	rows, err := tx.Rows()
 	defer rows.Close()
 	if err != nil {
-		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
+		return nil, 0, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
 	}
 
 	var objs []*core.Object
 	for rows.Next() {
 		row := meta.Struct.New()
 		if err = GetDataDB().ScanRows(rows, row); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		obj, err := ParseObject(row)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		objs = append(objs, obj)
 	}
 
-	return objs, nil
+	// get the total count
+	tx = GetDataDB().WithContext(ctx).Table(table)
+	if query != nil {
+		tx = query.ApplyTotalCount(tx)
+	} else {
+		tx = tx.Select("COUNT(*)")
+	}
+	row := tx.Row()
+	totalCnt := 0
+	if row != nil {
+		err = row.Scan(&totalCnt)
+		if err != nil {
+			return nil, 0, core.NewNotFoundError("failed to query the total count in %s, %s", table, err.Error())
+		}
+	}
+
+	return objs, totalCnt, nil
 }
 
 func (s *Synchro) InsertRow(ctx context.Context, table string, row *core.Object) (int64, error) {

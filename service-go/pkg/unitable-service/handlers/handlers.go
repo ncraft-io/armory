@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"regexp"
+	"strconv"
 
 	"github.com/segmentio/ksuid"
 
@@ -464,12 +466,22 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 		return nil, err
 	}
 
-	if rows, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
+	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
 		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
 	} else {
+		index := ""
+		if len(in.PageToken) > 0 {
+			t, _ := strconv.ParseInt(in.PageToken, 10, 64)
+			t += 1
+			if t*int64(in.PageSize) < int64(totalCnt) {
+				index = fmt.Sprint(t)
+			}
+		}
+
 		return &pb.ListRowResponse{
-			Objects:    rows,
-			TotalCount: int32(len(rows)),
+			Objects:       rows,
+			TotalCount:    int32(totalCnt),
+			NextPageToken: index,
 		}, nil
 	}
 }
@@ -488,12 +500,12 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 		return nil, err
 	}
 
-	if rows, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
+	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
 		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
 	} else {
 		return &pb.ExportRowResponse{
 			Objects:    rows,
-			TotalCount: int32(len(rows)),
+			TotalCount: int32(totalCnt),
 		}, nil
 	}
 }
