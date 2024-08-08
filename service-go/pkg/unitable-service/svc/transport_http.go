@@ -304,8 +304,15 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 // form of the error will be used. If the error implements StatusCoder, the
 // provided StatusCode will be used instead of 500.
 func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
-	e, ok := err.(*core.Error)
-	if !ok {
+	var e *core.Error
+	if core.IsError(err) {
+		if ce, ok := err.(*core.Error); ok {
+			e = ce
+		} else if ce, ok = errors.Unwrap(err).(*core.Error); ok {
+			e = ce
+		}
+	}
+	if e == nil {
 		e = core.NewErrorFrom(500, err.Error())
 	}
 
@@ -1783,6 +1790,11 @@ func DecodeHTTPListRowZeroRequest(_ context.Context, r *http.Request) (interface
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
 	}
 
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Query, "query")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the query  query parameter")
+	}
+
 	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
@@ -2125,10 +2137,6 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 		response = nil
 	}
 
-	if response == nil {
-		return nil
-	}
-
 	enveloped := nhttp.IsEnvelopeStyle(ctx, cfg.GetStyle())
 	if enveloped {
 		code := core.NewErrorCode(200)
@@ -2144,23 +2152,32 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 			message = msg
 		}
 
-		totalCount := int32(0)
-		nextPageToken := ""
-		if p, ok := response.(pagination.Paginater); ok {
-			totalCount = p.GetTotalCount()
-			nextPageToken = p.GetNextPageToken()
-		}
+		if response == nil {
+			response = &nhttp.EnvelopedResponse{
+				Error: &core.Error{
+					Code:    code,
+					Message: message,
+				},
+			}
+		} else {
+			totalCount := int32(0)
+			nextPageToken := ""
+			if p, ok := response.(pagination.Paginater); ok {
+				totalCount = p.GetTotalCount()
+				nextPageToken = p.GetNextPageToken()
+			}
 
-		response = &nhttp.EnvelopedResponse{
-			Error: &core.Error{
-				Code:    code,
-				Message: message,
-			},
-			TotalCount:    totalCount,
-			NextPageToken: nextPageToken,
-			Data:          response,
+			response = &nhttp.EnvelopedResponse{
+				Error: &core.Error{
+					Code:    code,
+					Message: message,
+				},
+				TotalCount:    totalCount,
+				NextPageToken: nextPageToken,
+				Data:          response,
+			}
 		}
-	} else {
+	} else if response != nil {
 		if p, ok := response.(pagination.Paginater); ok {
 			total := p.GetTotalCount()
 			if total > 0 {
@@ -2180,6 +2197,10 @@ func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, respo
 				w.Header().Set("Link", fmt.Sprintf("<%s>; rel=\"next\"", path))
 			}
 		}
+	}
+
+	if response == nil {
+		return nil
 	}
 
 	return nhttp.NewResponseJsonWriter(response).WriteHttpResponse(ctx, w)
