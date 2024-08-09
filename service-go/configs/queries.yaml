@@ -147,115 +147,115 @@ dbQuery:
     - name: residence-cockpit-supporting-2
       sql: select * from  where jidi = '' group by 住宅类型
       columns:
-        - name: supporting_education
+        - name: public_education
           type: integer
           example: 330
-        - name: supporting_admin
+        - name: public_admin
           type: integer
           example: 330
-        - name: supporting_health
+        - name: public_health
           type: integer
           example: 330
-        - name: supporting_elder
+        - name: public_elder
           type: integer
           example: 330
-        - name: supporting_culture
+        - name: public_culture
           type: integer
           example: 330
-        - name: supporting_market
+        - name: public_market
           type: integer
           example: 330
-        - name: supporting_traffic
+        - name: public_traffic
           type: integer
           example: 330
-        - name: supporting_other
+        - name: public_other
           type: integer
           example: 330
     - name: residence-cockpit-supporting-3
       sql: select * from  where jidi = '' group by 住宅类型
       columns:
-        - name: supporting_built
+        - name: public_built
           type: integer
           example: 330
-        - name: supporting_building
+        - name: public_building
           type: integer
           example: 330
-        - name: supporting_unbuilt
+        - name: public_unbuilt
           type: integer
           example: 330
     - name: residence-cockpit-supporting-4
       sql: select * from  where jidi = '' group by 住宅类型
       columns:
-        - name: supporting_education_building
+        - name: public_education_building
           type: integer
           example: 330
-        - name: supporting_education_unbuilt
+        - name: public_education_unbuilt
           type: integer
           example: 330
-        - name: supporting_education_built
+        - name: public_education_built
           type: integer
           example: 330
-        - name: supporting_admin_building
+        - name: public_admin_building
           type: integer
           example: 330
-        - name: supporting_admin_unbuilt
+        - name: public_admin_unbuilt
           type: integer
           example: 330
-        - name: supporting_admin_built
+        - name: public_admin_built
           type: integer
           example: 330
-        - name: supporting_health_building
+        - name: public_health_building
           type: integer
           example: 330
-        - name: supporting_health_unbuilt
+        - name: public_health_unbuilt
           type: integer
           example: 330
-        - name: supporting_health_built
+        - name: public_health_built
           type: integer
           example: 330
-        - name: supporting_elder_building
+        - name: public_elder_building
           type: integer
           example: 330
-        - name: supporting_elder_unbuilt
+        - name: public_elder_unbuilt
           type: integer
           example: 330
-        - name: supporting_elder_built
+        - name: public_elder_built
           type: integer
           example: 330
-        - name: supporting_culture_building
+        - name: public_culture_building
           type: integer
           example: 330
-        - name: supporting_culture_unbuilt
+        - name: public_culture_unbuilt
           type: integer
           example: 330
-        - name: supporting_culture_built
+        - name: public_culture_built
           type: integer
           example: 330
-        - name: supporting_market_building
+        - name: public_market_building
           type: integer
           example: 330
-        - name: supporting_market_unbuilt
+        - name: public_market_unbuilt
           type: integer
           example: 330
-        - name: supporting_market_built
+        - name: public_market_built
           type: integer
           example: 330
-        - name: supporting_traffic_building
+        - name: public_traffic_building
           type: integer
           example: 330
-        - name: supporting_traffic_unbuilt
+        - name: public_traffic_unbuilt
           type: integer
           example: 330
-        - name: supporting_traffic_built
+        - name: public_traffic_built
           type: integer
           example: 330
-        - name: supporting_other_building
+        - name: public_other_building
           type: integer
           example: 330
-        - name: supporting_other_unbuilt
+        - name: public_other_unbuilt
           type: integer
           example: 330
-        - name: supporting_other_built
+        - name: public_other_built
           type: integer
           example: 330
     - name: residence-base
@@ -279,112 +279,139 @@ dbQuery:
         - name: city_gy_building_area_built
           type: integer
           example: 230
+        - name: city_gy_building_area_building
+          type: integer
+          example: 230
         - name: city_zs_building_area_built
+          type: integer
+          example: 330
+        - name: city_zs_building_area_building
           type: integer
           example: 330
         - name: city_ps_building_area_built
           type: integer
           example: 230
+        - name: city_ps_building_area_building
+          type: integer
+          example: 230
         - name: town_building_area_built
           type: integer
           example: 330
-        - name: commercial__building_area_built
+        - name: town_building_area_building
+          type: integer
+          example: 330
+        - name: commercial_building_area_built
+          type: integer
+          example: 300
+        - name: commercial_building_area_building
           type: integer
           example: 300
         - name: road_built
           type: integer
           example: 330
+        - name: road
+          type: integer
+          example: 330
         - name: river_built
+          type: integer
+          example: 300
+        - name: river
           type: integer
           example: 300
         - name: lake_built
           type: integer
           example: 300
+        - name: lake
+          type: integer
+          example: 300
         - name: green_built
           type: integer
           example: 300
-        - name: supporting_education
+        - name: green
+          type: integer
+          example: 300
+        - name: public_education
           type: integer
           example: 330
-        - name: supporting_education_built
+        - name: public_education_built
           type: integer
           example: 330
-        - name: supporting_admin
+        - name: public_admin
           type: integer
           example: 330
-        - name: supporting_admin_built
+        - name: public_admin_built
           type: integer
           example: 330
-        - name: supporting_health
+        - name: public_health
           type: integer
           example: 330
-        - name: supporting_health_built
+        - name: public_health_built
           type: integer
           example: 330
-        - name: supporting_elder
+        - name: public_elder
           type: integer
           example: 330
-        - name: supporting_elder_built
+        - name: public_elder_built
           type: integer
           example: 330
-        - name: supporting_culture
+        - name: public_culture
           type: integer
           example: 330
-        - name: supporting_culture_built
+        - name: public_culture_built
           type: integer
           example: 330
-        - name: supporting_market
+        - name: public_market
           type: integer
           example: 330
-        - name: supporting_market_built
+        - name: public_market_built
           type: integer
           example: 330
-        - name: supporting_traffic
+        - name: public_traffic
           type: integer
           example: 330
-        - name: supporting_traffic_built
+        - name: public_traffic_built
           type: integer
           example: 330
-        - name: supporting_other
+        - name: public_other
           type: integer
           example: 330
-        - name: supporting_other_built
+        - name: public_other_built
           type: integer
           example: 330
     - name: residence-residence-1
       sql: select * from  where jidi = '' group by 住宅类型
       columns:
-        - name: city_gy_count
+        - name: city_gy
           type: integer
           example: 300
         - name: city_gy_building_area
           type: integer
           example: 330
-        - name: city_zs_count
+        - name: city_zs
           type: integer
           example: 230
         - name: city_zs_building_area
           type: float
           example: 1.6
-        - name: city_ps_count
+        - name: city_ps
           type: float
           example: 3.2
         - name: city_ps_building_area
           type: integer
           example: 230
-        - name: city_unknown_count
+        - name: city_unknown
           type: integer
           example: 330
         - name: city_unknown_building_area
           type: integer
           example: 230
-        - name: town_count
+        - name: town
           type: integer
           example: 330
         - name: town_building_area
           type: integer
           example: 300
-        - name: commercial_count
+        - name: commercial
           type: integer
           example: 330
         - name: commercial_building_area
@@ -471,39 +498,39 @@ dbQuery:
     - name: residence-supporting-2
       sql: select * from  where jidi = '' group by 住宅类型
       columns:
-        - name: supporting_education
+        - name: public_education
           type: integer
           example: 330
-        - name: supporting_admin
+        - name: public_admin
           type: integer
           example: 330
-        - name: supporting_health
+        - name: public_health
           type: integer
           example: 330
-        - name: supporting_elder
+        - name: public_elder
           type: integer
           example: 330
-        - name: supporting_culture
+        - name: public_culture
           type: integer
           example: 330
-        - name: supporting_market
+        - name: public_market
           type: integer
           example: 330
-        - name: supporting_traffic
+        - name: public_traffic
           type: integer
           example: 330
-        - name: supporting_other
+        - name: public_other
           type: integer
           example: 330
-        - name: supporting_building
+        - name: public_building
           type: integer
           example: 330
-        - name: supporting_built
+        - name: public_built
           type: integer
           example: 330
-        - name: supporting_unbuilt
+        - name: public_unbuilt
           type: integer
           example: 330
-        - name: supporting_public
+        - name: public_open
           type: integer
           example: 330
