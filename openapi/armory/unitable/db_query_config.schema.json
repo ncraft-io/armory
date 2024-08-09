@@ -1,0 +1,14 @@
+{
+    "title": "armory.unitable.DbQueryConfig",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "queries": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.unitable.DbQuery"
+            }
+        }
+    }
+}

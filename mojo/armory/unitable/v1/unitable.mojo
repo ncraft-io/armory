@@ -89,7 +89,10 @@ interface Unitable {
 
     /// 查询行
     @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows")
-    list_row(database: String @1, table: String @2) -> [Object]
+    list_row(database: String @1, //< specify the database name
+             table: String @2, //< specify the table name
+             query: String @3) //< specify the query expression loads form config file
+             -> [Object]
 
     /// 导出行(实现不同的权限控制)
     @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export")

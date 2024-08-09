@@ -24,6 +24,8 @@ type Column {
 
     referenced: String @20 //< 是否为引用字段，可以设置是否自动join
 
+    example: Value @30 //< 示例的值
+
     create_time: Timestamp @100 //< 表单列创建时间
     update_time: Timestamp @101 //< 表单列更新时间
 }

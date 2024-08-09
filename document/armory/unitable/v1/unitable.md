@@ -73,6 +73,7 @@ GET /armory/unitable/v1/databases/{database}/tables
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -92,15 +93,19 @@ GET /armory/unitable/v1/databases/{database}/tables
 #### `armory.unitable.Table`
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
-| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
-| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
-| `database` | `string` |  | N |  | 表单所在的数据库名 |
-| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
-| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
-| `id` | `string` |  | N |  | 表单ID |
-| `name` | `string` |  | N |  | 表单名 |
-| `tenant` | `string` |  | N |  | 租户名 |
-| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 创建表单
@@ -132,6 +137,7 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -146,6 +152,19 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -172,6 +191,7 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -186,6 +206,19 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 获取表单
@@ -210,15 +243,6 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 #### 返回对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
-| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
-| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
-| `database` | `string` |  | N |  | 表单所在的数据库名 |
-| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
-| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
-| `id` | `string` |  | N |  | 表单ID |
-| `name` | `string` |  | N |  | 表单名 |
-| `tenant` | `string` |  | N |  | 租户名 |
-| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -229,6 +253,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -243,6 +268,19 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 更新表单
@@ -265,6 +303,15 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 #### Body 请求对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -275,6 +322,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -289,6 +337,19 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -356,6 +417,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -370,6 +432,19 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 在指定的表内查找列
@@ -417,6 +492,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -431,6 +507,19 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 在指定的表内创建列
@@ -458,6 +547,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -472,6 +562,19 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -484,6 +587,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -498,6 +602,19 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 在指定的表内获取列
@@ -528,6 +645,7 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -542,6 +660,19 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ## 在指定的表内更新列
@@ -570,6 +701,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -584,6 +716,19 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -645,6 +790,7 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -659,6 +805,19 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -697,6 +856,7 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |
@@ -711,6 +871,19 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
 | `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
 
 
 ### 返回值
@@ -759,13 +932,14 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/rows
 #### Path 参数
 | 参数名 | 参数类型 | 格式类型 | 说明 |
 |---|---|---|---|
-| `database` | `string` |  |  |
-| `table` | `string` |  |  |
+| `database` | `string` |  | specify the database name |
+| `table` | `string` |  | specify the table name |
 
 
 #### Query 参数
 | 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
 |---|---|---|---|---|---|
+| `query` | `string` |  | 否 |  | specify the query expression loads form config file |
 | `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
 | `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
 | `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |

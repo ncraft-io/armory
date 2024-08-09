@@ -5,6 +5,7 @@ syntax = "proto3";
 package armory.unitable;
 
 import "mojo/core/time.proto";
+import "mojo/core/value.proto";
 import "mojo/mojo.proto";
 
 option go_package = "github.com/ncraft-io/armory/go/pkg/armory/unitable;unitable";
@@ -30,6 +31,7 @@ message Column {
     bool temporal = 15;
     bool dimensional = 16;
     string referenced = 20;
+    mojo.core.Value example = 30;
     mojo.core.Timestamp create_time = 100;
     mojo.core.Timestamp update_time = 101;
 }

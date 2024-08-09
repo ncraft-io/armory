@@ -32,6 +32,18 @@ public interface ListRowRequestOrBuilder extends
       getTableBytes();
 
   /**
+   * <code>string query = 3;</code>
+   * @return The query.
+   */
+  java.lang.String getQuery();
+  /**
+   * <code>string query = 3;</code>
+   * @return The bytes for query.
+   */
+  com.google.protobuf.ByteString
+      getQueryBytes();
+
+  /**
    * <code>int32 page_size = 2000;</code>
    * @return The pageSize.
    */

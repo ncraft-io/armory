@@ -24,6 +24,7 @@ public interface AuthingHttp {
     
     @ResponseBody
     @PostMapping("armory/auth/v1/accounts")
-    Result<Account> createAccount(@RequestParam(name = "database", required = false) String database, @RequestParam(name = "table", required = false) String table);
+    Result<Account> createAccount(@RequestParam(name = "database", required = false) String database, 
+				@RequestParam(name = "table", required = false) String table);
     
 }

@@ -1,0 +1,27 @@
+{
+    "title": "armory.unitable.DbQuery",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "columns": {
+            "title": "mojo.core.Array",
+            "description": "Query 包含的列的元信息",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.unitable.Column"
+            }
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "sql": {
+            "title": "mojo.core.String",
+            "type": "string"
+        }
+    }
+}

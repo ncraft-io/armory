@@ -1,0 +1,509 @@
+dbQuery:
+  queries:
+    - name: residence-cockpit-title
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: base_count
+          type: integer
+          example: 46
+        - name: area
+          type: integer
+          example: 1500
+        - name: residence_building_area_unbuilt
+          type: integer
+          example: 6000
+        - name: city_building_area
+          type: integer
+          example: 3000
+    - name: residence-cockpit-residence-1
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: area_built
+          type: integer
+          example: 345
+        - name: area
+          type: integer
+          example: 400
+        - name: building_area_built
+          type: integer
+          example: 330
+        - name: building_area
+          type: integer
+          example: 400
+    - name: residence-cockpit-residence-2
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: city_building_area
+          type: integer
+          example: 345
+        - name: town_building_area
+          type: integer
+          example: 330
+        - name: commercial_building_area
+          type: integer
+          example: 330
+    - name: residence-cockpit-residence-3
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: building_area_unbuilt
+          type: integer
+          example: 345
+        - name: building_area_building
+          type: integer
+          example: 330
+        - name: building_area_built
+          type: integer
+          example: 330
+    - name: residence-cockpit-residence-4
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: city_building_area_unbuilt
+          type: integer
+          example: 345
+        - name: city_building_area_building
+          type: integer
+          example: 330
+        - name: city_building_area_built
+          type: integer
+          example: 330
+        - name: town_building_area_unbuilt
+          type: integer
+          example: 345
+        - name: town_building_area_building
+          type: integer
+          example: 330
+        - name: town_building_area_built
+          type: integer
+          example: 330
+        - name: commercial_building_area_unbuilt
+          type: integer
+          example: 345
+        - name: commercial_building_area_building
+          type: integer
+          example: 330
+        - name: commercial_building_area_built
+          type: integer
+          example: 330
+    - name: residence-cockpit-residence-5
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: city_gy_building_area_building
+          type: integer
+          example: 330
+        - name: city_gy_building_area_built
+          type: integer
+          example: 330
+        - name: city_zs_building_area_building
+          type: integer
+          example: 330
+        - name: city_zs_building_area_built
+          type: integer
+          example: 330
+        - name: city_ps_building_area_building
+          type: integer
+          example: 330
+        - name: city_ps_building_area_built
+          type: integer
+          example: 330
+    - name: residence-cockpit-supporting-1
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: road_built
+          type: integer
+          example: 300
+        - name: road
+          type: integer
+          example: 330
+        - name: river_built
+          type: integer
+          example: 230
+        - name: river
+          type: integer
+          example: 330
+        - name: lake
+          type: integer
+          example: 330
+        - name: lake_built
+          type: integer
+          example: 230
+        - name: green
+          type: integer
+          example: 330
+        - name: green_built
+          type: integer
+          example: 230
+        - name: public
+          type: integer
+          example: 330
+        - name: public_built
+          type: integer
+          example: 300
+        - name: business
+          type: integer
+          example: 330
+        - name: business_built
+          type: integer
+          example: 300
+    - name: residence-cockpit-supporting-2
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: supporting_education
+          type: integer
+          example: 330
+        - name: supporting_admin
+          type: integer
+          example: 330
+        - name: supporting_health
+          type: integer
+          example: 330
+        - name: supporting_elder
+          type: integer
+          example: 330
+        - name: supporting_culture
+          type: integer
+          example: 330
+        - name: supporting_market
+          type: integer
+          example: 330
+        - name: supporting_traffic
+          type: integer
+          example: 330
+        - name: supporting_other
+          type: integer
+          example: 330
+    - name: residence-cockpit-supporting-3
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: supporting_built
+          type: integer
+          example: 330
+        - name: supporting_building
+          type: integer
+          example: 330
+        - name: supporting_unbuilt
+          type: integer
+          example: 330
+    - name: residence-cockpit-supporting-4
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: supporting_education_building
+          type: integer
+          example: 330
+        - name: supporting_education_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_education_built
+          type: integer
+          example: 330
+        - name: supporting_admin_building
+          type: integer
+          example: 330
+        - name: supporting_admin_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_admin_built
+          type: integer
+          example: 330
+        - name: supporting_health_building
+          type: integer
+          example: 330
+        - name: supporting_health_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_health_built
+          type: integer
+          example: 330
+        - name: supporting_elder_building
+          type: integer
+          example: 330
+        - name: supporting_elder_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_elder_built
+          type: integer
+          example: 330
+        - name: supporting_culture_building
+          type: integer
+          example: 330
+        - name: supporting_culture_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_culture_built
+          type: integer
+          example: 330
+        - name: supporting_market_building
+          type: integer
+          example: 330
+        - name: supporting_market_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_market_built
+          type: integer
+          example: 330
+        - name: supporting_traffic_building
+          type: integer
+          example: 330
+        - name: supporting_traffic_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_traffic_built
+          type: integer
+          example: 330
+        - name: supporting_other_building
+          type: integer
+          example: 330
+        - name: supporting_other_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_other_built
+          type: integer
+          example: 330
+    - name: residence-base
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: area
+          type: integer
+          example: 300
+        - name: building_area
+          type: integer
+          example: 330
+        - name: residence_building_area
+          type: integer
+          example: 230
+        - name: residence_plot_ratio_min
+          type: float
+          example: 1.6
+        - name: residence_plot_ratio_max
+          type: float
+          example: 3.2
+        - name: city_gy_building_area_built
+          type: integer
+          example: 230
+        - name: city_zs_building_area_built
+          type: integer
+          example: 330
+        - name: city_ps_building_area_built
+          type: integer
+          example: 230
+        - name: town_building_area_built
+          type: integer
+          example: 330
+        - name: commercial__building_area_built
+          type: integer
+          example: 300
+        - name: road_built
+          type: integer
+          example: 330
+        - name: river_built
+          type: integer
+          example: 300
+        - name: lake_built
+          type: integer
+          example: 300
+        - name: green_built
+          type: integer
+          example: 300
+        - name: supporting_education
+          type: integer
+          example: 330
+        - name: supporting_education_built
+          type: integer
+          example: 330
+        - name: supporting_admin
+          type: integer
+          example: 330
+        - name: supporting_admin_built
+          type: integer
+          example: 330
+        - name: supporting_health
+          type: integer
+          example: 330
+        - name: supporting_health_built
+          type: integer
+          example: 330
+        - name: supporting_elder
+          type: integer
+          example: 330
+        - name: supporting_elder_built
+          type: integer
+          example: 330
+        - name: supporting_culture
+          type: integer
+          example: 330
+        - name: supporting_culture_built
+          type: integer
+          example: 330
+        - name: supporting_market
+          type: integer
+          example: 330
+        - name: supporting_market_built
+          type: integer
+          example: 330
+        - name: supporting_traffic
+          type: integer
+          example: 330
+        - name: supporting_traffic_built
+          type: integer
+          example: 330
+        - name: supporting_other
+          type: integer
+          example: 330
+        - name: supporting_other_built
+          type: integer
+          example: 330
+    - name: residence-residence-1
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: city_gy_count
+          type: integer
+          example: 300
+        - name: city_gy_building_area
+          type: integer
+          example: 330
+        - name: city_zs_count
+          type: integer
+          example: 230
+        - name: city_zs_building_area
+          type: float
+          example: 1.6
+        - name: city_ps_count
+          type: float
+          example: 3.2
+        - name: city_ps_building_area
+          type: integer
+          example: 230
+        - name: city_unknown_count
+          type: integer
+          example: 330
+        - name: city_unknown_building_area
+          type: integer
+          example: 230
+        - name: town_count
+          type: integer
+          example: 330
+        - name: town_building_area
+          type: integer
+          example: 300
+        - name: commercial_count
+          type: integer
+          example: 330
+        - name: commercial_building_area
+          type: integer
+          example: 300
+    - name: residence-residence-2
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: city_building_area_built
+          type: integer
+          example: 300
+        - name: city_building_area_unbuilt
+          type: integer
+          example: 330
+        - name: city_building_area_building
+          type: integer
+          example: 330
+        - name: town_building_area_built
+          type: integer
+          example: 230
+        - name: town_building_area_unbuilt
+          type: float
+          example: 1.6
+        - name: town_building_area_building
+          type: float
+          example: 1.6
+        - name: commercial_building_area_built
+          type: float
+          example: 3.2
+        - name: commercial_building_area_unbuilt
+          type: integer
+          example: 230
+        - name: commercial_building_area_building
+          type: float
+          example: 3.2
+        - name: building_area_built
+          type: integer
+          example: 230
+        - name: building_area_unbuilt
+          type: integer
+          example: 330
+        - name: building_area_building
+          type: integer
+          example: 300
+    - name: residence-supporting-1
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: road_built
+          type: integer
+          example: 300
+        - name: road
+          type: integer
+          example: 330
+        - name: river_built
+          type: integer
+          example: 230
+        - name: river
+          type: integer
+          example: 330
+        - name: lake
+          type: integer
+          example: 330
+        - name: lake_built
+          type: integer
+          example: 230
+        - name: green
+          type: integer
+          example: 330
+        - name: green_built
+          type: integer
+          example: 230
+        - name: public
+          type: integer
+          example: 330
+        - name: public_built
+          type: integer
+          example: 300
+        - name: business
+          type: integer
+          example: 330
+        - name: business_built
+          type: integer
+          example: 300
+    - name: residence-supporting-2
+      sql: select * from  where jidi = '' group by 住宅类型
+      columns:
+        - name: supporting_education
+          type: integer
+          example: 330
+        - name: supporting_admin
+          type: integer
+          example: 330
+        - name: supporting_health
+          type: integer
+          example: 330
+        - name: supporting_elder
+          type: integer
+          example: 330
+        - name: supporting_culture
+          type: integer
+          example: 330
+        - name: supporting_market
+          type: integer
+          example: 330
+        - name: supporting_traffic
+          type: integer
+          example: 330
+        - name: supporting_other
+          type: integer
+          example: 330
+        - name: supporting_building
+          type: integer
+          example: 330
+        - name: supporting_built
+          type: integer
+          example: 330
+        - name: supporting_unbuilt
+          type: integer
+          example: 330
+        - name: supporting_public
+          type: integer
+          example: 330

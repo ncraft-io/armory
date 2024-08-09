@@ -18,6 +18,7 @@ private static final long serialVersionUID = 0L;
   private ListRowRequest() {
     database_ = "";
     table_ = "";
+    query_ = "";
     pageToken_ = "";
     filter_ = "";
   }
@@ -117,6 +118,44 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       table_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int QUERY_FIELD_NUMBER = 3;
+  private volatile java.lang.Object query_;
+  /**
+   * <code>string query = 3;</code>
+   * @return The query.
+   */
+  @java.lang.Override
+  public java.lang.String getQuery() {
+    java.lang.Object ref = query_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      query_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string query = 3;</code>
+   * @return The bytes for query.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getQueryBytes() {
+    java.lang.Object ref = query_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      query_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -304,6 +343,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, table_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(query_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, query_);
+    }
     if (pageSize_ != 0) {
       output.writeInt32(2000, pageSize_);
     }
@@ -339,6 +381,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, table_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(query_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, query_);
     }
     if (pageSize_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -385,6 +430,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getDatabase())) return false;
     if (!getTable()
         .equals(other.getTable())) return false;
+    if (!getQuery()
+        .equals(other.getQuery())) return false;
     if (getPageSize()
         != other.getPageSize()) return false;
     if (!getPageToken()
@@ -420,6 +467,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getDatabase().hashCode();
     hash = (37 * hash) + TABLE_FIELD_NUMBER;
     hash = (53 * hash) + getTable().hashCode();
+    hash = (37 * hash) + QUERY_FIELD_NUMBER;
+    hash = (53 * hash) + getQuery().hashCode();
     hash = (37 * hash) + PAGE_SIZE_FIELD_NUMBER;
     hash = (53 * hash) + getPageSize();
     hash = (37 * hash) + PAGE_TOKEN_FIELD_NUMBER;
@@ -571,6 +620,8 @@ private static final long serialVersionUID = 0L;
 
       table_ = "";
 
+      query_ = "";
+
       pageSize_ = 0;
 
       pageToken_ = "";
@@ -621,6 +672,7 @@ private static final long serialVersionUID = 0L;
       io.ncraft.armory.unitable.v1.ListRowRequest result = new io.ncraft.armory.unitable.v1.ListRowRequest(this);
       result.database_ = database_;
       result.table_ = table_;
+      result.query_ = query_;
       result.pageSize_ = pageSize_;
       result.pageToken_ = pageToken_;
       result.skip_ = skip_;
@@ -692,6 +744,10 @@ private static final long serialVersionUID = 0L;
         table_ = other.table_;
         onChanged();
       }
+      if (!other.getQuery().isEmpty()) {
+        query_ = other.query_;
+        onChanged();
+      }
       if (other.getPageSize() != 0) {
         setPageSize(other.getPageSize());
       }
@@ -751,6 +807,11 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 18
+            case 26: {
+              query_ = input.readStringRequireUtf8();
+
+              break;
+            } // case 26
             case 16000: {
               pageSize_ = input.readInt32();
 
@@ -954,6 +1015,82 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       table_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object query_ = "";
+    /**
+     * <code>string query = 3;</code>
+     * @return The query.
+     */
+    public java.lang.String getQuery() {
+      java.lang.Object ref = query_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        query_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string query = 3;</code>
+     * @return The bytes for query.
+     */
+    public com.google.protobuf.ByteString
+        getQueryBytes() {
+      java.lang.Object ref = query_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        query_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string query = 3;</code>
+     * @param value The query to set.
+     * @return This builder for chaining.
+     */
+    public Builder setQuery(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      query_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string query = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearQuery() {
+      
+      query_ = getDefaultInstance().getQuery();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string query = 3;</code>
+     * @param value The bytes for query to set.
+     * @return This builder for chaining.
+     */
+    public Builder setQueryBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      query_ = value;
       onChanged();
       return this;
     }

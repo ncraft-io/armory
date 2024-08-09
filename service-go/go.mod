@@ -13,12 +13,12 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
-	github.com/mojo-lang/core/go v0.0.0-20240718132104-5daa639555b5
+	github.com/mojo-lang/core/go v0.0.0-20240808085347-53eed0a2e240
 	github.com/mojo-lang/db/go v0.0.0-20240807121857-107d18e42a06
 	github.com/mojo-lang/http/go v0.0.0-20240627072315-89ee9c59b807
 	github.com/mojo-lang/mojo/go v0.0.0-20240807122300-2fee6f63223b
 	github.com/ncraft-io/armory/go v0.0.0
-	github.com/ncraft-io/ncraft-gokit v0.0.0-20240717073454-b346a2bfbe93
+	github.com/ncraft-io/ncraft-gokit v0.0.0-20240808082035-9f3ee3a0659d
 	github.com/ncraft-io/ncraft/go v0.0.0-20231130060710-4e89e62eb679
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1

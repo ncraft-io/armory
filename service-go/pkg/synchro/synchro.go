@@ -112,6 +112,10 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 	return obj, nil
 }
 
+func (s *Synchro) QueryBy(ctx context.Context, table string, query *unitable.DbQuery) ([]*core.Object, error) {
+	return nil, nil
+}
+
 func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) ([]*core.Object, int, error) {
 	meta := s.GetMetaTable(table, nil)
 	if meta == nil {

@@ -26,6 +26,9 @@
             "description": "字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限",
             "type": "boolean"
         },
+        "example": {
+            "$ref": "#/components/schemas/mojo.core.Value"
+        },
         "exportName": {
             "title": "mojo.core.String",
             "description": "导出时使用的名称，比如Excel导出时",

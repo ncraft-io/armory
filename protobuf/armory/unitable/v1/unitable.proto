@@ -150,6 +150,7 @@ message DeleteRowRequest {
 message ListRowRequest {
     string database = 1;
     string table = 2;
+    string query = 3;
     int32 page_size = 2000;
     string page_token = 2001;
     int32 skip = 2002;

@@ -7,6 +7,7 @@ import (
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
 	"regexp"
 	"strconv"
 
@@ -27,16 +28,25 @@ type unitableServer struct {
 	pb.UnimplementedUnitableServer
 
 	Synchro *synchro.Synchro
+	Queries map[string]*unitable.DbQuery
 }
 
 // NewService returns a naive, stateless implementation of Interface.
 func NewService() pb.UnitableServer {
-	return unitableServer{
+	server := unitableServer{
 		Synchro: synchro.New(),
+		Queries: make(map[string]*unitable.DbQuery),
 	}
+	conf := &unitable.DbQueryConfig{}
+	_ = config.ScanFrom(conf, "dbQuery")
+	for _, query := range conf.Queries {
+		server.Queries[query.Name] = query
+	}
+
+	return server
 }
 
-var nameRegex = regexp.MustCompile(`[a-z][a-z0-9]*`)
+var nameRegex = regexp.MustCompile(`^[a-z][a-z0-9]*$`)
 
 // CreateTable implements Interface.
 func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*unitable.Table, error) {
@@ -459,6 +469,14 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
+	}
+
+	if query, ok := s.Queries[in.Query]; ok && len(in.Query) > 0 {
+		example := query.Example()
+		return &pb.ListRowResponse{
+			Objects:    []*core.Object{example},
+			TotalCount: 1,
+		}, nil
 	}
 
 	query, err := ParseQuery(in)

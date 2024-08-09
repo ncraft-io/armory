@@ -5,6 +5,7 @@
 | `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
 | `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
 | `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 |

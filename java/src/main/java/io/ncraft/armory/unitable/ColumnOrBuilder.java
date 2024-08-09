@@ -170,6 +170,21 @@ public interface ColumnOrBuilder extends
       getReferencedBytes();
 
   /**
+   * <code>.mojo.core.Value example = 30;</code>
+   * @return Whether the example field is set.
+   */
+  boolean hasExample();
+  /**
+   * <code>.mojo.core.Value example = 30;</code>
+   * @return The example.
+   */
+  org.mojolang.mojo.core.Value getExample();
+  /**
+   * <code>.mojo.core.Value example = 30;</code>
+   */
+  org.mojolang.mojo.core.ValueOrBuilder getExampleOrBuilder();
+
+  /**
    * <code>.mojo.core.Timestamp create_time = 100;</code>
    * @return Whether the createTime field is set.
    */

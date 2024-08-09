@@ -116,7 +116,7 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
             }
             
             @Override
-            public Pagination<org.mojolang.mojo.core.Object> listRow(String database, String table, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
+            public Pagination<org.mojolang.mojo.core.Object> listRow(String database, String table, String query, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
                  return Pagination.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to list_row."));
             }
             

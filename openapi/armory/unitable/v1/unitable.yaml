@@ -24,6 +24,8 @@ components:
           description: 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限
           title: mojo.core.Bool
           type: boolean
+        example:
+          $ref: '#/components/schemas/mojo.core.Value'
         exportName:
           description: 导出时使用的名称，比如Excel导出时
           title: mojo.core.String
@@ -79,6 +81,36 @@ components:
         updateTime:
           $ref: '#/components/schemas/mojo.core.Timestamp'
       title: armory.unitable.Column
+      type: object
+    armory.unitable.DbQuery:
+      description: ""
+      properties:
+        columns:
+          description: Query 包含的列的元信息
+          items:
+            $ref: '#/components/schemas/armory.unitable.Column'
+          title: mojo.core.Array
+          type: array
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        sql:
+          title: mojo.core.String
+          type: string
+      title: armory.unitable.DbQuery
+      type: object
+    armory.unitable.DbQueryConfig:
+      description: ""
+      properties:
+        queries:
+          items:
+            $ref: '#/components/schemas/armory.unitable.DbQuery'
+          title: mojo.core.Array
+          type: array
+      title: armory.unitable.DbQueryConfig
       type: object
     armory.unitable.Table:
       description: 动态table的元信息
@@ -136,6 +168,29 @@ components:
       format: Timestamp
       title: mojo.core.Timestamp
       type: string
+    mojo.core.Value:
+      oneOf:
+      - title: mojo.core.Null
+        type: "null"
+      - title: mojo.core.Bool
+        type: boolean
+      - title: mojo.core.String
+        type: string
+      - description: 'the format is: `b64.{base64 encoded bytes}`'
+        format: Bytes
+        title: mojo.core.Bytes
+        type: string
+      - format: Int64
+        title: mojo.core.Int64
+        type: integer
+      - format: Float64
+        title: mojo.core.Float64
+        type: number
+      - title: mojo.core.Object
+        type: object
+      - title: mojo.core.Values
+        type: array
+      title: mojo.core.Value
 info:
   description: ""
   title: 统一表单服务
@@ -587,13 +642,21 @@ paths:
       description: ""
       operationId: list_row
       parameters:
-      - in: path
+      - description: specify the database name
+        in: path
         name: database
         schema:
           title: mojo.core.String
           type: string
-      - in: path
+      - description: specify the table name
+        in: path
         name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: specify the query expression loads form config file
+        in: query
+        name: query
         schema:
           title: mojo.core.String
           type: string

@@ -1399,8 +1399,9 @@ github.com/mojo-lang/core/go v0.0.0-20231009061615-f75fad8ff39f/go.mod h1:2M6i+R
 github.com/mojo-lang/core/go v0.0.0-20231018025631-4656d7efb735/go.mod h1:2M6i+RgL+qBMsCPWNDTk6GIqqCuT2Q80u0LeGhuaAuo=
 github.com/mojo-lang/core/go v0.0.0-20231220010621-d5541d691b2a/go.mod h1:2M6i+RgL+qBMsCPWNDTk6GIqqCuT2Q80u0LeGhuaAuo=
 github.com/mojo-lang/core/go v0.0.0-20240205040023-0a270faf3af3/go.mod h1:2M6i+RgL+qBMsCPWNDTk6GIqqCuT2Q80u0LeGhuaAuo=
-github.com/mojo-lang/core/go v0.0.0-20240718132104-5daa639555b5 h1:H+FqBjK6bv9d9DBcK1rW9faTEckHZDwBrONpf8Lnk3g=
 github.com/mojo-lang/core/go v0.0.0-20240718132104-5daa639555b5/go.mod h1:2M6i+RgL+qBMsCPWNDTk6GIqqCuT2Q80u0LeGhuaAuo=
+github.com/mojo-lang/core/go v0.0.0-20240808085347-53eed0a2e240 h1:bJF4utaVUic14y8nsj/QenKzaZZEpToaxocGEocH3zM=
+github.com/mojo-lang/core/go v0.0.0-20240808085347-53eed0a2e240/go.mod h1:2M6i+RgL+qBMsCPWNDTk6GIqqCuT2Q80u0LeGhuaAuo=
 github.com/mojo-lang/db/go v0.0.0-20230427100802-d945e09a3155/go.mod h1:b3bcq7bz3mJF+TroTEf3Ysjv10G9Ev/NrG08oeDvf7k=
 github.com/mojo-lang/db/go v0.0.0-20240717081137-04f474db3557/go.mod h1:czqozDfR5/lWiSrUYJqTU/zQ3iyI5214tZE7mw+0Wbo=
 github.com/mojo-lang/db/go v0.0.0-20240807121857-107d18e42a06 h1:NEPagSYDDnQTAwyhjs+qvFPI7X/w2TJm95mieVZ8yBM=
@@ -1451,8 +1452,8 @@ github.com/nats-io/nkeys v0.4.4/go.mod h1:XUkxdLPTufzlihbamfzQ7mw/VGx6ObUs+0bN5s
 github.com/nats-io/nkeys v0.4.5/go.mod h1:XUkxdLPTufzlihbamfzQ7mw/VGx6ObUs+0bN5sNvt64=
 github.com/nats-io/nkeys v0.4.6/go.mod h1:4DxZNzenSVd1cYQoAa8948QY3QDjrHfcfVADymtkpts=
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
-github.com/ncraft-io/ncraft-gokit v0.0.0-20240717073454-b346a2bfbe93 h1:xWynfW6ue6UZbgAg0gTjab5eYIRxuMXfd8j61W/PPio=
-github.com/ncraft-io/ncraft-gokit v0.0.0-20240717073454-b346a2bfbe93/go.mod h1:v9HXKpXgMSXPbNwjBJqE+Ux7Lcnhc9YUSlkrUbuel9g=
+github.com/ncraft-io/ncraft-gokit v0.0.0-20240808082035-9f3ee3a0659d h1:2XUj/4IpPNBaPXvLaRKRPoerki2y1QTprZE9Oa8pZV8=
+github.com/ncraft-io/ncraft-gokit v0.0.0-20240808082035-9f3ee3a0659d/go.mod h1:v9HXKpXgMSXPbNwjBJqE+Ux7Lcnhc9YUSlkrUbuel9g=
 github.com/ncraft-io/ncraft/go v0.0.0-20231030073612-932e93b527ce/go.mod h1:fbu1vKePsnylXCT0EIj7j55IuKmxJ9xr9obAe8xBcRk=
 github.com/ncraft-io/ncraft/go v0.0.0-20231130060710-4e89e62eb679 h1:Q2vfTs/cIMSAuep85UvcDSwnWe9uPqrGf6y6pD0orrE=
 github.com/ncraft-io/ncraft/go v0.0.0-20231130060710-4e89e62eb679/go.mod h1:r/Bp58bP9dBnAQhHV7p/T0Bng6vwmfFYpGpnPeZu6UI=

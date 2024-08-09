@@ -510,6 +510,32 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int EXAMPLE_FIELD_NUMBER = 30;
+  private org.mojolang.mojo.core.Value example_;
+  /**
+   * <code>.mojo.core.Value example = 30;</code>
+   * @return Whether the example field is set.
+   */
+  @java.lang.Override
+  public boolean hasExample() {
+    return example_ != null;
+  }
+  /**
+   * <code>.mojo.core.Value example = 30;</code>
+   * @return The example.
+   */
+  @java.lang.Override
+  public org.mojolang.mojo.core.Value getExample() {
+    return example_ == null ? org.mojolang.mojo.core.Value.getDefaultInstance() : example_;
+  }
+  /**
+   * <code>.mojo.core.Value example = 30;</code>
+   */
+  @java.lang.Override
+  public org.mojolang.mojo.core.ValueOrBuilder getExampleOrBuilder() {
+    return getExample();
+  }
+
   public static final int CREATE_TIME_FIELD_NUMBER = 100;
   private org.mojolang.mojo.core.Timestamp createTime_;
   /**
@@ -627,6 +653,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(referenced_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 20, referenced_);
     }
+    if (example_ != null) {
+      output.writeMessage(30, getExample());
+    }
     if (createTime_ != null) {
       output.writeMessage(100, getCreateTime());
     }
@@ -700,6 +729,10 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(referenced_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, referenced_);
     }
+    if (example_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(30, getExample());
+    }
     if (createTime_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(100, getCreateTime());
@@ -757,6 +790,11 @@ private static final long serialVersionUID = 0L;
         != other.getDimensional()) return false;
     if (!getReferenced()
         .equals(other.getReferenced())) return false;
+    if (hasExample() != other.hasExample()) return false;
+    if (hasExample()) {
+      if (!getExample()
+          .equals(other.getExample())) return false;
+    }
     if (hasCreateTime() != other.hasCreateTime()) return false;
     if (hasCreateTime()) {
       if (!getCreateTime()
@@ -819,6 +857,10 @@ private static final long serialVersionUID = 0L;
         getDimensional());
     hash = (37 * hash) + REFERENCED_FIELD_NUMBER;
     hash = (53 * hash) + getReferenced().hashCode();
+    if (hasExample()) {
+      hash = (37 * hash) + EXAMPLE_FIELD_NUMBER;
+      hash = (53 * hash) + getExample().hashCode();
+    }
     if (hasCreateTime()) {
       hash = (37 * hash) + CREATE_TIME_FIELD_NUMBER;
       hash = (53 * hash) + getCreateTime().hashCode();
@@ -989,6 +1031,12 @@ private static final long serialVersionUID = 0L;
 
       referenced_ = "";
 
+      if (exampleBuilder_ == null) {
+        example_ = null;
+      } else {
+        example_ = null;
+        exampleBuilder_ = null;
+      }
       if (createTimeBuilder_ == null) {
         createTime_ = null;
       } else {
@@ -1044,6 +1092,11 @@ private static final long serialVersionUID = 0L;
       result.temporal_ = temporal_;
       result.dimensional_ = dimensional_;
       result.referenced_ = referenced_;
+      if (exampleBuilder_ == null) {
+        result.example_ = example_;
+      } else {
+        result.example_ = exampleBuilder_.build();
+      }
       if (createTimeBuilder_ == null) {
         result.createTime_ = createTime_;
       } else {
@@ -1163,6 +1216,9 @@ private static final long serialVersionUID = 0L;
         referenced_ = other.referenced_;
         onChanged();
       }
+      if (other.hasExample()) {
+        mergeExample(other.getExample());
+      }
       if (other.hasCreateTime()) {
         mergeCreateTime(other.getCreateTime());
       }
@@ -1280,6 +1336,13 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 162
+            case 242: {
+              input.readMessage(
+                  getExampleFieldBuilder().getBuilder(),
+                  extensionRegistry);
+
+              break;
+            } // case 242
             case 802: {
               input.readMessage(
                   getCreateTimeFieldBuilder().getBuilder(),
@@ -2285,6 +2348,125 @@ private static final long serialVersionUID = 0L;
       referenced_ = value;
       onChanged();
       return this;
+    }
+
+    private org.mojolang.mojo.core.Value example_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.mojolang.mojo.core.Value, org.mojolang.mojo.core.Value.Builder, org.mojolang.mojo.core.ValueOrBuilder> exampleBuilder_;
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     * @return Whether the example field is set.
+     */
+    public boolean hasExample() {
+      return exampleBuilder_ != null || example_ != null;
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     * @return The example.
+     */
+    public org.mojolang.mojo.core.Value getExample() {
+      if (exampleBuilder_ == null) {
+        return example_ == null ? org.mojolang.mojo.core.Value.getDefaultInstance() : example_;
+      } else {
+        return exampleBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public Builder setExample(org.mojolang.mojo.core.Value value) {
+      if (exampleBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        example_ = value;
+        onChanged();
+      } else {
+        exampleBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public Builder setExample(
+        org.mojolang.mojo.core.Value.Builder builderForValue) {
+      if (exampleBuilder_ == null) {
+        example_ = builderForValue.build();
+        onChanged();
+      } else {
+        exampleBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public Builder mergeExample(org.mojolang.mojo.core.Value value) {
+      if (exampleBuilder_ == null) {
+        if (example_ != null) {
+          example_ =
+            org.mojolang.mojo.core.Value.newBuilder(example_).mergeFrom(value).buildPartial();
+        } else {
+          example_ = value;
+        }
+        onChanged();
+      } else {
+        exampleBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public Builder clearExample() {
+      if (exampleBuilder_ == null) {
+        example_ = null;
+        onChanged();
+      } else {
+        example_ = null;
+        exampleBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public org.mojolang.mojo.core.Value.Builder getExampleBuilder() {
+      
+      onChanged();
+      return getExampleFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    public org.mojolang.mojo.core.ValueOrBuilder getExampleOrBuilder() {
+      if (exampleBuilder_ != null) {
+        return exampleBuilder_.getMessageOrBuilder();
+      } else {
+        return example_ == null ?
+            org.mojolang.mojo.core.Value.getDefaultInstance() : example_;
+      }
+    }
+    /**
+     * <code>.mojo.core.Value example = 30;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.mojolang.mojo.core.Value, org.mojolang.mojo.core.Value.Builder, org.mojolang.mojo.core.ValueOrBuilder> 
+        getExampleFieldBuilder() {
+      if (exampleBuilder_ == null) {
+        exampleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.mojolang.mojo.core.Value, org.mojolang.mojo.core.Value.Builder, org.mojolang.mojo.core.ValueOrBuilder>(
+                getExample(),
+                getParentForChildren(),
+                isClean());
+        example_ = null;
+      }
+      return exampleBuilder_;
     }
 
     private org.mojolang.mojo.core.Timestamp createTime_;

@@ -211,79 +211,80 @@ public final class UnitableProto {
       "ow\030\004 \001(\0132\021.mojo.core.Object\"<\n\rGetRowReq" +
       "uest\022\020\n\010database\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\n\n" +
       "\002id\030\003 \001(\t\"?\n\020DeleteRowRequest\022\020\n\010databas" +
-      "e\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\"\333\001\n\016L" +
+      "e\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\"\352\001\n\016L" +
       "istRowRequest\022\020\n\010database\030\001 \001(\t\022\r\n\005table" +
-      "\030\002 \001(\t\022\022\n\tpage_size\030\320\017 \001(\005\022\023\n\npage_token" +
-      "\030\321\017 \001(\t\022\r\n\004skip\030\322\017 \001(\005\022\017\n\006filter\030\333\017 \001(\t\022" +
-      "#\n\005order\030\334\017 \001(\0132\023.mojo.core.Ordering\022)\n\n" +
-      "field_mask\030\335\017 \001(\0132\024.mojo.core.FieldMask\022" +
-      "\017\n\006unique\030\336\017 \001(\010\"e\n\017ListRowResponse\022\"\n\007o" +
-      "bjects\030\001 \003(\0132\021.mojo.core.Object\022\024\n\013total" +
-      "_count\030\320\017 \001(\005\022\030\n\017next_page_token\030\321\017 \001(\t\"" +
-      "\335\001\n\020ExportRowRequest\022\020\n\010database\030\001 \001(\t\022\r" +
-      "\n\005table\030\002 \001(\t\022\022\n\tpage_size\030\320\017 \001(\005\022\023\n\npag" +
-      "e_token\030\321\017 \001(\t\022\r\n\004skip\030\322\017 \001(\005\022\017\n\006filter\030" +
-      "\333\017 \001(\t\022#\n\005order\030\334\017 \001(\0132\023.mojo.core.Order" +
-      "ing\022)\n\nfield_mask\030\335\017 \001(\0132\024.mojo.core.Fie" +
-      "ldMask\022\017\n\006unique\030\336\017 \001(\010\"g\n\021ExportRowResp" +
-      "onse\022\"\n\007objects\030\001 \003(\0132\021.mojo.core.Object" +
-      "\022\024\n\013total_count\030\320\017 \001(\005\022\030\n\017next_page_toke" +
-      "n\030\321\017 \001(\t\"Z\n\026BatchCreateRowsRequest\022\020\n\010da" +
-      "tabase\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\037\n\004rows\030\003 \003(" +
-      "\0132\021.mojo.core.Object\"Z\n\026BatchUpdateRowsR" +
-      "equest\022\020\n\010database\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022" +
-      "\037\n\004rows\030\004 \003(\0132\021.mojo.core.Object\"F\n\026Batc" +
-      "hDeleteRowsRequest\022\020\n\010database\030\001 \001(\t\022\r\n\005" +
-      "table\030\002 \001(\t\022\013\n\003ids\030\003 \003(\t2\263\016\n\010Unitable\022N\n" +
-      "\014create_table\022&.armory.unitable.v1.Creat" +
-      "eTableRequest\032\026.armory.unitable.Table\022G\n" +
-      "\014update_table\022&.armory.unitable.v1.Updat" +
-      "eTableRequest\032\017.mojo.core.Null\022H\n\tget_ta" +
-      "ble\022#.armory.unitable.v1.GetTableRequest" +
-      "\032\026.armory.unitable.Table\022\\\n\013list_tables\022" +
-      "%.armory.unitable.v1.ListTablesRequest\032&" +
-      ".armory.unitable.v1.ListTablesResponse\022G" +
-      "\n\014delete_table\022&.armory.unitable.v1.Dele" +
-      "teTableRequest\032\017.mojo.core.Null\022J\n\nsync_" +
-      "table\022$.armory.unitable.v1.SyncTableRequ" +
-      "est\032\026.armory.unitable.Table\022Q\n\rcreate_co" +
-      "lumn\022\'.armory.unitable.v1.CreateColumnRe" +
-      "quest\032\027.armory.unitable.Column\022I\n\rupdate" +
-      "_column\022\'.armory.unitable.v1.UpdateColum" +
-      "nRequest\032\017.mojo.core.Null\022K\n\nget_column\022" +
-      "$.armory.unitable.v1.GetColumnRequest\032\027." +
-      "armory.unitable.Column\022I\n\rdelete_column\022" +
-      "\'.armory.unitable.v1.DeleteColumnRequest" +
-      "\032\017.mojo.core.Null\022_\n\014list_columns\022&.armo" +
-      "ry.unitable.v1.ListColumnsRequest\032\'.armo" +
-      "ry.unitable.v1.ListColumnsResponse\022V\n\024ba" +
-      "tch_create_columns\022-.armory.unitable.v1." +
-      "BatchCreateColumnsRequest\032\017.mojo.core.Nu" +
-      "ll\022T\n\023batch_update_column\022,.armory.unita" +
-      "ble.v1.BatchUpdateColumnRequest\032\017.mojo.c" +
-      "ore.Null\022T\n\023batch_delete_column\022,.armory" +
-      ".unitable.v1.BatchDeleteColumnRequest\032\017." +
-      "mojo.core.Null\022E\n\ncreate_row\022$.armory.un" +
-      "itable.v1.CreateRowRequest\032\021.mojo.core.O" +
-      "bject\022C\n\nupdate_row\022$.armory.unitable.v1" +
-      ".UpdateRowRequest\032\017.mojo.core.Null\022?\n\007ge" +
-      "t_row\022!.armory.unitable.v1.GetRowRequest" +
-      "\032\021.mojo.core.Object\022C\n\ndelete_row\022$.armo" +
-      "ry.unitable.v1.DeleteRowRequest\032\017.mojo.c" +
-      "ore.Null\022S\n\010list_row\022\".armory.unitable.v" +
-      "1.ListRowRequest\032#.armory.unitable.v1.Li" +
-      "stRowResponse\022Y\n\nexport_row\022$.armory.uni" +
-      "table.v1.ExportRowRequest\032%.armory.unita" +
-      "ble.v1.ExportRowResponse\022P\n\021batch_create" +
-      "_rows\022*.armory.unitable.v1.BatchCreateRo" +
-      "wsRequest\032\017.mojo.core.Null\022P\n\021batch_upda" +
-      "te_rows\022*.armory.unitable.v1.BatchUpdate" +
-      "RowsRequest\032\017.mojo.core.Null\022P\n\021batch_de" +
-      "lete_rows\022*.armory.unitable.v1.BatchDele" +
-      "teRowsRequest\032\017.mojo.core.NullBo\n\034io.ncr" +
-      "aft.armory.unitable.v1B\rUnitableProtoP\001Z" +
-      ">github.com/ncraft-io/armory/go/pkg/armo" +
-      "ry/unitable/v1;unitableb\006proto3"
+      "\030\002 \001(\t\022\r\n\005query\030\003 \001(\t\022\022\n\tpage_size\030\320\017 \001(" +
+      "\005\022\023\n\npage_token\030\321\017 \001(\t\022\r\n\004skip\030\322\017 \001(\005\022\017\n" +
+      "\006filter\030\333\017 \001(\t\022#\n\005order\030\334\017 \001(\0132\023.mojo.co" +
+      "re.Ordering\022)\n\nfield_mask\030\335\017 \001(\0132\024.mojo." +
+      "core.FieldMask\022\017\n\006unique\030\336\017 \001(\010\"e\n\017ListR" +
+      "owResponse\022\"\n\007objects\030\001 \003(\0132\021.mojo.core." +
+      "Object\022\024\n\013total_count\030\320\017 \001(\005\022\030\n\017next_pag" +
+      "e_token\030\321\017 \001(\t\"\335\001\n\020ExportRowRequest\022\020\n\010d" +
+      "atabase\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\022\n\tpage_siz" +
+      "e\030\320\017 \001(\005\022\023\n\npage_token\030\321\017 \001(\t\022\r\n\004skip\030\322\017" +
+      " \001(\005\022\017\n\006filter\030\333\017 \001(\t\022#\n\005order\030\334\017 \001(\0132\023." +
+      "mojo.core.Ordering\022)\n\nfield_mask\030\335\017 \001(\0132" +
+      "\024.mojo.core.FieldMask\022\017\n\006unique\030\336\017 \001(\010\"g" +
+      "\n\021ExportRowResponse\022\"\n\007objects\030\001 \003(\0132\021.m" +
+      "ojo.core.Object\022\024\n\013total_count\030\320\017 \001(\005\022\030\n" +
+      "\017next_page_token\030\321\017 \001(\t\"Z\n\026BatchCreateRo" +
+      "wsRequest\022\020\n\010database\030\001 \001(\t\022\r\n\005table\030\002 \001" +
+      "(\t\022\037\n\004rows\030\003 \003(\0132\021.mojo.core.Object\"Z\n\026B" +
+      "atchUpdateRowsRequest\022\020\n\010database\030\001 \001(\t\022" +
+      "\r\n\005table\030\002 \001(\t\022\037\n\004rows\030\004 \003(\0132\021.mojo.core" +
+      ".Object\"F\n\026BatchDeleteRowsRequest\022\020\n\010dat" +
+      "abase\030\001 \001(\t\022\r\n\005table\030\002 \001(\t\022\013\n\003ids\030\003 \003(\t2" +
+      "\263\016\n\010Unitable\022N\n\014create_table\022&.armory.un" +
+      "itable.v1.CreateTableRequest\032\026.armory.un" +
+      "itable.Table\022G\n\014update_table\022&.armory.un" +
+      "itable.v1.UpdateTableRequest\032\017.mojo.core" +
+      ".Null\022H\n\tget_table\022#.armory.unitable.v1." +
+      "GetTableRequest\032\026.armory.unitable.Table\022" +
+      "\\\n\013list_tables\022%.armory.unitable.v1.List" +
+      "TablesRequest\032&.armory.unitable.v1.ListT" +
+      "ablesResponse\022G\n\014delete_table\022&.armory.u" +
+      "nitable.v1.DeleteTableRequest\032\017.mojo.cor" +
+      "e.Null\022J\n\nsync_table\022$.armory.unitable.v" +
+      "1.SyncTableRequest\032\026.armory.unitable.Tab" +
+      "le\022Q\n\rcreate_column\022\'.armory.unitable.v1" +
+      ".CreateColumnRequest\032\027.armory.unitable.C" +
+      "olumn\022I\n\rupdate_column\022\'.armory.unitable" +
+      ".v1.UpdateColumnRequest\032\017.mojo.core.Null" +
+      "\022K\n\nget_column\022$.armory.unitable.v1.GetC" +
+      "olumnRequest\032\027.armory.unitable.Column\022I\n" +
+      "\rdelete_column\022\'.armory.unitable.v1.Dele" +
+      "teColumnRequest\032\017.mojo.core.Null\022_\n\014list" +
+      "_columns\022&.armory.unitable.v1.ListColumn" +
+      "sRequest\032\'.armory.unitable.v1.ListColumn" +
+      "sResponse\022V\n\024batch_create_columns\022-.armo" +
+      "ry.unitable.v1.BatchCreateColumnsRequest" +
+      "\032\017.mojo.core.Null\022T\n\023batch_update_column" +
+      "\022,.armory.unitable.v1.BatchUpdateColumnR" +
+      "equest\032\017.mojo.core.Null\022T\n\023batch_delete_" +
+      "column\022,.armory.unitable.v1.BatchDeleteC" +
+      "olumnRequest\032\017.mojo.core.Null\022E\n\ncreate_" +
+      "row\022$.armory.unitable.v1.CreateRowReques" +
+      "t\032\021.mojo.core.Object\022C\n\nupdate_row\022$.arm" +
+      "ory.unitable.v1.UpdateRowRequest\032\017.mojo." +
+      "core.Null\022?\n\007get_row\022!.armory.unitable.v" +
+      "1.GetRowRequest\032\021.mojo.core.Object\022C\n\nde" +
+      "lete_row\022$.armory.unitable.v1.DeleteRowR" +
+      "equest\032\017.mojo.core.Null\022S\n\010list_row\022\".ar" +
+      "mory.unitable.v1.ListRowRequest\032#.armory" +
+      ".unitable.v1.ListRowResponse\022Y\n\nexport_r" +
+      "ow\022$.armory.unitable.v1.ExportRowRequest" +
+      "\032%.armory.unitable.v1.ExportRowResponse\022" +
+      "P\n\021batch_create_rows\022*.armory.unitable.v" +
+      "1.BatchCreateRowsRequest\032\017.mojo.core.Nul" +
+      "l\022P\n\021batch_update_rows\022*.armory.unitable" +
+      ".v1.BatchUpdateRowsRequest\032\017.mojo.core.N" +
+      "ull\022P\n\021batch_delete_rows\022*.armory.unitab" +
+      "le.v1.BatchDeleteRowsRequest\032\017.mojo.core" +
+      ".NullBo\n\034io.ncraft.armory.unitable.v1B\rU" +
+      "nitableProtoP\001Z>github.com/ncraft-io/arm" +
+      "ory/go/pkg/armory/unitable/v1;unitableb\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -421,7 +422,7 @@ public final class UnitableProto {
     internal_static_armory_unitable_v1_ListRowRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_armory_unitable_v1_ListRowRequest_descriptor,
-        new java.lang.String[] { "Database", "Table", "PageSize", "PageToken", "Skip", "Filter", "Order", "FieldMask", "Unique", });
+        new java.lang.String[] { "Database", "Table", "Query", "PageSize", "PageToken", "Skip", "Filter", "Order", "FieldMask", "Unique", });
     internal_static_armory_unitable_v1_ListRowResponse_descriptor =
       getDescriptor().getMessageTypes().get(21);
     internal_static_armory_unitable_v1_ListRowResponse_fieldAccessorTable = new
