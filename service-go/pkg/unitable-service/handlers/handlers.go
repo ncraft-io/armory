@@ -79,7 +79,7 @@ func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableReque
 	in.Table.Id = in.Table.Name
 	in.Table.CreateTime = core.Now()
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.MigrateTable(ctx, in.Table, nil); err != nil {
+	if err := s.Synchro.MigrateTable(ctx, in.Table, nil, nil); err != nil {
 		return nil, core.NewInternalError("failed to create table in %s", in.Table.Database)
 	}
 
@@ -104,8 +104,6 @@ func MergeColumn(target *unitable.Column, src *unitable.Column) {
 	}
 	if len(target.Type) == 0 {
 		target.Type = src.Type
-	}
-	if len(target.Format) == 0 {
 		target.Format = src.Format
 	}
 	if len(target.TableId) == 0 {
@@ -155,17 +153,37 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 		in.Table.Id = in.Table.Name
 	}
 
+	var dropCols []string
 	renamedCols := make(map[string]string)
 	if old, err := model.GetTableModel().Get(ctx, in.Table.Id); err != nil {
 		return nil, core.NewInvalidArgumentError("the table %s not found, err: %s", in.Table.Id, err.Error())
 	} else {
 		columns := make(map[string]*unitable.Column)
+		nameIndex := make(map[string]*unitable.Column)
 		for _, col := range old.Columns {
 			columns[col.Id] = col
+			nameIndex[col.Name] = col
 		}
 
 		for _, col := range in.Table.Columns {
-			if len(col.Id) == 0 {
+			if c, ok := nameIndex[col.Name]; ok {
+				if len(col.Id) > 0 && col.Id != c.Id {
+					return nil, core.NewInvalidArgumentError("the table %s update the column %s with different id, old: %s, new: %s", in.Table.Id, col.Name, c.Id, col.Id)
+				}
+
+				col.Id = c.Id
+				MergeColumn(col, c)
+				col.UpdateTime = core.Now()
+
+				// NOT allow to change type if not force mode
+				if col.Type != c.Type || (c.Type == "string" && c.Format != col.Format) {
+					if in.Force {
+						dropCols = append(dropCols, c.Name)
+					} else {
+						return nil, core.NewInvalidArgumentError("the table %s not to allow to change column %s type if not force mode", in.Table.Id, col.Name)
+					}
+				}
+			} else if len(col.Id) == 0 {
 				col.Id = ksuid.New().String()
 				col.CreateTime = core.Now()
 				col.UpdateTime = core.Now()
@@ -195,8 +213,8 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 	}
 
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.MigrateTable(ctx, in.Table, renamedCols); err != nil {
-		return nil, core.NewInternalError("failed to update table in %s", in.Table.Database)
+	if err := s.Synchro.MigrateTable(ctx, in.Table, renamedCols, dropCols); err != nil {
+		return nil, core.NewInternalError("failed to update table in %s, err: %s", in.Table.Database, err.Error())
 	}
 
 	columns := in.Table.Columns

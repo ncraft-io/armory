@@ -66,7 +66,7 @@ func (s *Synchro) CreateTable(ctx context.Context, table *unitable.Table) error 
 	return nil
 }
 
-func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renamedCols map[string]string) error {
+func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renamedCols map[string]string, dropCols []string) error {
 	meta := s.GetMetaTable(table.Id, table)
 	if meta == nil {
 		return core.NewNotFoundError("the table %s is not exist", table.Name)
@@ -79,6 +79,11 @@ func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renam
 		tx := GetDataDB().WithContext(ctx).Table(table.Id)
 		for k, v := range renamedCols {
 			if err := tx.Migrator().RenameColumn(obj, k, v); err != nil {
+				return err
+			}
+		}
+		for _, c := range dropCols {
+			if err := tx.Migrator().DropColumn(obj, c); err != nil {
 				return err
 			}
 		}
