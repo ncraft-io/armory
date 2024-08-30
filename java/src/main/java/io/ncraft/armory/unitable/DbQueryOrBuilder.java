@@ -44,6 +44,43 @@ public interface DbQueryOrBuilder extends
       getSqlBytes();
 
   /**
+   * <code>repeated string parameters = 4;</code>
+   * @return A list containing the parameters.
+   */
+  java.util.List<java.lang.String>
+      getParametersList();
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @return The count of parameters.
+   */
+  int getParametersCount();
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @param index The index of the element to return.
+   * @return The parameters at the given index.
+   */
+  java.lang.String getParameters(int index);
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the parameters at the given index.
+   */
+  com.google.protobuf.ByteString
+      getParametersBytes(int index);
+
+  /**
+   * <code>string table = 5;</code>
+   * @return The table.
+   */
+  java.lang.String getTable();
+  /**
+   * <code>string table = 5;</code>
+   * @return The bytes for table.
+   */
+  com.google.protobuf.ByteString
+      getTableBytes();
+
+  /**
    * <code>repeated .armory.unitable.Column columns = 15 [(.mojo.reference) = "", (.mojo.db_json) = true];</code>
    */
   java.util.List<io.ncraft.armory.unitable.Column> 

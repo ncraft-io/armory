@@ -19,7 +19,19 @@
             "title": "mojo.core.String",
             "type": "string"
         },
+        "parameters": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "title": "mojo.core.String",
+                "type": "string"
+            }
+        },
         "sql": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "table": {
             "title": "mojo.core.String",
             "type": "string"
         }

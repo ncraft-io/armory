@@ -97,7 +97,16 @@ components:
         name:
           title: mojo.core.String
           type: string
+        parameters:
+          items:
+            title: mojo.core.String
+            type: string
+          title: mojo.core.Array
+          type: array
         sql:
+          title: mojo.core.String
+          type: string
+        table:
           title: mojo.core.String
           type: string
       title: armory.unitable.DbQuery

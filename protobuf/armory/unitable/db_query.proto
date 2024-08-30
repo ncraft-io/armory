@@ -16,5 +16,7 @@ message DbQuery {
     string id = 1;
     string name = 2;
     string sql = 3;
+    repeated string parameters = 4;
+    string table = 5;
     repeated Column columns = 15 [(mojo.reference)="", (mojo.db_json)=true];
 }

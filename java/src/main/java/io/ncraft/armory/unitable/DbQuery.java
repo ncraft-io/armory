@@ -19,6 +19,8 @@ private static final long serialVersionUID = 0L;
     id_ = "";
     name_ = "";
     sql_ = "";
+    parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    table_ = "";
     columns_ = java.util.Collections.emptyList();
   }
 
@@ -161,6 +163,79 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int PARAMETERS_FIELD_NUMBER = 4;
+  private com.google.protobuf.LazyStringList parameters_;
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @return A list containing the parameters.
+   */
+  public com.google.protobuf.ProtocolStringList
+      getParametersList() {
+    return parameters_;
+  }
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @return The count of parameters.
+   */
+  public int getParametersCount() {
+    return parameters_.size();
+  }
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @param index The index of the element to return.
+   * @return The parameters at the given index.
+   */
+  public java.lang.String getParameters(int index) {
+    return parameters_.get(index);
+  }
+  /**
+   * <code>repeated string parameters = 4;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the parameters at the given index.
+   */
+  public com.google.protobuf.ByteString
+      getParametersBytes(int index) {
+    return parameters_.getByteString(index);
+  }
+
+  public static final int TABLE_FIELD_NUMBER = 5;
+  private volatile java.lang.Object table_;
+  /**
+   * <code>string table = 5;</code>
+   * @return The table.
+   */
+  @java.lang.Override
+  public java.lang.String getTable() {
+    java.lang.Object ref = table_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      table_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string table = 5;</code>
+   * @return The bytes for table.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTableBytes() {
+    java.lang.Object ref = table_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      table_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   public static final int COLUMNS_FIELD_NUMBER = 15;
   private java.util.List<io.ncraft.armory.unitable.Column> columns_;
   /**
@@ -224,6 +299,12 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sql_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, sql_);
     }
+    for (int i = 0; i < parameters_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, parameters_.getRaw(i));
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, table_);
+    }
     for (int i = 0; i < columns_.size(); i++) {
       output.writeMessage(15, columns_.get(i));
     }
@@ -244,6 +325,17 @@ private static final long serialVersionUID = 0L;
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sql_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, sql_);
+    }
+    {
+      int dataSize = 0;
+      for (int i = 0; i < parameters_.size(); i++) {
+        dataSize += computeStringSizeNoTag(parameters_.getRaw(i));
+      }
+      size += dataSize;
+      size += 1 * getParametersList().size();
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, table_);
     }
     for (int i = 0; i < columns_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
@@ -270,6 +362,10 @@ private static final long serialVersionUID = 0L;
         .equals(other.getName())) return false;
     if (!getSql()
         .equals(other.getSql())) return false;
+    if (!getParametersList()
+        .equals(other.getParametersList())) return false;
+    if (!getTable()
+        .equals(other.getTable())) return false;
     if (!getColumnsList()
         .equals(other.getColumnsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -289,6 +385,12 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getName().hashCode();
     hash = (37 * hash) + SQL_FIELD_NUMBER;
     hash = (53 * hash) + getSql().hashCode();
+    if (getParametersCount() > 0) {
+      hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
+      hash = (53 * hash) + getParametersList().hashCode();
+    }
+    hash = (37 * hash) + TABLE_FIELD_NUMBER;
+    hash = (53 * hash) + getTable().hashCode();
     if (getColumnsCount() > 0) {
       hash = (37 * hash) + COLUMNS_FIELD_NUMBER;
       hash = (53 * hash) + getColumnsList().hashCode();
@@ -427,13 +529,17 @@ private static final long serialVersionUID = 0L;
 
       sql_ = "";
 
+      parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
+      table_ = "";
+
       if (columnsBuilder_ == null) {
         columns_ = java.util.Collections.emptyList();
       } else {
         columns_ = null;
         columnsBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000001);
+      bitField0_ = (bitField0_ & ~0x00000002);
       return this;
     }
 
@@ -464,10 +570,16 @@ private static final long serialVersionUID = 0L;
       result.id_ = id_;
       result.name_ = name_;
       result.sql_ = sql_;
+      if (((bitField0_ & 0x00000001) != 0)) {
+        parameters_ = parameters_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000001);
+      }
+      result.parameters_ = parameters_;
+      result.table_ = table_;
       if (columnsBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           columns_ = java.util.Collections.unmodifiableList(columns_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.columns_ = columns_;
       } else {
@@ -533,11 +645,25 @@ private static final long serialVersionUID = 0L;
         sql_ = other.sql_;
         onChanged();
       }
+      if (!other.parameters_.isEmpty()) {
+        if (parameters_.isEmpty()) {
+          parameters_ = other.parameters_;
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          ensureParametersIsMutable();
+          parameters_.addAll(other.parameters_);
+        }
+        onChanged();
+      }
+      if (!other.getTable().isEmpty()) {
+        table_ = other.table_;
+        onChanged();
+      }
       if (columnsBuilder_ == null) {
         if (!other.columns_.isEmpty()) {
           if (columns_.isEmpty()) {
             columns_ = other.columns_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureColumnsIsMutable();
             columns_.addAll(other.columns_);
@@ -550,7 +676,7 @@ private static final long serialVersionUID = 0L;
             columnsBuilder_.dispose();
             columnsBuilder_ = null;
             columns_ = other.columns_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
             columnsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getColumnsFieldBuilder() : null;
@@ -600,6 +726,17 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 26
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+              ensureParametersIsMutable();
+              parameters_.add(s);
+              break;
+            } // case 34
+            case 42: {
+              table_ = input.readStringRequireUtf8();
+
+              break;
+            } // case 42
             case 122: {
               io.ncraft.armory.unitable.Column m =
                   input.readMessage(
@@ -858,12 +995,198 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private com.google.protobuf.LazyStringList parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureParametersIsMutable() {
+      if (!((bitField0_ & 0x00000001) != 0)) {
+        parameters_ = new com.google.protobuf.LazyStringArrayList(parameters_);
+        bitField0_ |= 0x00000001;
+       }
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @return A list containing the parameters.
+     */
+    public com.google.protobuf.ProtocolStringList
+        getParametersList() {
+      return parameters_.getUnmodifiableView();
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @return The count of parameters.
+     */
+    public int getParametersCount() {
+      return parameters_.size();
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param index The index of the element to return.
+     * @return The parameters at the given index.
+     */
+    public java.lang.String getParameters(int index) {
+      return parameters_.get(index);
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the parameters at the given index.
+     */
+    public com.google.protobuf.ByteString
+        getParametersBytes(int index) {
+      return parameters_.getByteString(index);
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param index The index to set the value at.
+     * @param value The parameters to set.
+     * @return This builder for chaining.
+     */
+    public Builder setParameters(
+        int index, java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureParametersIsMutable();
+      parameters_.set(index, value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param value The parameters to add.
+     * @return This builder for chaining.
+     */
+    public Builder addParameters(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureParametersIsMutable();
+      parameters_.add(value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param values The parameters to add.
+     * @return This builder for chaining.
+     */
+    public Builder addAllParameters(
+        java.lang.Iterable<java.lang.String> values) {
+      ensureParametersIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, parameters_);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearParameters() {
+      parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string parameters = 4;</code>
+     * @param value The bytes of the parameters to add.
+     * @return This builder for chaining.
+     */
+    public Builder addParametersBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      ensureParametersIsMutable();
+      parameters_.add(value);
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object table_ = "";
+    /**
+     * <code>string table = 5;</code>
+     * @return The table.
+     */
+    public java.lang.String getTable() {
+      java.lang.Object ref = table_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        table_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string table = 5;</code>
+     * @return The bytes for table.
+     */
+    public com.google.protobuf.ByteString
+        getTableBytes() {
+      java.lang.Object ref = table_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        table_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string table = 5;</code>
+     * @param value The table to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTable(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      table_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string table = 5;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTable() {
+      
+      table_ = getDefaultInstance().getTable();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string table = 5;</code>
+     * @param value The bytes for table to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTableBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      table_ = value;
+      onChanged();
+      return this;
+    }
+
     private java.util.List<io.ncraft.armory.unitable.Column> columns_ =
       java.util.Collections.emptyList();
     private void ensureColumnsIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
+      if (!((bitField0_ & 0x00000002) != 0)) {
         columns_ = new java.util.ArrayList<io.ncraft.armory.unitable.Column>(columns_);
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
        }
     }
 
@@ -1013,7 +1336,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearColumns() {
       if (columnsBuilder_ == null) {
         columns_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         columnsBuilder_.clear();
@@ -1090,7 +1413,7 @@ private static final long serialVersionUID = 0L;
         columnsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             io.ncraft.armory.unitable.Column, io.ncraft.armory.unitable.Column.Builder, io.ncraft.armory.unitable.ColumnOrBuilder>(
                 columns_,
-                ((bitField0_ & 0x00000001) != 0),
+                ((bitField0_ & 0x00000002) != 0),
                 getParentForChildren(),
                 isClean());
         columns_ = null;

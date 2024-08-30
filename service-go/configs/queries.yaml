@@ -1,136 +1,143 @@
 dbQuery:
   queries:
     - name: residence-cockpit-title
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select 46  as base_count, t1.area as area, t2.building_area_unbuilt as residence_building_area_unbuilt, t3.building_area  as city_building_area from (select '1' as id, sum(tzghydmj) as area from ads_residence_stat [where jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt from ads_residence_stat [where jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' [and jdmc2150 = ?]) t3 on t2.id = t3.id
+      parameters: [base, base, base]
       columns:
         - name: base_count
           type: integer
           example: 46
         - name: area
-          type: integer
+          type: float
           example: 1500
         - name: residence_building_area_unbuilt
-          type: integer
+          type: float
           example: 6000
         - name: city_building_area
-          type: integer
+          type: float
           example: 3000
     - name: residence-cockpit-residence-1
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select sum(tzghydmj_built) as area_built, sum(tzghydmj) as area, sum(tzghjzmj_built) as building_area_built, sum(tzghjzmj) as building_area from ads_residence_stat [where jdmc2150 = ?]
+      parameters: [base]
       columns:
         - name: area_built
-          type: integer
+          type: float
           example: 345
         - name: area
-          type: integer
+          type: float
           example: 400
         - name: building_area_built
-          type: integer
+          type: float
           example: 330
         - name: building_area
-          type: integer
+          type: float
           example: 400
     - name: residence-cockpit-residence-2
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.building_area as city_building_area, t2.building_area as town_building_area, t3.building_area as commercial_building_area from (select '1' as id, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '区属' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '商品房' [and jdmc2150 = ?]) t3 on t2.id = t3.id
+      parameters: [base, base, base]
       columns:
         - name: city_building_area
-          type: integer
+          type: float
           example: 345
         - name: town_building_area
-          type: integer
+          type: float
           example: 330
         - name: commercial_building_area
-          type: integer
+          type: float
           example: 330
     - name: residence-cockpit-residence-3
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat [where jdmc2150 = ?]
+      parameters: [base]
       columns:
         - name: building_area_unbuilt
-          type: integer
+          type: float
           example: 345
         - name: building_area_building
-          type: integer
+          type: float
           example: 330
         - name: building_area_built
-          type: integer
+          type: float
           example: 330
     - name: residence-cockpit-residence-4
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.building_area_unbuilt as city_building_area_unbuilt, t1.building_area_building as city_building_area_building, t1.building_area_built as city_building_area_built, t2.building_area_unbuilt as town_building_area_unbuilt, t2.building_area_building as town_building_area_building, t2.building_area_built as town_building_area_built, t3.building_area_unbuilt as commercial_building_area_unbuilt, t3.building_area_building as commercial_building_area_building, t3.building_area_built as commercial_building_area_built from (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '市属' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '区属' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '商品房' [and jdmc2150 = ?]) t3 on t2.id = t3.id
+      parameters: [base, base, base]
       columns:
         - name: city_building_area_unbuilt
-          type: integer
+          type: float
           example: 345
         - name: city_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: city_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: town_building_area_unbuilt
-          type: integer
+          type: float
           example: 345
         - name: town_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: town_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: commercial_building_area_unbuilt
-          type: integer
+          type: float
           example: 345
         - name: commercial_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: commercial_building_area_built
-          type: integer
+          type: float
           example: 330
     - name: residence-cockpit-residence-5
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.building_area_building as city_gy_building_area_building, t1.building_area_built as city_gy_building_area_built, t2.building_area_building as city_zs_building_area_building, t2.building_area_built as city_zs_building_area_built, t3.building_area_building as city_ps_building_area_building, t3.building_area_built as city_ps_building_area_built from (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '市属' and zzlx2143 = '共有产权保障房' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '市属' and zzlx2143 = '市属征收安置房' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '市属' and zzlx2143 = '配售型保障房' [and jdmc2150 = ?]) t3 on t2.id = t3.id
+      parameters: [base, base, base]
       columns:
         - name: city_gy_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: city_gy_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: city_zs_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: city_zs_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: city_ps_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: city_ps_building_area_built
-          type: integer
+          type: float
           example: 330
     - name: residence-cockpit-supporting-1
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.zd_built as road_built, t1.zd as road, t2.zd_built as river_built, t2.zd as river, t3.mj_built as lake_built, t3.mj as lake, t4.mj_built as green_built, t4.mj as green, t5.built as public_built, t5.total as public, t6.built as business_built, t6.total as business from (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from public.ads_supporting_stat where kind = '道路' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from ads_supporting_stat where kind = '河流' [and jdmc2150 = ?] ) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '湖泊' [and jdmc2150 = ?] ) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '绿化' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(total) as total from ads_supporting_stat where kind = '公建' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(total) as total from ads_supporting_stat where ptlx2106 = '独立商业' [and jdmc2150 = ?]) t6 on (t5.id = t6.id)
+      parameters: [base, base, base, base, base, base]
       columns:
         - name: road_built
-          type: integer
+          type: float
           example: 300
         - name: road
-          type: integer
+          type: float
           example: 330
         - name: river_built
-          type: integer
+          type: float
           example: 230
         - name: river
-          type: integer
+          type: float
           example: 330
         - name: lake
-          type: integer
+          type: float
           example: 330
         - name: lake_built
-          type: integer
+          type: float
           example: 230
         - name: green
-          type: integer
+          type: float
           example: 330
         - name: green_built
-          type: integer
+          type: float
           example: 230
         - name: public
           type: integer
@@ -145,7 +152,8 @@ dbQuery:
           type: integer
           example: 300
     - name: residence-cockpit-supporting-2
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.total as public_education, t2.total as public_admin, t3.total as public_health, t4.total as public_elder, t5.total as public_culture, t6.total as public_market, t7.total as public_traffic, t8.total as public_other from (select '1' as id, sum(total) as total from public.ads_supporting_stat  where kind = '公建' and ptdlx = '教育' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '行政' [and jdmc2150 = ?] ) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '卫生' [and jdmc2150 = ?] ) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '为老' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '文体' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '菜场' [and jdmc2150 = ?]) t6 on (t5.id = t6.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '交通' [and jdmc2150 = ?]) t7 on (t6.id = t7.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '其他' [and jdmc2150 = ?]) t8 on (t7.id = t8.id)
+      parameters: [base, base, base, base, base, base, base, base]
       columns:
         - name: public_education
           type: integer
@@ -172,8 +180,9 @@ dbQuery:
           type: integer
           example: 330
     - name: residence-cockpit-supporting-3
-      sql: select * from  where jidi = '' group by 住宅类型
-      columns:
+      sql: select t1.public_built, t1.public_building, t1.public_unbuilt from (select COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as public_built, sum(building) as public_building, sum(unbuilt) as public_unbuilt from public.ads_supporting_stat  where kind = '公建' [and jdmc2150 = ?]) t1;
+      parameters: [base]
+      columns:  
         - name: public_built
           type: integer
           example: 330
@@ -184,7 +193,8 @@ dbQuery:
           type: integer
           example: 330
     - name: residence-cockpit-supporting-4
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.building as public_education_building, t1.built as public_education_built, t1.unbuilt as public_education_unbuilt, t2.building as public_admin_building, t2.built as public_admin_built, t2.unbuilt as public_admin_unbuilt, t3.building as public_health_building, t3.built as public_health_built, t3.unbuilt as public_health_unbuilt, t4.building as public_elder_building, t4.built as public_elder_built, t4.unbuilt as public_elder_unbuilt, t5.building as public_culture_building, t5.built as public_culture_built, t5.unbuilt as public_culture_unbuilt, t6.building as public_market_building, t6.built as public_market_built, t6.unbuilt as public_market_unbuilt, t7.building as public_traffic_building, t7.built as public_traffic_built, t7.unbuilt as public_traffic_unbuilt, t8.building as public_other_building, t8.built as public_other_built, t8.unbuilt as public_other_unbuilt from (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat  where kind = '公建' and ptdlx = '教育' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '行政' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '卫生' [and jdmc2150 = ?]) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '为老' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '文体' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '菜场' [and jdmc2150 = ?]) t6 on (t5.id = t6.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '交通' [and jdmc2150 = ?]) t7 on (t6.id = t7.id) inner join (select '1' as id, sum(building) as building, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(unbuilt) as unbuilt from public.ads_supporting_stat where kind = '公建' and ptdlx = '其他' [and jdmc2150 = ?]) t8 on (t7.id = t8.id)
+      parameters: [base, base, base, base, base, base, base, base]
       columns:
         - name: public_education_building
           type: integer
@@ -259,16 +269,17 @@ dbQuery:
           type: integer
           example: 330
     - name: residence-base
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.area as area, t1.building_area as building_area, t2.building_area as residence_building_area, t3.plot_ratio_min as residence_plot_ratio_min, t3.plot_ratio_max as residence_plot_ratio_max, t4.building_area_built    as city_gy_building_area_built, t4.building_area_building as city_gy_building_area_building, t5.building_area_built    as city_zs_building_area_built, t5.building_area_building as city_zs_building_area_building, t6.building_area_built    as city_ps_building_area_built, t6.building_area_building as city_ps_building_area_building, t7.building_area_built    as town_building_area_built, t7.building_area_building as town_building_area_building, t8.building_area_built    as commercial_building_area_built, t8.building_area_building as commercial_building_area_building, t9.zd_built as road_built, t9.zd as road, t10.zd_built as river_built, t10.zd as river, t11.mj_built as lake_built, t11.mj as lake, t12.mj_built as green_built, t12.mj as green, t13.total as public_education, t13.built as public_education_built, t14.total as public_admin, t14.built as public_admin_built, t15.total as public_health, t15.built as public_health_built, t16.total as public_elder, t16.built as public_elder_built, t17.total as public_culture, t17.built as public_culture_built, t18.total as public_market, t18.built as public_market_built, t19.total as public_traffic, t19.built as public_traffic_built, t20.total as public_other, t20.built as public_other_built from (select '1' as id, sum(tzghydmj) as area, sum(tzghjzmj) as building_area from public.ads_residence_stat [where jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj) as building_area from public.ads_residence_stat where kind = '市属' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, min(ghrjl_min) as plot_ratio_min, max(ghrjl_max) as plot_ratio_max from public.ads_residence_stat [where jdmc2150 = ?]) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(tzghjzmj_built) as building_area_built, sum(tzghjzmj_building) as building_area_building from ads_residence_stat where kind = '市属' and zzlx2143 = '共有产权保障房' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, sum(tzghjzmj_built) as building_area_built, sum(tzghjzmj_building) as building_area_building from ads_residence_stat where kind = '市属' and zzlx2143 = '市属征收安置房' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, sum(tzghjzmj_built) as building_area_built, sum(tzghjzmj_building) as building_area_building from ads_residence_stat where kind = '市属' and zzlx2143 = '配售型保障房' [and jdmc2150 = ?]) t6 on (t5.id = t6.id) inner join (select '1' as id, sum(tzghjzmj_built) as building_area_built, sum(tzghjzmj_building) as building_area_building from ads_residence_stat where kind = '区属' [and jdmc2150 = ?]) t7 on (t6.id = t7.id) inner join (select '1' as id, sum(tzghjzmj_built) as building_area_built,sum(tzghjzmj_building) as building_area_building from ads_residence_stat where kind = '商品房' [and jdmc2150 = ?]) t8 on (t7.id = t8.id) inner join (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from public.ads_supporting_stat where kind = '道路' [and jdmc2150 = ?]) t9 on (t8.id = t9.id) inner join (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from ads_supporting_stat where kind = '河流' [and jdmc2150 = ?]) t10 on (t9.id = t10.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '湖泊' [and jdmc2150 = ?]) t11 on (t10.id = t11.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '绿化' [and jdmc2150 = ?]) t12 on (t11.id = t12.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat  where kind = '公建' and ptdlx = '教育' [and jdmc2150 = ?]) t13 on (t12.id = t13.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '行政' [and jdmc2150 = ?]) t14 on (t13.id = t14.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '卫生' [and jdmc2150 = ?]) t15 on (t14.id = t15.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '为老' [and jdmc2150 = ?]) t16 on (t15.id = t16.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '文体' [and jdmc2150 = ?]) t17 on (t16.id = t17.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '菜场' [and jdmc2150 = ?]) t18 on (t17.id = t18.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '交通' [and jdmc2150 = ?]) t19 on (t18.id = t19.id) inner join (select '1' as id, sum(total) as total, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built from public.ads_supporting_stat where kind = '公建' and ptdlx = '其他' [and jdmc2150 = ?]) t20 on (t19.id = t20.id)
+      parameters: [base, base, base, base, base, base, base, base, base, base, base, base, base, base, base, base, base, base, base, base]
       columns:
         - name: area
-          type: integer
+          type: float
           example: 300
         - name: building_area
-          type: integer
+          type: float
           example: 330
         - name: residence_building_area
-          type: integer
+          type: float
           example: 230
         - name: residence_plot_ratio_min
           type: float
@@ -277,58 +288,58 @@ dbQuery:
           type: float
           example: 3.2
         - name: city_gy_building_area_built
-          type: integer
+          type: float
           example: 230
         - name: city_gy_building_area_building
-          type: integer
+          type: float
           example: 230
         - name: city_zs_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: city_zs_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: city_ps_building_area_built
-          type: integer
+          type: float
           example: 230
         - name: city_ps_building_area_building
-          type: integer
+          type: float
           example: 230
         - name: town_building_area_built
-          type: integer
+          type: float
           example: 330
         - name: town_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: commercial_building_area_built
-          type: integer
+          type: float
           example: 300
         - name: commercial_building_area_building
-          type: integer
+          type: float
           example: 300
         - name: road_built
-          type: integer
+          type: float
           example: 330
         - name: road
-          type: integer
+          type: float
           example: 330
         - name: river_built
-          type: integer
+          type: float
           example: 300
         - name: river
-          type: integer
+          type: float
           example: 300
         - name: lake_built
-          type: integer
+          type: float
           example: 300
         - name: lake
-          type: integer
+          type: float
           example: 300
         - name: green_built
-          type: integer
+          type: float
           example: 300
         - name: green
-          type: integer
+          type: float
           example: 300
         - name: public_education
           type: integer
@@ -378,14 +389,21 @@ dbQuery:
         - name: public_other_built
           type: integer
           example: 330
+        - name: public_commercial
+          type: integer
+          example: 300
+        - name: public_commercial_built
+          type: integer
+          example: 100
     - name: residence-residence-1
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.total as city_gy, t1.building_area as city_gy_building_area, t2.total as city_zs, t2.building_area as city_zs_building_area, t3.total as city_ps, t3.building_area as city_ps_building_area, t4.total as city_unknown, t4.building_area as city_unknown_building_area, t5.total as town, t5.building_area as town_building_area, t6.total as commercial, t6.building_area as commercial_building_area from (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' and zzlx2143 = '共有产权保障房' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' and zzlx2143 = '市属征收安置房' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' and zzlx2143 = '配售型保障房' [and jdmc2150 = ?]) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '市属' and zzlx2143 = '市属-未定义' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '区属' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, sum(total) as total, sum(tzghjzmj) as building_area from ads_residence_stat where kind = '商品房' [and jdmc2150 = ?]) t6 on (t5.id = t6.id)
+      parameters: [base, base, base, base, base, base]
       columns:
         - name: city_gy
           type: integer
           example: 300
         - name: city_gy_building_area
-          type: integer
+          type: float
           example: 330
         - name: city_zs
           type: integer
@@ -394,43 +412,43 @@ dbQuery:
           type: float
           example: 1.6
         - name: city_ps
-          type: float
+          type: integer
           example: 3.2
         - name: city_ps_building_area
-          type: integer
+          type: float
           example: 230
         - name: city_unknown
           type: integer
           example: 330
         - name: city_unknown_building_area
-          type: integer
+          type: float
           example: 230
         - name: town
           type: integer
           example: 330
         - name: town_building_area
-          type: integer
+          type: float
           example: 300
         - name: commercial
           type: integer
           example: 330
         - name: commercial_building_area
-          type: integer
+          type: float
           example: 300
     - name: residence-residence-2
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.building_area_unbuilt  as city_building_area_unbuilt, t1.building_area_building as city_building_area_building, t1.building_area_built    as city_building_area_built,  t2.building_area_unbuilt  as town_building_area_unbuilt, t2.building_area_building as town_building_area_building, t2.building_area_built    as town_building_area_built, t3.building_area_unbuilt  as commercial_building_area_unbuilt, t3.building_area_building as commercial_building_area_building, t3.building_area_built    as commercial_building_area_built, t4.building_area_unbuilt  as building_area_unbuilt, t4.building_area_building as building_area_building, t4.building_area_built    as building_area_built from (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '市属' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '区属' [and jdmc2150 = ?]) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat where kind = '商品房' [and jdmc2150 = ?]) t3 on t2.id = t3.id inner join (select '1' as id, sum(tzghjzmj_unbuilt) as building_area_unbuilt, sum(tzghjzmj_building) as building_area_building, sum(tzghjzmj_built) as building_area_built from ads_residence_stat [where jdmc2150 = ?]) t4 on t3.id = t4.id
       columns:
         - name: city_building_area_built
-          type: integer
+          type: float
           example: 300
         - name: city_building_area_unbuilt
-          type: integer
+          type: float
           example: 330
         - name: city_building_area_building
-          type: integer
+          type: float
           example: 330
         - name: town_building_area_built
-          type: integer
+          type: float
           example: 230
         - name: town_building_area_unbuilt
           type: float
@@ -442,46 +460,47 @@ dbQuery:
           type: float
           example: 3.2
         - name: commercial_building_area_unbuilt
-          type: integer
+          type: float
           example: 230
         - name: commercial_building_area_building
           type: float
           example: 3.2
         - name: building_area_built
-          type: integer
+          type: float
           example: 230
         - name: building_area_unbuilt
-          type: integer
+          type: float
           example: 330
         - name: building_area_building
-          type: integer
+          type: float
           example: 300
     - name: residence-supporting-1
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.zd_built as road_built, t1.zd as road, t2.zd_built as river_built, t2.zd as river, t3.mj_built as lake_built, t3.mj as lake, t4.mj_built as green_built, t4.mj as green, t5.built as public_built, t5.total as public, t6.built as business_built, t6.total as business from (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from public.ads_supporting_stat where kind = '道路' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(zd_built) as zd_built, sum(zd) as zd from ads_supporting_stat where kind = '河流' [and jdmc2150 = ?] ) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '湖泊' [and jdmc2150 = ?] ) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(mj_built) as mj_built, sum(mj) as mj from ads_supporting_stat where kind = '绿化' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(total) as total from ads_supporting_stat where kind = '公建' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, COALESCE(sum(built),0) +  COALESCE(sum(open),0) +  COALESCE(sum(takeover),0) as built, sum(total) as total from ads_supporting_stat where kind = '商业' [and jdmc2150 = ?]) t6 on (t5.id = t6.id)
+      parameters: [base, base, base, base, base, base]
       columns:
         - name: road_built
-          type: integer
+          type: float
           example: 300
         - name: road
-          type: integer
+          type: float
           example: 330
         - name: river_built
-          type: integer
+          type: float
           example: 230
         - name: river
-          type: integer
+          type: float
           example: 330
         - name: lake
-          type: integer
+          type: float
           example: 330
         - name: lake_built
-          type: integer
+          type: float
           example: 230
         - name: green
-          type: integer
+          type: float
           example: 330
         - name: green_built
-          type: integer
+          type: float
           example: 230
         - name: public
           type: integer
@@ -496,7 +515,8 @@ dbQuery:
           type: integer
           example: 300
     - name: residence-supporting-2
-      sql: select * from  where jidi = '' group by 住宅类型
+      sql: select t1.total as public_education, t2.total as public_admin, t3.total as public_health, t4.total as public_elder, t5.total as public_culture, t6.total as public_market, t7.total as public_traffic, t8.total as public_other, t9.building as public_building, t9.built as public_built, t9.unbuilt as public_unbuilt, t9.open as public_open from (select '1' as id, sum(total) as total from public.ads_supporting_stat  where kind = '公建' and ptdlx = '教育' [and jdmc2150 = ?]) t1 inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '行政' [and jdmc2150 = ?] ) t2 on (t1.id = t2.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '卫生' [and jdmc2150 = ?] ) t3 on (t2.id = t3.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '为老' [and jdmc2150 = ?]) t4 on (t3.id = t4.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '文体' [and jdmc2150 = ?]) t5 on (t4.id = t5.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '菜场' [and jdmc2150 = ?]) t6 on (t5.id = t6.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '交通' [and jdmc2150 = ?]) t7 on (t6.id = t7.id) inner join (select '1' as id, sum(total) as total from public.ads_supporting_stat where kind = '公建' and ptdlx = '其他' [and jdmc2150 = ?]) t8 on (t7.id = t8.id) inner join (select '1' as id, sum(building) as building, sum(built) as built, sum(unbuilt) as unbuilt, sum(open) as open from public.ads_supporting_stat where kind = '公建' [and jdmc2150 = ?]) t9 on (t8.id = t9.id)
+      parameters: [base, base, base, base, base, base, base, base, base]
       columns:
         - name: public_education
           type: integer

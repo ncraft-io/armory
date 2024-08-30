@@ -8,8 +8,10 @@ import (
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
+	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -46,7 +48,7 @@ func NewService() pb.UnitableServer {
 	return server
 }
 
-var nameRegex = regexp.MustCompile(`^[a-z][a-z0-9]*$`)
+var nameRegex = regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
 
 // CreateTable implements Interface.
 func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*unitable.Table, error) {
@@ -418,7 +420,7 @@ func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) 
 	}
 
 	if _, err := s.Synchro.UpdateRow(ctx, in.Table, in.Row); err != nil {
-		return nil, core.NewInternalError("failed to update the row in %s, (%v)", in.Table, in.Row.ToMapInterface())
+		return nil, core.NewInternalError("failed to update the row in %s, (%v), err: %s", in.Table, in.Row.ToMapInterface(), err.Error())
 	}
 
 	return &core.Null{}, nil
@@ -437,7 +439,7 @@ func (s unitableServer) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core
 	}
 
 	if row, err := s.Synchro.GetRow(ctx, in.Table, in.Id); err != nil {
-		return nil, core.NewInternalError("failed to get the row %s in %s", in.Id, in.Table)
+		return nil, core.NewInternalError("failed to get the row %s in %s, err: %s", in.Id, in.Table, err.Error())
 	} else {
 		return row, nil
 	}
@@ -456,10 +458,25 @@ func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) 
 	}
 
 	if _, err := s.Synchro.DeleteRows(ctx, in.Table, in.Id); err != nil {
-		return nil, core.NewInternalError("failed to delete the row %s in %s", in.Id, in.Table)
+		return nil, core.NewInternalError("failed to delete the row %s in %s, err: %s", in.Id, in.Table, err.Error())
 	} else {
 		return &core.Null{}, nil
 	}
+}
+
+var optStr = regexp.MustCompile(`\[[^\[\]]+]`)
+
+func isEmpty(values []interface{}) bool {
+	if len(values) == 0 {
+		return true
+	}
+	allNil := true
+	for _, v := range values {
+		if v != nil {
+			allNil = false
+		}
+	}
+	return allNil
 }
 
 // ListRow implements Interface.
@@ -471,12 +488,50 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
 
-	if query, ok := s.Queries[in.Query]; ok && len(in.Query) > 0 {
-		example := query.Example()
-		return &pb.ListRowResponse{
-			Objects:    []*core.Object{example},
-			TotalCount: 1,
-		}, nil
+	if q, ok := s.Queries[in.Query]; ok && len(in.Query) > 0 {
+		var values []interface{}
+		query := &unitable.DbQuery{
+			Id:         q.Id,
+			Name:       q.Name,
+			Sql:        q.Sql,
+			Parameters: q.Parameters,
+			Columns:    q.Columns,
+		}
+
+		if vals, ok := ctx.Value("http-request-query").(url.Values); ok {
+			for _, p := range query.Parameters {
+				if v, ok := vals[p]; ok && len(v) > 0 {
+					values = append(values, v[0])
+				} else {
+					values = append(values, nil)
+				}
+			}
+		}
+
+		if len(query.Sql) == 0 {
+			example := query.Example()
+			return &pb.ListRowResponse{
+				Objects:    []*core.Object{example},
+				TotalCount: 1,
+			}, nil
+		} else {
+			if isEmpty(values) {
+				query.Sql = string(optStr.ReplaceAll([]byte(query.Sql), []byte("")))
+				values = []interface{}{}
+			} else {
+				query.Sql = strings.Replace(query.Sql, "[", "", -1)
+				query.Sql = strings.Replace(query.Sql, "]", "", -1)
+			}
+
+			objs, err := s.Synchro.QueryBy(ctx, in.Table, query, values)
+			if err != nil {
+				return nil, err
+			}
+			return &pb.ListRowResponse{
+				Objects:    objs,
+				TotalCount: 1,
+			}, nil
+		}
 	}
 
 	query, err := ParseQuery(in)
@@ -485,7 +540,7 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 	}
 
 	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
-		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
+		return nil, core.NewInternalError("failed to query the row in %s, err: %s", in.Table, err.Error())
 	} else {
 		index := ""
 		if len(in.PageToken) > 0 {
@@ -519,7 +574,7 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 	}
 
 	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
-		return nil, core.NewInternalError("failed to query the row in %s", in.Table)
+		return nil, core.NewInternalError("failed to query the row in %s, err: %s", in.Table, err.Error())
 	} else {
 		return &pb.ExportRowResponse{
 			Objects:    rows,
