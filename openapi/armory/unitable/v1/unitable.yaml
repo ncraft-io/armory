@@ -354,6 +354,11 @@ paths:
         schema:
           title: mojo.core.String
           type: string
+      - in: query
+        name: force
+        schema:
+          title: mojo.core.Bool
+          type: boolean
       requestBody:
         content:
           application/json:

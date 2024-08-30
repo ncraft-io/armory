@@ -31,7 +31,7 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
             }
             
             @Override
-            public Result<Null> updateTable(String database, Table table, String id) {
+            public Result<Null> updateTable(String database, Table table, String id, boolean force) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to update_table."));
             }
             

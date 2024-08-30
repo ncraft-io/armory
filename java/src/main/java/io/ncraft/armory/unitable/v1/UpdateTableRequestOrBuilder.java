@@ -45,4 +45,10 @@ public interface UpdateTableRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getIdBytes();
+
+  /**
+   * <code>bool force = 4;</code>
+   * @return The force.
+   */
+  boolean getForce();
 }

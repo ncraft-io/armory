@@ -9,7 +9,7 @@ interface Unitable {
     /// 更新表单
     @entity("Table")
     @http.put("/armory/unitable/v1/databases/{database}/tables/{id}")
-    update_table(database: String @1, table: Table @2 @http.body, id: String @3)
+    update_table(database: String @1, table: Table @2 @http.body, id: String @3, force: Bool @4)
 
     /// 获取表单
     @entity("Table")

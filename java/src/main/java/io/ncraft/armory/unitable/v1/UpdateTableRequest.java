@@ -147,6 +147,17 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int FORCE_FIELD_NUMBER = 4;
+  private boolean force_;
+  /**
+   * <code>bool force = 4;</code>
+   * @return The force.
+   */
+  @java.lang.Override
+  public boolean getForce() {
+    return force_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -170,6 +181,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, id_);
     }
+    if (force_ != false) {
+      output.writeBool(4, force_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -188,6 +202,10 @@ private static final long serialVersionUID = 0L;
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, id_);
+    }
+    if (force_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(4, force_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -213,6 +231,8 @@ private static final long serialVersionUID = 0L;
     }
     if (!getId()
         .equals(other.getId())) return false;
+    if (getForce()
+        != other.getForce()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -232,6 +252,9 @@ private static final long serialVersionUID = 0L;
     }
     hash = (37 * hash) + ID_FIELD_NUMBER;
     hash = (53 * hash) + getId().hashCode();
+    hash = (37 * hash) + FORCE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getForce());
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -370,6 +393,8 @@ private static final long serialVersionUID = 0L;
       }
       id_ = "";
 
+      force_ = false;
+
       return this;
     }
 
@@ -403,6 +428,7 @@ private static final long serialVersionUID = 0L;
         result.table_ = tableBuilder_.build();
       }
       result.id_ = id_;
+      result.force_ = force_;
       onBuilt();
       return result;
     }
@@ -462,6 +488,9 @@ private static final long serialVersionUID = 0L;
         id_ = other.id_;
         onChanged();
       }
+      if (other.getForce() != false) {
+        setForce(other.getForce());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -505,6 +534,11 @@ private static final long serialVersionUID = 0L;
 
               break;
             } // case 26
+            case 32: {
+              force_ = input.readBool();
+
+              break;
+            } // case 32
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -788,6 +822,37 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       id_ = value;
+      onChanged();
+      return this;
+    }
+
+    private boolean force_ ;
+    /**
+     * <code>bool force = 4;</code>
+     * @return The force.
+     */
+    @java.lang.Override
+    public boolean getForce() {
+      return force_;
+    }
+    /**
+     * <code>bool force = 4;</code>
+     * @param value The force to set.
+     * @return This builder for chaining.
+     */
+    public Builder setForce(boolean value) {
+      
+      force_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool force = 4;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearForce() {
+      
+      force_ = false;
       onChanged();
       return this;
     }

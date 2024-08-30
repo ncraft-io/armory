@@ -26,6 +26,7 @@ message UpdateTableRequest {
     string database = 1;
     armory.unitable.Table table = 2;
     string id = 3;
+    bool force = 4;
 }
 
 message GetTableRequest {

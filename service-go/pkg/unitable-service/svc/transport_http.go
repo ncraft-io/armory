@@ -495,6 +495,11 @@ func DecodeHTTPUpdateTableZeroRequest(_ context.Context, r *http.Request) (inter
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Force, "force")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the force  query parameter")
+	}
+
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
@@ -2226,8 +2231,8 @@ func headersToContext(ctx context.Context, r *http.Request) context.Context {
 
 	// Tune specific change.
 	// also add the request url
-	ctx = context.WithValue(ctx, "http-request-query", r.URL.Query())
 	ctx = context.WithValue(ctx, "http-request-path", r.URL.Path)
+	ctx = context.WithValue(ctx, "http-request-query", r.URL.Query())
 	ctx = context.WithValue(ctx, "transport", "HTTPJSON")
 
 	return ctx

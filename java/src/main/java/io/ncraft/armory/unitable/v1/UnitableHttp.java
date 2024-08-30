@@ -31,7 +31,8 @@ public interface UnitableHttp {
     @PutMapping("/armory/unitable/v1/databases/{database}/tables/{id}")
     Result<Null> updateTable(@PathVariable("database") String database, 
 				@RequestBody Table table, 
-				@PathVariable("id") String id);
+				@PathVariable("id") String id, 
+				@RequestParam(name = "force", required = false) boolean force);
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables/{id}")
