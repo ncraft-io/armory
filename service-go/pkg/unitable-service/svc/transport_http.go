@@ -2226,6 +2226,7 @@ func headersToContext(ctx context.Context, r *http.Request) context.Context {
 
 	// Tune specific change.
 	// also add the request url
+	ctx = context.WithValue(ctx, "http-request-query", r.URL.Query())
 	ctx = context.WithValue(ctx, "http-request-path", r.URL.Path)
 	ctx = context.WithValue(ctx, "transport", "HTTPJSON")
 

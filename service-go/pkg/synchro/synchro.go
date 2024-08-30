@@ -10,6 +10,7 @@ import (
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"github.com/segmentio/ksuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type MetaTable struct {
@@ -35,6 +36,11 @@ func (s *Synchro) GetMetaTable(tableName string, table *unitable.Table) *MetaTab
 				logs.ErrLogw("failed to get the table", "name", table, "error", err)
 				return nil
 			}
+			if len(t.GetColumns()) == 0 {
+				logs.ErrLogw("failed to get any columns in the table", "name", table)
+				return nil
+			}
+
 			table = t
 		}
 
@@ -112,8 +118,38 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 	return obj, nil
 }
 
-func (s *Synchro) QueryBy(ctx context.Context, table string, query *unitable.DbQuery) ([]*core.Object, error) {
-	return nil, nil
+func (s *Synchro) QueryBy(ctx context.Context, tableName string, query *unitable.DbQuery, arguments []interface{}) ([]*core.Object, error) {
+	table := &unitable.Table{
+		Name:    tableName,
+		Columns: query.Columns,
+	}
+	meta := &MetaTable{
+		Table:  table,
+		Struct: NewDynamicStruct(table),
+	}
+
+	tx := GetDataDB().WithContext(ctx).Table(table.Name).Raw(query.Sql, arguments...)
+	rows, err := tx.Rows()
+	defer rows.Close()
+	if err != nil {
+		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
+	}
+
+	var objs []*core.Object
+	for rows.Next() {
+		row := meta.Struct.New()
+		if err = GetDataDB().ScanRows(rows, row); err != nil {
+			return nil, core.NewInternalError("failed to scan the row in %s, %s", table, err.Error())
+		}
+
+		obj, err := ParseObject(row)
+		if err != nil {
+			return nil, core.NewInternalError("failed to parse the row in %s, %s", table, err.Error())
+		}
+		objs = append(objs, obj)
+	}
+
+	return objs, nil
 }
 
 func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) ([]*core.Object, int, error) {
@@ -173,13 +209,15 @@ func (s *Synchro) InsertRow(ctx context.Context, table string, row *core.Object)
 	if meta == nil {
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
+	logs.Debugf("the meta table is %v", meta.Table)
 
 	data, err := meta.Struct.NewOf(row)
 	if err != nil {
 		return 0, err
 	}
+	logs.Debugf("the create row is %v", data)
 
-	result := GetDataDB().WithContext(ctx).Table(table).Create(data)
+	result := GetDataDB().WithContext(ctx).Table(table).Clauses(clause.OnConflict{UpdateAll: true}).Create(data)
 	return result.RowsAffected, result.Error
 }
 
@@ -197,7 +235,7 @@ func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Ob
 			if err != nil {
 				return err
 			}
-			if err := tx.Table(table).Create(data).Error; err != nil {
+			if err := tx.Table(table).Clauses(clause.OnConflict{UpdateAll: true}).Create(data).Error; err != nil {
 				// return any error will roll back
 				return err
 			}
@@ -227,7 +265,8 @@ func (s *Synchro) UpdateRow(ctx context.Context, table string, row *core.Object)
 		return 0, err
 	}
 
-	result := GetDataDB().WithContext(ctx).Table(table).Updates(data)
+	updateRow := FilterOutId(row.ToMapInterface())
+	result := GetDataDB().WithContext(ctx).Table(table).Model(data).Updates(updateRow)
 	return result.RowsAffected, result.Error
 }
 
@@ -249,8 +288,9 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 	// Continuous session mode
 	tx := GetDataDB().WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
 	err := tx.Transaction(func(tx *gorm.DB) error {
-		for _, date := range datas {
-			if err := tx.Table(table).Updates(date).Error; err != nil {
+		for i, data := range datas {
+			updateRow := FilterOutId(rows[i].ToMapInterface())
+			if err := tx.Table(table).Model(data).Updates(updateRow).Error; err != nil {
 				// return any error will roll back
 				return err
 			}
