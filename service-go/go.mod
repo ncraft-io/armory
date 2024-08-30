@@ -27,6 +27,6 @@ require (
 	github.com/segmentio/ksuid v1.0.4
 	github.com/zeebo/assert v1.3.0
 	go.uber.org/automaxprocs v1.5.3
-	google.golang.org/grpc v1.58.2
+	google.golang.org/grpc v1.58.3
 	gorm.io/gorm v1.25.4
 )
