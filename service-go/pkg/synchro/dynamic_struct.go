@@ -7,6 +7,7 @@ import (
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -37,8 +38,19 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 		}
 
 		field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, strcase.ToLowerCamel(col.Name)))
+
+		var gtags []string
+		gtags = append(gtags, fmt.Sprintf("column:%s", col.Name))
+
+		if col.Indexed {
+			gtags = append(gtags, "index")
+		}
 		if len(col.DisplayName) > 0 {
-			field.Tag = reflect.StructTag(string(field.Tag) + fmt.Sprintf(` gorm:"comment:%s"`, col.DisplayName))
+			gtags = append(gtags, fmt.Sprintf("comment:%s", col.DisplayName))
+		}
+		if len(gtags) > 0 {
+			tag := fmt.Sprintf(` gorm:"%s"`, strings.Join(gtags, ";"))
+			field.Tag = reflect.StructTag(string(field.Tag) + tag)
 		}
 
 		fields = append(fields, field)
