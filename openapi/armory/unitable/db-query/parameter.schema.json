@@ -1,0 +1,19 @@
+{
+    "title": "armory.unitable.DbQuery.Parameter",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "isArray": {
+            "title": "mojo.core.Bool",
+            "type": "boolean"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "type": {
+            "title": "mojo.core.String",
+            "type": "string"
+        }
+    }
+}

@@ -99,8 +99,7 @@ components:
           type: string
         parameters:
           items:
-            title: mojo.core.String
-            type: string
+            $ref: '#/components/schemas/armory.unitable.DbQuery.Parameter'
           title: mojo.core.Array
           type: array
         sql:
@@ -110,6 +109,20 @@ components:
           title: mojo.core.String
           type: string
       title: armory.unitable.DbQuery
+      type: object
+    armory.unitable.DbQuery.Parameter:
+      description: ""
+      properties:
+        isArray:
+          title: mojo.core.Bool
+          type: boolean
+        name:
+          title: mojo.core.String
+          type: string
+        type:
+          title: mojo.core.String
+          type: string
+      title: armory.unitable.DbQuery.Parameter
       type: object
     armory.unitable.DbQueryConfig:
       description: ""

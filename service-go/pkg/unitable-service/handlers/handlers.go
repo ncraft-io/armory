@@ -118,6 +118,9 @@ func MergeColumn(target *unitable.Column, src *unitable.Column) {
 	if len(target.ExportName) == 0 {
 		target.ExportName = src.ExportName
 	}
+	if !target.Indexed {
+		target.Indexed = src.Indexed
+	}
 }
 
 // UpdateTable implements Interface.
@@ -518,8 +521,15 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 
 		if vals, ok := ctx.Value("http-request-query").(url.Values); ok {
 			for _, p := range query.Parameters {
-				if v, ok := vals[p]; ok && len(v) > 0 {
-					values = append(values, v[0])
+				if v, ok := vals[p.Name]; ok && len(v) > 0 {
+					if p.IsArray {
+						if len(v) == 1 {
+							v = strings.Split(v[0], ",")
+						}
+						values = append(values, v)
+					} else {
+						values = append(values, v[0])
+					}
 				} else {
 					values = append(values, nil)
 				}

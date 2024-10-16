@@ -44,29 +44,28 @@ public interface DbQueryOrBuilder extends
       getSqlBytes();
 
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @return A list containing the parameters.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  java.util.List<java.lang.String>
+  java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter> 
       getParametersList();
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @return The count of parameters.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+   */
+  io.ncraft.armory.unitable.DbQuery.Parameter getParameters(int index);
+  /**
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
   int getParametersCount();
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @param index The index of the element to return.
-   * @return The parameters at the given index.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  java.lang.String getParameters(int index);
+  java.util.List<? extends io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder> 
+      getParametersOrBuilderList();
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @param index The index of the value to return.
-   * @return The bytes of the parameters at the given index.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  com.google.protobuf.ByteString
-      getParametersBytes(int index);
+  io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder getParametersOrBuilder(
+      int index);
 
   /**
    * <code>string table = 5;</code>

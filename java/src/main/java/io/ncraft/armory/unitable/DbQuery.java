@@ -19,7 +19,7 @@ private static final long serialVersionUID = 0L;
     id_ = "";
     name_ = "";
     sql_ = "";
-    parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    parameters_ = java.util.Collections.emptyList();
     table_ = "";
     columns_ = java.util.Collections.emptyList();
   }
@@ -47,6 +47,775 @@ private static final long serialVersionUID = 0L;
     return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             io.ncraft.armory.unitable.DbQuery.class, io.ncraft.armory.unitable.DbQuery.Builder.class);
+  }
+
+  public interface ParameterOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:armory.unitable.DbQuery.Parameter)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>string type = 2;</code>
+     * @return The type.
+     */
+    java.lang.String getType();
+    /**
+     * <code>string type = 2;</code>
+     * @return The bytes for type.
+     */
+    com.google.protobuf.ByteString
+        getTypeBytes();
+
+    /**
+     * <code>bool is_array = 3;</code>
+     * @return The isArray.
+     */
+    boolean getIsArray();
+  }
+  /**
+   * Protobuf type {@code armory.unitable.DbQuery.Parameter}
+   */
+  public static final class Parameter extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:armory.unitable.DbQuery.Parameter)
+      ParameterOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Parameter.newBuilder() to construct.
+    private Parameter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Parameter() {
+      name_ = "";
+      type_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Parameter();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_Parameter_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_Parameter_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.ncraft.armory.unitable.DbQuery.Parameter.class, io.ncraft.armory.unitable.DbQuery.Parameter.Builder.class);
+    }
+
+    public static final int NAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object name_;
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object type_;
+    /**
+     * <code>string type = 2;</code>
+     * @return The type.
+     */
+    @java.lang.Override
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string type = 2;</code>
+     * @return The bytes for type.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int IS_ARRAY_FIELD_NUMBER = 3;
+    private boolean isArray_;
+    /**
+     * <code>bool is_array = 3;</code>
+     * @return The isArray.
+     */
+    @java.lang.Override
+    public boolean getIsArray() {
+      return isArray_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, type_);
+      }
+      if (isArray_ != false) {
+        output.writeBool(3, isArray_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, type_);
+      }
+      if (isArray_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, isArray_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof io.ncraft.armory.unitable.DbQuery.Parameter)) {
+        return super.equals(obj);
+      }
+      io.ncraft.armory.unitable.DbQuery.Parameter other = (io.ncraft.armory.unitable.DbQuery.Parameter) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getType()
+          .equals(other.getType())) return false;
+      if (getIsArray()
+          != other.getIsArray()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      hash = (37 * hash) + IS_ARRAY_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsArray());
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.ncraft.armory.unitable.DbQuery.Parameter parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(io.ncraft.armory.unitable.DbQuery.Parameter prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code armory.unitable.DbQuery.Parameter}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:armory.unitable.DbQuery.Parameter)
+        io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_Parameter_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_Parameter_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.ncraft.armory.unitable.DbQuery.Parameter.class, io.ncraft.armory.unitable.DbQuery.Parameter.Builder.class);
+      }
+
+      // Construct using io.ncraft.armory.unitable.DbQuery.Parameter.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        type_ = "";
+
+        isArray_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return io.ncraft.armory.unitable.DbQueryProto.internal_static_armory_unitable_DbQuery_Parameter_descriptor;
+      }
+
+      @java.lang.Override
+      public io.ncraft.armory.unitable.DbQuery.Parameter getDefaultInstanceForType() {
+        return io.ncraft.armory.unitable.DbQuery.Parameter.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.ncraft.armory.unitable.DbQuery.Parameter build() {
+        io.ncraft.armory.unitable.DbQuery.Parameter result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.ncraft.armory.unitable.DbQuery.Parameter buildPartial() {
+        io.ncraft.armory.unitable.DbQuery.Parameter result = new io.ncraft.armory.unitable.DbQuery.Parameter(this);
+        result.name_ = name_;
+        result.type_ = type_;
+        result.isArray_ = isArray_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.ncraft.armory.unitable.DbQuery.Parameter) {
+          return mergeFrom((io.ncraft.armory.unitable.DbQuery.Parameter)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.ncraft.armory.unitable.DbQuery.Parameter other) {
+        if (other == io.ncraft.armory.unitable.DbQuery.Parameter.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (other.getIsArray() != false) {
+          setIsArray(other.getIsArray());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                name_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              case 18: {
+                type_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 24: {
+                isArray_ = input.readBool();
+
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+      /**
+       * <code>string name = 1;</code>
+       * @return The name.
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return The bytes for name.
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object type_ = "";
+      /**
+       * <code>string type = 2;</code>
+       * @return The type.
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string type = 2;</code>
+       * @return The bytes for type.
+       */
+      public com.google.protobuf.ByteString
+          getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string type = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearType() {
+        
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string type = 2;</code>
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean isArray_ ;
+      /**
+       * <code>bool is_array = 3;</code>
+       * @return The isArray.
+       */
+      @java.lang.Override
+      public boolean getIsArray() {
+        return isArray_;
+      }
+      /**
+       * <code>bool is_array = 3;</code>
+       * @param value The isArray to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsArray(boolean value) {
+        
+        isArray_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool is_array = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsArray() {
+        
+        isArray_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:armory.unitable.DbQuery.Parameter)
+    }
+
+    // @@protoc_insertion_point(class_scope:armory.unitable.DbQuery.Parameter)
+    private static final io.ncraft.armory.unitable.DbQuery.Parameter DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.ncraft.armory.unitable.DbQuery.Parameter();
+    }
+
+    public static io.ncraft.armory.unitable.DbQuery.Parameter getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Parameter>
+        PARSER = new com.google.protobuf.AbstractParser<Parameter>() {
+      @java.lang.Override
+      public Parameter parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<Parameter> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Parameter> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.ncraft.armory.unitable.DbQuery.Parameter getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public static final int ID_FIELD_NUMBER = 1;
@@ -164,38 +933,43 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PARAMETERS_FIELD_NUMBER = 4;
-  private com.google.protobuf.LazyStringList parameters_;
+  private java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter> parameters_;
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @return A list containing the parameters.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  public com.google.protobuf.ProtocolStringList
-      getParametersList() {
+  @java.lang.Override
+  public java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter> getParametersList() {
     return parameters_;
   }
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @return The count of parameters.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
+  @java.lang.Override
+  public java.util.List<? extends io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder> 
+      getParametersOrBuilderList() {
+    return parameters_;
+  }
+  /**
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+   */
+  @java.lang.Override
   public int getParametersCount() {
     return parameters_.size();
   }
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @param index The index of the element to return.
-   * @return The parameters at the given index.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  public java.lang.String getParameters(int index) {
+  @java.lang.Override
+  public io.ncraft.armory.unitable.DbQuery.Parameter getParameters(int index) {
     return parameters_.get(index);
   }
   /**
-   * <code>repeated string parameters = 4;</code>
-   * @param index The index of the value to return.
-   * @return The bytes of the parameters at the given index.
+   * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
    */
-  public com.google.protobuf.ByteString
-      getParametersBytes(int index) {
-    return parameters_.getByteString(index);
+  @java.lang.Override
+  public io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder getParametersOrBuilder(
+      int index) {
+    return parameters_.get(index);
   }
 
   public static final int TABLE_FIELD_NUMBER = 5;
@@ -300,7 +1074,7 @@ private static final long serialVersionUID = 0L;
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, sql_);
     }
     for (int i = 0; i < parameters_.size(); i++) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, parameters_.getRaw(i));
+      output.writeMessage(4, parameters_.get(i));
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 5, table_);
@@ -326,13 +1100,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sql_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, sql_);
     }
-    {
-      int dataSize = 0;
-      for (int i = 0; i < parameters_.size(); i++) {
-        dataSize += computeStringSizeNoTag(parameters_.getRaw(i));
-      }
-      size += dataSize;
-      size += 1 * getParametersList().size();
+    for (int i = 0; i < parameters_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(4, parameters_.get(i));
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(table_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, table_);
@@ -529,7 +1299,12 @@ private static final long serialVersionUID = 0L;
 
       sql_ = "";
 
-      parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      if (parametersBuilder_ == null) {
+        parameters_ = java.util.Collections.emptyList();
+      } else {
+        parameters_ = null;
+        parametersBuilder_.clear();
+      }
       bitField0_ = (bitField0_ & ~0x00000001);
       table_ = "";
 
@@ -570,11 +1345,15 @@ private static final long serialVersionUID = 0L;
       result.id_ = id_;
       result.name_ = name_;
       result.sql_ = sql_;
-      if (((bitField0_ & 0x00000001) != 0)) {
-        parameters_ = parameters_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000001);
+      if (parametersBuilder_ == null) {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          parameters_ = java.util.Collections.unmodifiableList(parameters_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.parameters_ = parameters_;
+      } else {
+        result.parameters_ = parametersBuilder_.build();
       }
-      result.parameters_ = parameters_;
       result.table_ = table_;
       if (columnsBuilder_ == null) {
         if (((bitField0_ & 0x00000002) != 0)) {
@@ -645,15 +1424,31 @@ private static final long serialVersionUID = 0L;
         sql_ = other.sql_;
         onChanged();
       }
-      if (!other.parameters_.isEmpty()) {
-        if (parameters_.isEmpty()) {
-          parameters_ = other.parameters_;
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          ensureParametersIsMutable();
-          parameters_.addAll(other.parameters_);
+      if (parametersBuilder_ == null) {
+        if (!other.parameters_.isEmpty()) {
+          if (parameters_.isEmpty()) {
+            parameters_ = other.parameters_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureParametersIsMutable();
+            parameters_.addAll(other.parameters_);
+          }
+          onChanged();
         }
-        onChanged();
+      } else {
+        if (!other.parameters_.isEmpty()) {
+          if (parametersBuilder_.isEmpty()) {
+            parametersBuilder_.dispose();
+            parametersBuilder_ = null;
+            parameters_ = other.parameters_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            parametersBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getParametersFieldBuilder() : null;
+          } else {
+            parametersBuilder_.addAllMessages(other.parameters_);
+          }
+        }
       }
       if (!other.getTable().isEmpty()) {
         table_ = other.table_;
@@ -727,9 +1522,16 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 26
             case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              ensureParametersIsMutable();
-              parameters_.add(s);
+              io.ncraft.armory.unitable.DbQuery.Parameter m =
+                  input.readMessage(
+                      io.ncraft.armory.unitable.DbQuery.Parameter.parser(),
+                      extensionRegistry);
+              if (parametersBuilder_ == null) {
+                ensureParametersIsMutable();
+                parameters_.add(m);
+              } else {
+                parametersBuilder_.addMessage(m);
+              }
               break;
             } // case 34
             case 42: {
@@ -995,114 +1797,244 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.LazyStringList parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter> parameters_ =
+      java.util.Collections.emptyList();
     private void ensureParametersIsMutable() {
       if (!((bitField0_ & 0x00000001) != 0)) {
-        parameters_ = new com.google.protobuf.LazyStringArrayList(parameters_);
+        parameters_ = new java.util.ArrayList<io.ncraft.armory.unitable.DbQuery.Parameter>(parameters_);
         bitField0_ |= 0x00000001;
        }
     }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        io.ncraft.armory.unitable.DbQuery.Parameter, io.ncraft.armory.unitable.DbQuery.Parameter.Builder, io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder> parametersBuilder_;
+
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @return A list containing the parameters.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
-    public com.google.protobuf.ProtocolStringList
-        getParametersList() {
-      return parameters_.getUnmodifiableView();
+    public java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter> getParametersList() {
+      if (parametersBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(parameters_);
+      } else {
+        return parametersBuilder_.getMessageList();
+      }
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @return The count of parameters.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
     public int getParametersCount() {
-      return parameters_.size();
+      if (parametersBuilder_ == null) {
+        return parameters_.size();
+      } else {
+        return parametersBuilder_.getCount();
+      }
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @param index The index of the element to return.
-     * @return The parameters at the given index.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
-    public java.lang.String getParameters(int index) {
-      return parameters_.get(index);
+    public io.ncraft.armory.unitable.DbQuery.Parameter getParameters(int index) {
+      if (parametersBuilder_ == null) {
+        return parameters_.get(index);
+      } else {
+        return parametersBuilder_.getMessage(index);
+      }
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the parameters at the given index.
-     */
-    public com.google.protobuf.ByteString
-        getParametersBytes(int index) {
-      return parameters_.getByteString(index);
-    }
-    /**
-     * <code>repeated string parameters = 4;</code>
-     * @param index The index to set the value at.
-     * @param value The parameters to set.
-     * @return This builder for chaining.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
     public Builder setParameters(
-        int index, java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureParametersIsMutable();
-      parameters_.set(index, value);
-      onChanged();
+        int index, io.ncraft.armory.unitable.DbQuery.Parameter value) {
+      if (parametersBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.set(index, value);
+        onChanged();
+      } else {
+        parametersBuilder_.setMessage(index, value);
+      }
       return this;
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @param value The parameters to add.
-     * @return This builder for chaining.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public Builder setParameters(
+        int index, io.ncraft.armory.unitable.DbQuery.Parameter.Builder builderForValue) {
+      if (parametersBuilder_ == null) {
+        ensureParametersIsMutable();
+        parameters_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        parametersBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public Builder addParameters(io.ncraft.armory.unitable.DbQuery.Parameter value) {
+      if (parametersBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(value);
+        onChanged();
+      } else {
+        parametersBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
     public Builder addParameters(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureParametersIsMutable();
-      parameters_.add(value);
-      onChanged();
+        int index, io.ncraft.armory.unitable.DbQuery.Parameter value) {
+      if (parametersBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(index, value);
+        onChanged();
+      } else {
+        parametersBuilder_.addMessage(index, value);
+      }
       return this;
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @param values The parameters to add.
-     * @return This builder for chaining.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public Builder addParameters(
+        io.ncraft.armory.unitable.DbQuery.Parameter.Builder builderForValue) {
+      if (parametersBuilder_ == null) {
+        ensureParametersIsMutable();
+        parameters_.add(builderForValue.build());
+        onChanged();
+      } else {
+        parametersBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public Builder addParameters(
+        int index, io.ncraft.armory.unitable.DbQuery.Parameter.Builder builderForValue) {
+      if (parametersBuilder_ == null) {
+        ensureParametersIsMutable();
+        parameters_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        parametersBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
     public Builder addAllParameters(
-        java.lang.Iterable<java.lang.String> values) {
-      ensureParametersIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, parameters_);
-      onChanged();
+        java.lang.Iterable<? extends io.ncraft.armory.unitable.DbQuery.Parameter> values) {
+      if (parametersBuilder_ == null) {
+        ensureParametersIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, parameters_);
+        onChanged();
+      } else {
+        parametersBuilder_.addAllMessages(values);
+      }
       return this;
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @return This builder for chaining.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
     public Builder clearParameters() {
-      parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000001);
-      onChanged();
+      if (parametersBuilder_ == null) {
+        parameters_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+      } else {
+        parametersBuilder_.clear();
+      }
       return this;
     }
     /**
-     * <code>repeated string parameters = 4;</code>
-     * @param value The bytes of the parameters to add.
-     * @return This builder for chaining.
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
      */
-    public Builder addParametersBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      ensureParametersIsMutable();
-      parameters_.add(value);
-      onChanged();
+    public Builder removeParameters(int index) {
+      if (parametersBuilder_ == null) {
+        ensureParametersIsMutable();
+        parameters_.remove(index);
+        onChanged();
+      } else {
+        parametersBuilder_.remove(index);
+      }
       return this;
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public io.ncraft.armory.unitable.DbQuery.Parameter.Builder getParametersBuilder(
+        int index) {
+      return getParametersFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder getParametersOrBuilder(
+        int index) {
+      if (parametersBuilder_ == null) {
+        return parameters_.get(index);  } else {
+        return parametersBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public java.util.List<? extends io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder> 
+         getParametersOrBuilderList() {
+      if (parametersBuilder_ != null) {
+        return parametersBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(parameters_);
+      }
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public io.ncraft.armory.unitable.DbQuery.Parameter.Builder addParametersBuilder() {
+      return getParametersFieldBuilder().addBuilder(
+          io.ncraft.armory.unitable.DbQuery.Parameter.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public io.ncraft.armory.unitable.DbQuery.Parameter.Builder addParametersBuilder(
+        int index) {
+      return getParametersFieldBuilder().addBuilder(
+          index, io.ncraft.armory.unitable.DbQuery.Parameter.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .armory.unitable.DbQuery.Parameter parameters = 4;</code>
+     */
+    public java.util.List<io.ncraft.armory.unitable.DbQuery.Parameter.Builder> 
+         getParametersBuilderList() {
+      return getParametersFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        io.ncraft.armory.unitable.DbQuery.Parameter, io.ncraft.armory.unitable.DbQuery.Parameter.Builder, io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder> 
+        getParametersFieldBuilder() {
+      if (parametersBuilder_ == null) {
+        parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            io.ncraft.armory.unitable.DbQuery.Parameter, io.ncraft.armory.unitable.DbQuery.Parameter.Builder, io.ncraft.armory.unitable.DbQuery.ParameterOrBuilder>(
+                parameters_,
+                ((bitField0_ & 0x00000001) != 0),
+                getParentForChildren(),
+                isClean());
+        parameters_ = null;
+      }
+      return parametersBuilder_;
     }
 
     private java.lang.Object table_ = "";
