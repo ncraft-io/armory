@@ -1,0 +1,940 @@
+hook:
+  enable: true
+  minInterval: 0
+  maxInterval: 0
+  sqls:
+    - |
+      create table if not exists public.ods_residence
+      (
+        id           text not null primary key,
+        kind         text,    -- 类型： 市属、区属、商品房
+        zzlx2143     text,    -- 房屋性质
+        szq1650      text,    -- 所在区
+        jdmc2150     text,    -- 基地名称
+        dkbh2250     text,    -- 地块编号
+        kgbh2500     text,    -- 控规编号
+        tzghydmj2511 numeric, -- 图则规划用地面积
+        ghydmj2092   numeric, -- 规划用地面积
+        sjydmj2206   numeric, -- 实际用地面积
+        ghrjl2147    numeric, -- 规划容积率
+        tzghjzmj2008 numeric, -- 图则规划建筑面积
+        ghzzjzmj2265 numeric, -- 规划住宅建筑面积
+        sjzzjzmj2206 numeric, -- 实际住宅建筑面积
+        ghts1843     numeric, -- 规划套数
+        sjts1635     numeric, -- 实际套数
+        jszt1593     text,    -- 建设状态
+        xqam2336     text,    -- 小区案名
+        kgsj2156     timestamp with time zone, -- 开工时间
+        jgsj2247     timestamp with time zone  -- 竣工时间
+      );
+    - |
+      create table if not exists public.ods_supporting
+      (
+        id       text not null primary key,
+        kind     text,    -- 类型： 商业、公建、绿化、湖泊、河流、道路
+        szq1650  text,    -- 所在区
+        jdmc2150 text,    -- 基地名称
+        ptlx2106 text,    -- 配套类型
+        ptdlx    text,    -- 配套大类型
+        ptxlx    text,    -- 配套小类型
+        dkbh2250 text,    -- 地块编号
+        ydmj2134 numeric, -- 用地面积
+        ghrjl2038  numeric, -- 容积率
+        jzmj2394 numeric, -- 建筑面积
+        xmmc1879 text,    -- 项目名称
+        xmjz2185 text,    -- 项目进展
+        mj2253   numeric, -- 面积
+        zd2344   numeric, -- 长度
+        kbmc2891 text,    -- 开办名称
+        kgsj2156 timestamp with time zone, -- 开工时间
+        jgsj2247 timestamp with time zone, -- 竣工时间
+        kbsj2218 timestamp with time zone, -- 开办时间
+        jgsj1623 timestamp with time zone  -- 接管时间
+      );
+    - |
+      create table if not exists public.ads_residence_stat
+      (
+        id           text not null primary key,
+        kind         text, -- 类型： 市属、区属、商品房
+        zzlx2143     text, -- 住宅类型
+        szq1650      text, -- 所在区
+        jdmc2150     text, -- 基地名称
+        
+        total numeric, -- 项目总数
+        built numeric, -- 项目已建数
+        building numeric, -- 项目在建数
+        unbuilt numeric, -- 项目未建数
+        
+        ghrjl_min    numeric, -- 规划容积率
+        ghrjl_max    numeric, -- 规划容积率
+        tzghydmj numeric, -- 图则规划用地面积
+        tzghydmj_unbuilt numeric, -- 图则规划用地面积
+        tzghydmj_building numeric, -- 图则规划用地面积
+        tzghydmj_built numeric, -- 图则规划用地面积
+        ghydmj   numeric, -- 规划用地面积
+        ghydmj_unbuilt   numeric, -- 规划用地面积
+        ghydmj_building   numeric, -- 规划用地面积
+        ghydmj_built   numeric, -- 规划用地面积
+        sjydmj   numeric, -- 实际用地面积
+        sjydmj_unbuilt   numeric, -- 实际用地面积
+        sjydmj_building   numeric, -- 实际用地面积
+        sjydmj_built   numeric, -- 实际用地面积
+        tzghjzmj numeric, -- 图则规划建筑面积
+        tzghjzmj_unbuilt numeric, -- 图则规划建筑面积
+        tzghjzmj_building numeric, -- 图则规划建筑面积
+        tzghjzmj_built numeric, -- 图则规划建筑面积
+        ghzzjzmj numeric, -- 规划住宅建筑面积
+        ghzzjzmj_unbuilt numeric, -- 规划住宅建筑面积
+        ghzzjzmj_building numeric, -- 规划住宅建筑面积
+        ghzzjzmj_built numeric, -- 规划住宅建筑面积
+        sjzzjzmj numeric, -- 实际住宅建筑面积
+        sjzzjzmj_unbuilt numeric, -- 实际住宅建筑面积
+        sjzzjzmj_building numeric, -- 实际住宅建筑面积
+        sjzzjzmj_built numeric -- 实际住宅建筑面积
+      );
+    - |
+      create table if not exists public.ads_supporting_stat
+      (
+        id           text not null primary key,
+        kind            text,  -- 类型： 商业、公建、绿化、湖泊、河流、道路
+        szq1650          text, -- 所在区
+        jdmc2150         text, -- 基地名称
+        ptlx2106         text, -- 配套类型
+        
+        ptdlx            text, -- 配套大类型
+        ptxlx            text, -- 配套小类型
+        
+        total numeric, -- 项目总数
+        built numeric, -- 项目已建数
+        building numeric, -- 项目在建数
+        unbuilt numeric, -- 项目未建数
+        takeover numeric, -- 项目接管数
+        open numeric, -- 项目开放数
+        
+        ghrjl_min          numeric, -- 容积率
+        ghrjl_max          numeric, -- 容积率
+        
+        ydmj         numeric, -- 用地面积
+        ydmj_unbuilt         numeric, -- 用地面积
+        ydmj_building         numeric, -- 用地面积
+        ydmj_built         numeric, -- 用地面积
+        ydmj_open   numeric,
+        jzmj         numeric, -- 建筑面积
+        jzmj_unbuilt         numeric, -- 建筑面积
+        jzmj_building         numeric, -- 建筑面积
+        jzmj_built         numeric, -- 建筑面积
+        jzmj_open   numeric,
+        
+        mj      numeric, -- 面积
+        mj_unbuilt      numeric, -- 面积
+        mj_building      numeric, -- 面积
+        mj_built      numeric, -- 面积
+        mj_takeover   numeric,
+        mj_open numeric,
+        zd       numeric, -- 长度
+        zd_unbuilt       numeric, -- 长度
+        zd_building       numeric, -- 长度
+        zd_built       numeric, -- 长度
+        zd_takeover   numeric,
+        zd_open numeric
+      );
+    - TRUNCATE TABLE public.ods_residence;
+    - TRUNCATE TABLE public.ods_supporting;
+    - TRUNCATE TABLE public.ads_residence_stat;
+    - TRUNCATE TABLE public.ads_supporting_stat;
+    - |
+      INSERT INTO public.ods_residence
+          (id, kind, zzlx2143, szq1650, jdmc2150, dkbh2250, kgbh2500, tzghydmj2511, ghydmj2092, sjydmj2206, tzghjzmj2008, ghzzjzmj2265, sjzzjzmj2206, ghts1843, sjts1635, jszt1593, xqam2336, kgsj2156, jgsj2247 )
+        SELECT id, '市属', zzlx2143, szq1650, jdmc2150, dkbh2250, kgbh2500, tzghydmj2511, ghydmj2092, sjydmj2206, tzghjzmj2008, ghzzjzmj2265, sjzzjzmj2206, ghts1843, sjts1635, jszt1593, xqam2336, kgsj2156, jgsj2247
+        FROM public.residence_city_house
+        ON CONFLICT(id)
+        DO UPDATE SET
+          kind = EXCLUDED.kind,
+          zzlx2143 = EXCLUDED.zzlx2143,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          kgbh2500 = EXCLUDED.kgbh2500,
+          tzghydmj2511 = EXCLUDED.tzghydmj2511,
+          ghydmj2092 = EXCLUDED.ghydmj2092,
+          sjydmj2206 = EXCLUDED.sjydmj2206,
+          tzghjzmj2008 = EXCLUDED.tzghjzmj2008,
+          ghzzjzmj2265 = EXCLUDED.ghzzjzmj2265,
+          sjzzjzmj2206 = EXCLUDED.sjzzjzmj2206,
+          ghts1843 = EXCLUDED.ghts1843,
+          sjts1635 = EXCLUDED.sjts1635,
+          jszt1593 = EXCLUDED.jszt1593,
+          xqam2336 = EXCLUDED.xqam2336,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247
+        ;
+    - |
+      INSERT INTO public.ods_residence
+        (id, kind,  szq1650, jdmc2150, dkbh2250,  tzghydmj2511, ghydmj2092,   tzghjzmj2008, ghzzjzmj2265,  ghts1843,  jszt1593, xqam2336, kgsj2156, jgsj2247)
+      SELECT id, '区属',  szq1650, jdmc2150, dkbh2250,  tzghydmj2511, ghydmj2092,  tzghjzmj2008, ghzzjzmj2265, zzts2352, jszt1593, xqam2336, qbkgsj1805, qbjgsj2418
+      FROM public.residence_district_house
+      ON CONFLICT(id)
+      DO UPDATE SET
+        kind = EXCLUDED.kind,
+        szq1650 = EXCLUDED.szq1650,
+        jdmc2150 = EXCLUDED.jdmc2150,
+        dkbh2250 = EXCLUDED.dkbh2250,
+        tzghydmj2511 = EXCLUDED.tzghydmj2511,
+        ghydmj2092 = EXCLUDED.ghydmj2092,
+        tzghjzmj2008 = EXCLUDED.tzghjzmj2008,
+        ghzzjzmj2265 = EXCLUDED.ghzzjzmj2265,
+        ghts1843 = EXCLUDED.ghts1843,
+        jszt1593 = EXCLUDED.jszt1593,
+        xqam2336 = EXCLUDED.xqam2336,
+        kgsj2156 = EXCLUDED.kgsj2156,
+        jgsj2247 = EXCLUDED.jgsj2247
+      ;
+    - |
+      INSERT INTO public.ods_residence
+        (id, kind,  szq1650, jdmc2150, dkbh2250, kgbh2500, tzghydmj2511, ghydmj2092,  ghrjl2147, tzghjzmj2008, ghzzjzmj2265,  ghts1843, jszt1593, xqam2336, jgsj2247)
+      SELECT id, '商品房',  szq1650, jdmc2150, dkbh2250, kgbh2500, tzghydmj2511, ghydmj2092, ghrjl2147, tzghjzmj2008, ghzzjzmj2265, ghts1843,  jszt1593, xqam2336, crsj1986
+      FROM public.residence_commodity_house
+      ON CONFLICT(id)
+      DO UPDATE SET
+        kind = EXCLUDED.kind,
+        szq1650 = EXCLUDED.szq1650,
+        jdmc2150 = EXCLUDED.jdmc2150,
+        dkbh2250 = EXCLUDED.dkbh2250,
+        kgbh2500 = EXCLUDED.kgbh2500,
+        tzghydmj2511 = EXCLUDED.tzghydmj2511,
+        ghydmj2092 = EXCLUDED.ghydmj2092,
+        sjydmj2206 = EXCLUDED.sjydmj2206,
+        ghrjl2147 = EXCLUDED.ghrjl2147,
+        tzghjzmj2008 = EXCLUDED.tzghjzmj2008,
+        ghzzjzmj2265 = EXCLUDED.ghzzjzmj2265,
+        ghts1843 = EXCLUDED.ghts1843,
+        jszt1593 = EXCLUDED.jszt1593,
+        xqam2336 = EXCLUDED.xqam2336,
+        jgsj2247 = EXCLUDED.jgsj2247
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+        (id, kind, szq1650, jdmc2150, ptlx2106, dkbh2250, ydmj2134, ghrjl2038, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '商业', szq1650, jdmc2150, ptlx2106, dkbh2250, ydmj2134, rjl2038, jzmj2394, '', xmjz2185, '', NULL, NULL, NULL
+      FROM public.residence_supporting_business
+      ON CONFLICT(id)
+      DO UPDATE SET
+        kind = EXCLUDED.kind,
+        szq1650 = EXCLUDED.szq1650,
+        jdmc2150 = EXCLUDED.jdmc2150,
+        ptlx2106 = EXCLUDED.ptlx2106,
+        dkbh2250 = EXCLUDED.dkbh2250,
+        ydmj2134 = EXCLUDED.ydmj2134,
+        ghrjl2038 = EXCLUDED.ghrjl2038,
+        jzmj2394 = EXCLUDED.jzmj2394,
+        xmmc1879 = EXCLUDED.xmmc1879,
+        xmjz2185 = EXCLUDED.xmjz2185,
+        kbmc2891 = EXCLUDED.kbmc2891,
+        kgsj2156 = EXCLUDED.kgsj2156,
+        jgsj2247 = EXCLUDED.jgsj2247,
+        kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+        (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, ptlx2106, ptlx2106, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 != '邮政' and ptlx2106 != '银行' and ptlx2106 != '教育' and ptlx2106 != '文体'
+      ON CONFLICT(id)
+      DO UPDATE SET
+        kind = EXCLUDED.kind,
+        szq1650 = EXCLUDED.szq1650,
+        jdmc2150 = EXCLUDED.jdmc2150,
+        ptdlx = EXCLUDED.ptdlx,
+        ptlx2106 = EXCLUDED.ptlx2106,
+        dkbh2250 = EXCLUDED.dkbh2250,
+        ydmj2134 = EXCLUDED.ydmj2134,
+        jzmj2394 = EXCLUDED.jzmj2394,
+        xmmc1879 = EXCLUDED.xmmc1879,
+        xmjz2185 = EXCLUDED.xmjz2185,
+        kbmc2891 = EXCLUDED.kbmc2891,
+        kgsj2156 = EXCLUDED.kgsj2156,
+        jgsj2247 = EXCLUDED.jgsj2247,
+        kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+        (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, '其他', ptlx2106, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 = '邮政' or ptlx2106 = '银行'
+      ON CONFLICT(id)
+      DO UPDATE SET
+        kind = EXCLUDED.kind,
+        szq1650 = EXCLUDED.szq1650,
+        jdmc2150 = EXCLUDED.jdmc2150,
+        ptdlx = EXCLUDED.ptdlx,
+        ptlx2106 = EXCLUDED.ptlx2106,
+        dkbh2250 = EXCLUDED.dkbh2250,
+        ydmj2134 = EXCLUDED.ydmj2134,
+        jzmj2394 = EXCLUDED.jzmj2394,
+        xmmc1879 = EXCLUDED.xmmc1879,
+        xmjz2185 = EXCLUDED.xmjz2185,
+        kbmc2891 = EXCLUDED.kbmc2891,
+        kgsj2156 = EXCLUDED.kgsj2156,
+        jgsj2247 = EXCLUDED.jgsj2247,
+        kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, ptlx2106, ptlx2106, xmmc1879, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 = '教育'
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          ydmj2134 = EXCLUDED.ydmj2134,
+          jzmj2394 = EXCLUDED.jzmj2394,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          kbmc2891 = EXCLUDED.kbmc2891,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, ptlx2106, ptlx2106, '文化中心', dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 = '文体' and (xmmc1879 = '文化中心' or xmmc1879 = '社区文化中心')
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          ydmj2134 = EXCLUDED.ydmj2134,
+          jzmj2394 = EXCLUDED.jzmj2394,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          kbmc2891 = EXCLUDED.kbmc2891,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, ptlx2106, ptlx2106, '体育中心', dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 = '文体' and (xmmc1879 = '体育中心' or xmmc1879 = '社区体育活动中心' or xmmc1879 = '社区体育中心')
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          ydmj2134 = EXCLUDED.ydmj2134,
+          jzmj2394 = EXCLUDED.jzmj2394,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          kbmc2891 = EXCLUDED.kbmc2891,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx, dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218)
+      SELECT id, '公建', szq1650, jdmc2150, ptlx2106, ptlx2106, '文体中心', dkbh2250, ydmj2134, jzmj2394, xmmc1879, xmjz2185, kbmc2891, kgsj2156, jgsj2247, kbsj2218
+      FROM public.residence_supporting_public
+      WHERE ptlx2106 = '文体' and (xmmc1879 = '文化体育中心' or xmmc1879 = '社区文化体育活动中心' or xmmc1879 = '社区文化体育中心')
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          ydmj2134 = EXCLUDED.ydmj2134,
+          jzmj2394 = EXCLUDED.jzmj2394,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          kbmc2891 = EXCLUDED.kbmc2891,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          kbsj2218 = EXCLUDED.kbsj2218
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptlx2106, dkbh2250, xmmc1879, xmjz2185, mj2253, kgsj2156, jgsj2247, jgsj1623)
+      SELECT id, '绿化', szq1650, jdmc2150, ptlx2106, dkbh2250, xmmc1879, xmjz2185, ydmj2134, kgsj2156, jgsj2247, jgsj1623
+      FROM public.residence_supporting_afforest
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          dkbh2250 = EXCLUDED.dkbh2250,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          mj2253 = EXCLUDED.mj2253,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          jgsj1623 = EXCLUDED.jgsj1623
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, mj2253, kgsj2156, jgsj2247, jgsj1623)
+      SELECT id, '湖泊', szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, mj2253, kgsj2156, jgsj2247, jgsj1623
+      FROM public.residence_supporting_lake
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          --dkbh2250 = EXCLUDED.dkbh2250,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          mj2253 = EXCLUDED.mj2253,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          jgsj1623 = EXCLUDED.jgsj1623
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, zd2344, kgsj2156, jgsj2247, jgsj1623)
+      SELECT id, '河流', szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, zd2344, kgsj2156, jgsj2247, jgsj1623
+      FROM public.residence_supporting_river
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          --dkbh2250 = EXCLUDED.dkbh2250,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          zd2344 = EXCLUDED.zd2344,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          jgsj1623 = EXCLUDED.jgsj1623
+      ;
+    - |
+      INSERT INTO public.ods_supporting
+          (id, kind, szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, zd2344, kgsj2156, jgsj2247, jgsj1623)
+      SELECT id, '道路', szq1650, jdmc2150, ptlx2106, xmmc1879, xmjz2185, zd2344, kgsj2156, jgsj2247, jgsj1623
+      FROM public.residence_supporting_road
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          --dkbh2250 = EXCLUDED.dkbh2250,
+          xmmc1879 = EXCLUDED.xmmc1879,
+          xmjz2185 = EXCLUDED.xmjz2185,
+          zd2344 = EXCLUDED.zd2344,
+          kgsj2156 = EXCLUDED.kgsj2156,
+          jgsj2247 = EXCLUDED.jgsj2247,
+          jgsj1623 = EXCLUDED.jgsj1623
+      ;
+    - |
+      INSERT INTO public.ads_residence_stat
+          (id, kind, zzlx2143, szq1650, jdmc2150, built, tzghydmj_built, ghydmj_built, sjydmj_built, tzghjzmj_built, ghzzjzmj_built, sjzzjzmj_built)
+      (select
+          CONCAT(kind, '.', zzlx2143, '.', szq1650, '.', jdmc2150) as id,
+          kind,
+          zzlx2143,
+          szq1650,
+          jdmc2150,
+          count(*) as built,
+          sum(tzghydmj2511) as tzghydmj_built,
+          sum(ghydmj2092) as ghydmj_built,
+          sum(sjydmj2206) as sjydmj_built,
+          sum(tzghjzmj2008) as tzghjzmj_built,
+          sum(ghzzjzmj2265) as ghzzjzmj_built,
+          sum(sjzzjzmj2206) as sjzzjzmj_built
+      from public.ods_residence
+      where jszt1593 = '已建'
+      group by kind, zzlx2143, szq1650, jdmc2150)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          zzlx2143 = EXCLUDED.zzlx2143,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          built = EXCLUDED.built,
+          tzghydmj_built = EXCLUDED.tzghydmj_built,
+          ghydmj_built = EXCLUDED.ghydmj_built,
+          sjydmj_built = EXCLUDED.sjydmj_built,
+          tzghjzmj_built = EXCLUDED.tzghjzmj_built,
+          ghzzjzmj_built = EXCLUDED.ghzzjzmj_built,
+          sjzzjzmj_built = EXCLUDED.sjzzjzmj_built
+      ;
+    - |
+      INSERT INTO public.ads_residence_stat
+          (id, kind, zzlx2143, szq1650, jdmc2150, unbuilt, tzghydmj_unbuilt, ghydmj_unbuilt, sjydmj_unbuilt, tzghjzmj_unbuilt, ghzzjzmj_unbuilt, sjzzjzmj_unbuilt)
+      (select
+          CONCAT(kind, '.', zzlx2143, '.', szq1650, '.', jdmc2150) as id,
+          kind,
+          zzlx2143,
+          szq1650,
+          jdmc2150,
+          count(*) as unbuilt,
+          sum(tzghydmj2511) as tzghydmj_unbuilt,
+          sum(ghydmj2092) as ghydmj_unbuilt,
+          sum(sjydmj2206) as sjydmj_unbuilt,
+          sum(tzghjzmj2008) as tzghjzmj_unbuilt,
+          sum(ghzzjzmj2265) as ghzzjzmj_unbuilt,
+          sum(sjzzjzmj2206) as sjzzjzmj_unbuilt
+      from public.ods_residence
+      where jszt1593 = '未建'
+      group by kind, zzlx2143, szq1650, jdmc2150)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          zzlx2143 = EXCLUDED.zzlx2143,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          unbuilt = EXCLUDED.unbuilt,
+          tzghydmj_unbuilt = EXCLUDED.tzghydmj_unbuilt,
+          ghydmj_unbuilt = EXCLUDED.ghydmj_unbuilt,
+          sjydmj_unbuilt = EXCLUDED.sjydmj_unbuilt,
+          tzghjzmj_unbuilt = EXCLUDED.tzghjzmj_unbuilt,
+          ghzzjzmj_unbuilt = EXCLUDED.ghzzjzmj_unbuilt,
+          sjzzjzmj_unbuilt = EXCLUDED.sjzzjzmj_unbuilt
+      ;
+    - |
+      INSERT INTO public.ads_residence_stat
+          (id, kind, zzlx2143, szq1650, jdmc2150, building, tzghydmj_building, ghydmj_building, sjydmj_building, tzghjzmj_building, ghzzjzmj_building, sjzzjzmj_building)
+      (select
+          CONCAT(kind, '.', zzlx2143, '.', szq1650, '.', jdmc2150) as id,
+          kind,
+          zzlx2143,
+          szq1650,
+          jdmc2150,
+          count(*) as building,
+          sum(tzghydmj2511) as tzghydmj_building,
+          sum(ghydmj2092) as ghydmj_building,
+          sum(sjydmj2206) as sjydmj_building,
+          sum(tzghjzmj2008) as tzghjzmj_building,
+          sum(ghzzjzmj2265) as ghzzjzmj_building,
+          sum(sjzzjzmj2206) as sjzzjzmj_building
+      from public.ods_residence
+      where jszt1593 = '在建'
+      group by kind, zzlx2143, szq1650, jdmc2150)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          zzlx2143 = EXCLUDED.zzlx2143,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          building = EXCLUDED.building,
+          tzghydmj_building = EXCLUDED.tzghydmj_building,
+          ghydmj_building = EXCLUDED.ghydmj_building,
+          sjydmj_building = EXCLUDED.sjydmj_building,
+          tzghjzmj_building = EXCLUDED.tzghjzmj_building,
+          ghzzjzmj_building = EXCLUDED.ghzzjzmj_building,
+          sjzzjzmj_building = EXCLUDED.sjzzjzmj_building
+      ;
+    - |
+      INSERT INTO public.ads_residence_stat
+          (id, kind, zzlx2143, szq1650, jdmc2150, total, tzghydmj, ghydmj, sjydmj, tzghjzmj, ghzzjzmj, sjzzjzmj)
+      (select
+          CONCAT(kind, '.', zzlx2143, '.', szq1650, '.', jdmc2150) as id,
+          kind,
+          zzlx2143,
+          szq1650,
+          jdmc2150,
+          count(*) as total,
+          sum(tzghydmj2511) as tzghydmj,
+          sum(ghydmj2092) as ghydmj,
+          sum(sjydmj2206) as sjydmj,
+          sum(tzghjzmj2008) as tzghjzmj,
+          sum(ghzzjzmj2265) as ghzzjzmj,
+          sum(sjzzjzmj2206) as sjzzjzmj
+      from public.ods_residence
+      group by kind, zzlx2143, szq1650, jdmc2150)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          zzlx2143 = EXCLUDED.zzlx2143,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          total = EXCLUDED.total,
+          tzghydmj = EXCLUDED.tzghydmj,
+          ghydmj = EXCLUDED.ghydmj,
+          sjydmj = EXCLUDED.sjydmj,
+          tzghjzmj = EXCLUDED.tzghjzmj,
+          ghzzjzmj = EXCLUDED.ghzzjzmj,
+          sjzzjzmj = EXCLUDED.sjzzjzmj
+      ;
+    - |
+      INSERT INTO public.ads_residence_stat
+          (id, ghrjl_min, ghrjl_max)
+      (select
+          CONCAT(kind, '.', zzlx2143, '.', szq1650, '.', jdmc2150) as id,
+          min(ghrjl2147) as ghrjl_min,
+          max(ghrjl2147) as ghrjl_max
+      from public.ods_residence
+      group by kind, zzlx2143, szq1650, jdmc2150)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          ghrjl_min = EXCLUDED.ghrjl_min,
+          ghrjl_max = EXCLUDED.ghrjl_max
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  ydmj_built, jzmj_built, mj_built, zd_built)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(ydmj2134) as ydmj_built,
+          sum(jzmj2394) as jzmj_built,
+          sum(mj2253) as mj_built,
+          sum(zd2344) as zd_built
+      from public.ods_supporting
+      where xmjz2185 = '已建'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          ydmj_built = EXCLUDED.ydmj_built,
+          jzmj_built = EXCLUDED.jzmj_built,
+          mj_built = EXCLUDED.mj_built,
+          zd_built = EXCLUDED.zd_built
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  ydmj_building, jzmj_building, mj_building, zd_building)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(ydmj2134) as ydmj_building,
+          sum(jzmj2394) as jzmj_building,
+          sum(mj2253) as mj_building,
+          sum(zd2344) as zd_building
+      from public.ods_supporting
+      where xmjz2185 = '在建'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          ydmj_building = EXCLUDED.ydmj_building,
+          jzmj_building = EXCLUDED.jzmj_building,
+          mj_building = EXCLUDED.mj_building,
+          zd_building = EXCLUDED.zd_building
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  ydmj_unbuilt, jzmj_unbuilt, mj_unbuilt, zd_unbuilt)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(ydmj2134) as ydmj_unbuilt,
+          sum(jzmj2394) as jzmj_unbuilt,
+          sum(mj2253) as mj_unbuilt,
+          sum(zd2344) as zd_unbuilt
+      from public.ods_supporting
+      where xmjz2185 = '未建'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          ydmj_unbuilt = EXCLUDED.ydmj_unbuilt,
+          jzmj_unbuilt = EXCLUDED.jzmj_unbuilt,
+          mj_unbuilt = EXCLUDED.mj_unbuilt,
+          zd_unbuilt = EXCLUDED.zd_unbuilt
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  mj_takeover, zd_takeover)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(mj2253) as mj_takeover,
+          sum(zd2344) as zd_takeover
+      from public.ods_supporting
+      where xmjz2185 = '接管'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          mj_takeover = EXCLUDED.mj_takeover,
+          zd_takeover = EXCLUDED.zd_takeover
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  ydmj_open, jzmj_open, mj_open, zd_open)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(ydmj2134) as ydmj_open,
+          sum(jzmj2394) as jzmj_open,
+          sum(mj2253) as mj_open,
+          sum(zd2344) as zd_open
+      from public.ods_supporting
+      where xmjz2185 = '开办'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          ydmj_open = EXCLUDED.ydmj_open,
+          jzmj_open = EXCLUDED.jzmj_open,
+          mj_open = EXCLUDED.mj_open,
+          zd_open = EXCLUDED.zd_open
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  ydmj, jzmj, mj, zd)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          sum(ydmj2134) as ydmj,
+          sum(jzmj2394) as jzmj,
+          sum(mj2253) as mj,
+          sum(zd2344) as zd
+      from public.ods_supporting
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          ydmj = EXCLUDED.ydmj,
+          jzmj = EXCLUDED.jzmj,
+          mj = EXCLUDED.mj,
+          zd = EXCLUDED.zd
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  built)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as built
+      from public.ods_supporting
+      where xmjz2185 = '已建' and (kind = '公建' or kind = '商业')
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          built = EXCLUDED.built
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  building)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as building
+      from public.ods_supporting
+      where xmjz2185 = '在建' and (kind = '公建' or kind = '商业')
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          building = EXCLUDED.building
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  unbuilt)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as unbuilt
+      from public.ods_supporting
+      where xmjz2185 = '未建' and (kind = '公建' or kind = '商业')
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          unbuilt = EXCLUDED.unbuilt
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  takeover)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as takeover
+      from public.ods_supporting
+      where xmjz2185 = '接管' and (kind = '公建' or kind = '商业')
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          takeover = EXCLUDED.takeover
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  open)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as open
+      from public.ods_supporting
+      where xmjz2185 = '开办' and (kind = '公建' or kind = '商业')
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          open = EXCLUDED.open
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx,  total)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          kind,
+          szq1650,
+          jdmc2150,
+          ptdlx,
+          ptlx2106,
+          ptxlx,
+          count(*) as total
+      from public.ods_supporting
+      where kind = '公建' or kind = '商业'
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          kind = EXCLUDED.kind,
+          szq1650 = EXCLUDED.szq1650,
+          jdmc2150 = EXCLUDED.jdmc2150,
+          ptdlx = EXCLUDED.ptdlx,
+          ptlx2106 = EXCLUDED.ptlx2106,
+          ptxlx = EXCLUDED.ptxlx,
+          total = EXCLUDED.total
+      ;
+    - |
+      INSERT INTO public.ads_supporting_stat
+          (id, ghrjl_min, ghrjl_max)
+      (select
+          CONCAT(kind, '.', szq1650, '.', jdmc2150, '.', ptdlx, '.', ptlx2106, '.', ptxlx) as id,
+          min(ghrjl2038) as ghrjl_min,
+          max(ghrjl2038) as ghrjl_max
+      from public.ods_supporting
+      group by kind, szq1650, jdmc2150, ptdlx, ptlx2106, ptxlx)
+      ON CONFLICT(id)
+      DO UPDATE SET
+          ghrjl_min = EXCLUDED.ghrjl_min,
+          ghrjl_max = EXCLUDED.ghrjl_max
+      ;

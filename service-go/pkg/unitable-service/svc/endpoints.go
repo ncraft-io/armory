@@ -65,6 +65,7 @@ type Endpoints struct {
 	GetRowEndpoint             endpoint.Endpoint
 	DeleteRowEndpoint          endpoint.Endpoint
 	ListRowEndpoint            endpoint.Endpoint
+	ListRowStatEndpoint        endpoint.Endpoint
 	ExportRowEndpoint          endpoint.Endpoint
 	BatchCreateRowsEndpoint    endpoint.Endpoint
 	BatchUpdateRowsEndpoint    endpoint.Endpoint
@@ -223,6 +224,14 @@ func (e Endpoints) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb.List
 		return nil, err
 	}
 	return response.(*pb.ListRowResponse), nil
+}
+
+func (e Endpoints) ListRowStat(ctx context.Context, in *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
+	response, err := e.ListRowStatEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.ListRowStatResponse), nil
 }
 
 func (e Endpoints) ExportRow(ctx context.Context, in *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
@@ -468,6 +477,17 @@ func MakeListRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	}
 }
 
+func MakeListRowStatEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ListRowStatRequest)
+		v, err := s.ListRowStat(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 func MakeExportRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.ExportRowRequest)
@@ -538,6 +558,7 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"get_row":              struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
+		"list_row_stat":        struct{}{},
 		"export_row":           struct{}{},
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
@@ -609,6 +630,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "list_row" {
 			e.ListRowEndpoint = middleware(e.ListRowEndpoint)
 		}
+		if inc == "list_row_stat" {
+			e.ListRowStatEndpoint = middleware(e.ListRowStatEndpoint)
+		}
 		if inc == "export_row" {
 			e.ExportRowEndpoint = middleware(e.ExportRowEndpoint)
 		}
@@ -654,6 +678,7 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"get_row":              struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
+		"list_row_stat":        struct{}{},
 		"export_row":           struct{}{},
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
@@ -724,6 +749,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "list_row" {
 			e.ListRowEndpoint = middleware("list_row", e.ListRowEndpoint)
+		}
+		if inc == "list_row_stat" {
+			e.ListRowStatEndpoint = middleware("list_row_stat", e.ListRowStatEndpoint)
 		}
 		if inc == "export_row" {
 			e.ExportRowEndpoint = middleware("export_row", e.ExportRowEndpoint)

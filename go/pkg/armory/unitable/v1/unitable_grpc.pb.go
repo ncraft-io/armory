@@ -42,6 +42,7 @@ const (
 	Unitable_GetRow_FullMethodName             = "/armory.unitable.v1.Unitable/get_row"
 	Unitable_DeleteRow_FullMethodName          = "/armory.unitable.v1.Unitable/delete_row"
 	Unitable_ListRow_FullMethodName            = "/armory.unitable.v1.Unitable/list_row"
+	Unitable_ListRowStat_FullMethodName        = "/armory.unitable.v1.Unitable/list_row_stat"
 	Unitable_ExportRow_FullMethodName          = "/armory.unitable.v1.Unitable/export_row"
 	Unitable_BatchCreateRows_FullMethodName    = "/armory.unitable.v1.Unitable/batch_create_rows"
 	Unitable_BatchUpdateRows_FullMethodName    = "/armory.unitable.v1.Unitable/batch_update_rows"
@@ -71,6 +72,7 @@ type UnitableClient interface {
 	GetRow(ctx context.Context, in *GetRowRequest, opts ...grpc.CallOption) (*core.Object, error)
 	DeleteRow(ctx context.Context, in *DeleteRowRequest, opts ...grpc.CallOption) (*core.Null, error)
 	ListRow(ctx context.Context, in *ListRowRequest, opts ...grpc.CallOption) (*ListRowResponse, error)
+	ListRowStat(ctx context.Context, in *ListRowStatRequest, opts ...grpc.CallOption) (*ListRowStatResponse, error)
 	ExportRow(ctx context.Context, in *ExportRowRequest, opts ...grpc.CallOption) (*ExportRowResponse, error)
 	BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
 	BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
@@ -256,6 +258,15 @@ func (c *unitableClient) ListRow(ctx context.Context, in *ListRowRequest, opts .
 	return out, nil
 }
 
+func (c *unitableClient) ListRowStat(ctx context.Context, in *ListRowStatRequest, opts ...grpc.CallOption) (*ListRowStatResponse, error) {
+	out := new(ListRowStatResponse)
+	err := c.cc.Invoke(ctx, Unitable_ListRowStat_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *unitableClient) ExportRow(ctx context.Context, in *ExportRowRequest, opts ...grpc.CallOption) (*ExportRowResponse, error) {
 	out := new(ExportRowResponse)
 	err := c.cc.Invoke(ctx, Unitable_ExportRow_FullMethodName, in, out, opts...)
@@ -315,6 +326,7 @@ type UnitableServer interface {
 	GetRow(context.Context, *GetRowRequest) (*core.Object, error)
 	DeleteRow(context.Context, *DeleteRowRequest) (*core.Null, error)
 	ListRow(context.Context, *ListRowRequest) (*ListRowResponse, error)
+	ListRowStat(context.Context, *ListRowStatRequest) (*ListRowStatResponse, error)
 	ExportRow(context.Context, *ExportRowRequest) (*ExportRowResponse, error)
 	BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*core.Null, error)
 	BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*core.Null, error)
@@ -382,6 +394,9 @@ func (UnimplementedUnitableServer) DeleteRow(context.Context, *DeleteRowRequest)
 }
 func (UnimplementedUnitableServer) ListRow(context.Context, *ListRowRequest) (*ListRowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRow not implemented")
+}
+func (UnimplementedUnitableServer) ListRowStat(context.Context, *ListRowStatRequest) (*ListRowStatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRowStat not implemented")
 }
 func (UnimplementedUnitableServer) ExportRow(context.Context, *ExportRowRequest) (*ExportRowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportRow not implemented")
@@ -750,6 +765,24 @@ func _Unitable_ListRow_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Unitable_ListRowStat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRowStatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).ListRowStat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_ListRowStat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).ListRowStat(ctx, req.(*ListRowStatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Unitable_ExportRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ExportRowRequest)
 	if err := dec(in); err != nil {
@@ -904,6 +937,10 @@ var Unitable_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "list_row",
 			Handler:    _Unitable_ListRow_Handler,
+		},
+		{
+			MethodName: "list_row_stat",
+			Handler:    _Unitable_ListRowStat_Handler,
 		},
 		{
 			MethodName: "export_row",

@@ -82,7 +82,9 @@ GET /armory/unitable/v1/databases/{database}/tables
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -136,6 +138,15 @@ POST /armory/unitable/v1/databases/{database}/tables
 #### Body 请求对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -155,7 +166,9 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -181,6 +194,15 @@ POST /armory/unitable/v1/databases/{database}/tables
 #### 返回对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -200,7 +222,9 @@ POST /armory/unitable/v1/databases/{database}/tables
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -262,7 +286,9 @@ GET /armory/unitable/v1/databases/{database}/tables/{id}
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -328,7 +354,9 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -404,6 +432,15 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 #### 返回对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -423,7 +460,9 @@ POST /armory/unitable/v1/databases/{database}/tables/{id}:sync
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -498,7 +537,9 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -553,7 +594,9 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -593,7 +636,9 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -651,7 +696,9 @@ GET /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -707,7 +754,9 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns/{id}
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -796,7 +845,9 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -862,7 +913,9 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/columns:batch
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |
@@ -976,6 +1029,44 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/rows
 ### 返回值
 
 #### 返回对象
+
+## 查询行的相关字段的统计值如果未设置stats字段，则检查columns中是否配置了statistical，如果有可以自动进行统计对于文本类型，只统计 group 的 count对于数字类型，则统计 count,sum,avg,max,min对于时间类型，则统计时间范围，并可以按年、按月、按天、按小时进行count统计如果设置了stats字段，则只按照stats字段的表达式进行统计对于文本类型，支持 group text_field   ==>  count text_field group text_field对于数字类型，支持 count number_field, sum number_field对于时间类型，支持 range time_field, years time_field, months, days, hours输出基本输出{ "field_name": {"function_name": "value" }}group函数{ "field_name": {"group": {"field_value1": {"count": value}, "field_value2": {"count": value}}
+
+### 请求路径
+```http
+GET /armory/unitable/v1/databases/{database}/tables/{table}/rows/stat
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  | specify the database name |
+| `table` | `string` |  | specify the table name |
+
+
+#### Query 参数
+| 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
+|---|---|---|---|---|---|
+| `stats` | `Array<string>` |  | 否 |  | specify the statistics field expression, like `sum field` |
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
+
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<mojo.core.Object>` |  |
+
 
 ## 在指定的表内获取某一行数据
 

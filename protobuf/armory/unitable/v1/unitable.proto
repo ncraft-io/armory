@@ -167,6 +167,25 @@ message ListRowResponse {
     string next_page_token = 2001;
 }
 
+message ListRowStatRequest {
+    string database = 1;
+    string table = 2;
+    repeated string stats = 3;
+    int32 page_size = 2000;
+    string page_token = 2001;
+    int32 skip = 2002;
+    string filter = 2011;
+    mojo.core.Ordering order = 2012;
+    mojo.core.FieldMask field_mask = 2013;
+    bool unique = 2014;
+}
+
+message ListRowStatResponse {
+    repeated mojo.core.Object objects = 1;
+    int32 total_count = 2000;
+    string next_page_token = 2001;
+}
+
 message ExportRowRequest {
     string database = 1;
     string table = 2;
@@ -223,6 +242,7 @@ service Unitable {
     rpc get_row(GetRowRequest) returns (mojo.core.Object);
     rpc delete_row(DeleteRowRequest) returns (mojo.core.Null);
     rpc list_row(ListRowRequest) returns (ListRowResponse);
+    rpc list_row_stat(ListRowStatRequest) returns (ListRowStatResponse);
     rpc export_row(ExportRowRequest) returns (ExportRowResponse);
     rpc batch_create_rows(BatchCreateRowsRequest) returns (mojo.core.Null);
     rpc batch_update_rows(BatchUpdateRowsRequest) returns (mojo.core.Null);

@@ -682,3 +682,50 @@ func (s unitableServer) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteR
 
 	return &core.Null{}, nil
 }
+
+// ListRowStat implements Interface.
+func (s unitableServer) ListRowStat(ctx context.Context, in *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
+	if len(in.Database) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the database")
+	}
+	if len(in.Table) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the table name")
+	}
+
+	query, err := ParseQuery(in)
+	if err != nil {
+		return nil, err
+	}
+
+	_ = query
+
+	//if len(in.Stats) == 0 {
+	//	// get the meta table
+	//} else {
+	//	for _, stat := range in.Stats {
+	//		segemnts := strings.Split(stat, " ")
+	//		if len(segemnts) == 2 {
+	//			fun := strings.TrimSpace(segemnts[0])
+	//			if fun == "group" {
+	//
+	//			} else {
+	//				query.CalcFields = append(query.CalcFields, &db.CalcField{
+	//					Name:      strings.TrimSpace(segemnts[1]),
+	//					Functions: fun,
+	//					Alias:     nil,
+	//					GroupBy:   "",
+	//				})
+	//			}
+	//		} else if len(segemnts) == 4 {
+	//
+	//		}
+	//	}
+	//}
+
+	resp := &pb.ListRowStatResponse{
+		// Objects:
+		// TotalCount:
+		// NextPageToken:
+	}
+	return resp, nil
+}

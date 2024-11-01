@@ -185,6 +185,13 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 			addTracerOption("list_row")...,
 		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_row", logger)))...,
 		),
+		listRowStat: grpctransport.NewServer(
+			endpoints.ListRowStatEndpoint,
+			DecodeGRPCListRowStatRequest,
+			EncodeGRPCListRowStatResponse,
+			addTracerOption("list_row_stat")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_row_stat", logger)))...,
+		),
 		exportRow: grpctransport.NewServer(
 			endpoints.ExportRowEndpoint,
 			DecodeGRPCExportRowRequest,
@@ -239,6 +246,7 @@ type grpcServer struct {
 	getRow             grpctransport.Handler
 	deleteRow          grpctransport.Handler
 	listRow            grpctransport.Handler
+	listRowStat        grpctransport.Handler
 	exportRow          grpctransport.Handler
 	batchCreateRows    grpctransport.Handler
 	batchUpdateRows    grpctransport.Handler
@@ -397,6 +405,14 @@ func (s *grpcServer) ListRow(ctx context.Context, req *pb.ListRowRequest) (*pb.L
 		return nil, err
 	}
 	return rep.(*pb.ListRowResponse), nil
+}
+
+func (s *grpcServer) ListRowStat(ctx context.Context, req *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
+	_, rep, err := s.listRowStat.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.ListRowStatResponse), nil
 }
 
 func (s *grpcServer) ExportRow(ctx context.Context, req *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
@@ -566,6 +582,13 @@ func DecodeGRPCListRowRequest(_ context.Context, grpcReq interface{}) (interface
 	return req, nil
 }
 
+// DecodeGRPCListRowStatRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ListRowStat request to a user-domain ListRowStat request. Primarily useful in a server.
+func DecodeGRPCListRowStatRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ListRowStatRequest)
+	return req, nil
+}
+
 // DecodeGRPCExportRowRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC ExportRow request to a user-domain ExportRow request. Primarily useful in a server.
 func DecodeGRPCExportRowRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -726,6 +749,13 @@ func EncodeGRPCDeleteRowResponse(_ context.Context, response interface{}) (inter
 // user-domain ListRow response to a gRPC ListRow reply. Primarily useful in a server.
 func EncodeGRPCListRowResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.ListRowResponse)
+	return resp, nil
+}
+
+// EncodeGRPCListRowStatResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ListRowStat response to a gRPC ListRowStat reply. Primarily useful in a server.
+func EncodeGRPCListRowStatResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.ListRowStatResponse)
 	return resp, nil
 }
 

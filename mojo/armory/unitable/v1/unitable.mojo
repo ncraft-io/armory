@@ -94,6 +94,26 @@ interface Unitable {
              query: String @3) //< specify the query expression loads form config file
              -> [Object]
 
+    /// 查询行的相关字段的统计值
+    /// 如果未设置stats字段，则检查columns中是否配置了statistical，如果有可以自动进行统计
+    ///     对于文本类型，只统计 group 的 count
+    ///     对于数字类型，则统计 count,sum,avg,max,min
+    ///     对于时间类型，则统计时间范围，并可以按年、按月、按天、按小时进行count统计
+    /// 如果设置了stats字段，则只按照stats字段的表达式进行统计
+    ///     对于文本类型，支持 group text_field   ==>  count text_field group text_field
+    ///     对于数字类型，支持 count number_field, sum number_field
+    ///     对于时间类型，支持 range time_field, years time_field, months, days, hours
+    /// 输出
+    ///     基本输出
+    ///         { "field_name": {"function_name": "value" }}
+    ///     group函数
+    ///         { "field_name": {"group": {"field_value1": {"count": value}, "field_value2": {"count": value}}
+    @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows/stat")
+    list_row_stat(database: String @1, //< specify the database name
+             table: String @2, //< specify the table name
+             stats: [String] @3) //< specify the statistics field expression, like `sum field`
+             -> [Object]
+
     /// 导出行(实现不同的权限控制)
     @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export")
     export_row(database: String @1, table: String @2) -> [Object]

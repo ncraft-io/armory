@@ -604,6 +604,37 @@ public final class UnitableGrpc {
     return getListRowMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.ListRowStatRequest,
+      io.ncraft.armory.unitable.v1.ListRowStatResponse> getListRowStatMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "list_row_stat",
+      requestType = io.ncraft.armory.unitable.v1.ListRowStatRequest.class,
+      responseType = io.ncraft.armory.unitable.v1.ListRowStatResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.ListRowStatRequest,
+      io.ncraft.armory.unitable.v1.ListRowStatResponse> getListRowStatMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.ListRowStatRequest, io.ncraft.armory.unitable.v1.ListRowStatResponse> getListRowStatMethod;
+    if ((getListRowStatMethod = UnitableGrpc.getListRowStatMethod) == null) {
+      synchronized (UnitableGrpc.class) {
+        if ((getListRowStatMethod = UnitableGrpc.getListRowStatMethod) == null) {
+          UnitableGrpc.getListRowStatMethod = getListRowStatMethod =
+              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.ListRowStatRequest, io.ncraft.armory.unitable.v1.ListRowStatResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "list_row_stat"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.unitable.v1.ListRowStatRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.unitable.v1.ListRowStatResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new UnitableMethodDescriptorSupplier("list_row_stat"))
+              .build();
+        }
+      }
+    }
+    return getListRowStatMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.ExportRowRequest,
       io.ncraft.armory.unitable.v1.ExportRowResponse> getExportRowMethod;
 
@@ -911,6 +942,13 @@ public final class UnitableGrpc {
 
     /**
      */
+    default void listRowStat(io.ncraft.armory.unitable.v1.ListRowStatRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ListRowStatResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getListRowStatMethod(), responseObserver);
+    }
+
+    /**
+     */
     default void exportRow(io.ncraft.armory.unitable.v1.ExportRowRequest request,
         io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ExportRowResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getExportRowMethod(), responseObserver);
@@ -1119,6 +1157,14 @@ public final class UnitableGrpc {
 
     /**
      */
+    public void listRowStat(io.ncraft.armory.unitable.v1.ListRowStatRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ListRowStatResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getListRowStatMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void exportRow(io.ncraft.armory.unitable.v1.ExportRowRequest request,
         io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ExportRowResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
@@ -1297,6 +1343,13 @@ public final class UnitableGrpc {
     public io.ncraft.armory.unitable.v1.ListRowResponse listRow(io.ncraft.armory.unitable.v1.ListRowRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getListRowMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.ncraft.armory.unitable.v1.ListRowStatResponse listRowStat(io.ncraft.armory.unitable.v1.ListRowStatRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getListRowStatMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1498,6 +1551,14 @@ public final class UnitableGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.unitable.v1.ListRowStatResponse> listRowStat(
+        io.ncraft.armory.unitable.v1.ListRowStatRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getListRowStatMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.unitable.v1.ExportRowResponse> exportRow(
         io.ncraft.armory.unitable.v1.ExportRowRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1548,10 +1609,11 @@ public final class UnitableGrpc {
   private static final int METHODID_GET_ROW = 16;
   private static final int METHODID_DELETE_ROW = 17;
   private static final int METHODID_LIST_ROW = 18;
-  private static final int METHODID_EXPORT_ROW = 19;
-  private static final int METHODID_BATCH_CREATE_ROWS = 20;
-  private static final int METHODID_BATCH_UPDATE_ROWS = 21;
-  private static final int METHODID_BATCH_DELETE_ROWS = 22;
+  private static final int METHODID_LIST_ROW_STAT = 19;
+  private static final int METHODID_EXPORT_ROW = 20;
+  private static final int METHODID_BATCH_CREATE_ROWS = 21;
+  private static final int METHODID_BATCH_UPDATE_ROWS = 22;
+  private static final int METHODID_BATCH_DELETE_ROWS = 23;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1645,6 +1707,10 @@ public final class UnitableGrpc {
         case METHODID_LIST_ROW:
           serviceImpl.listRow((io.ncraft.armory.unitable.v1.ListRowRequest) request,
               (io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ListRowResponse>) responseObserver);
+          break;
+        case METHODID_LIST_ROW_STAT:
+          serviceImpl.listRowStat((io.ncraft.armory.unitable.v1.ListRowStatRequest) request,
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.ListRowStatResponse>) responseObserver);
           break;
         case METHODID_EXPORT_ROW:
           serviceImpl.exportRow((io.ncraft.armory.unitable.v1.ExportRowRequest) request,
@@ -1814,6 +1880,13 @@ public final class UnitableGrpc {
               io.ncraft.armory.unitable.v1.ListRowResponse>(
                 service, METHODID_LIST_ROW)))
         .addMethod(
+          getListRowStatMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              io.ncraft.armory.unitable.v1.ListRowStatRequest,
+              io.ncraft.armory.unitable.v1.ListRowStatResponse>(
+                service, METHODID_LIST_ROW_STAT)))
+        .addMethod(
           getExportRowMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
@@ -1908,6 +1981,7 @@ public final class UnitableGrpc {
               .addMethod(getGetRowMethod())
               .addMethod(getDeleteRowMethod())
               .addMethod(getListRowMethod())
+              .addMethod(getListRowStatMethod())
               .addMethod(getExportRowMethod())
               .addMethod(getBatchCreateRowsMethod())
               .addMethod(getBatchUpdateRowsMethod())

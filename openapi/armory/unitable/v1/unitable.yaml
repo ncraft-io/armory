@@ -58,8 +58,16 @@ components:
           description: 是否为引用字段，可以设置是否自动join
           title: mojo.core.String
           type: string
+        repeated:
+          description: is Array type
+          title: mojo.core.Bool
+          type: boolean
         show:
           description: 是否需要显示
+          title: mojo.core.Bool
+          type: boolean
+        statistical:
+          description: 是否可以被统计
           title: mojo.core.Bool
           type: boolean
         tableId:
@@ -850,6 +858,92 @@ paths:
         "200":
           description: OK
       summary: 在指定的表内更新指定ID的数据
+  /armory/unitable/v1/databases/{database}/tables/{table}/rows/stat:
+    get:
+      description: ""
+      operationId: list_row_stat
+      parameters:
+      - description: specify the database name
+        in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: specify the table name
+        in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: specify the statistics field expression, like `sum field`
+        in: query
+        name: stats
+        schema:
+          items:
+            title: mojo.core.String
+            type: string
+          title: mojo.core.Array
+          type: array
+      - description: the page size for pagination request
+        in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the page token for pagination request, usually like "1", "2"
+          ...
+        in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: skip the first items count for the request
+        in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the mojo expression for DB query
+        in: query
+        name: filter
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: setting the order field for result, like "name desc"
+        in: query
+        name: order
+        schema:
+          $ref: '#/components/schemas/mojo.core.Ordering'
+      - description: control the fields which need to be retrieved
+        in: query
+        name: field_mask
+        schema:
+          $ref: '#/components/schemas/mojo.core.FieldMask'
+      - description: make the fields which returns are unique, equals to "SELECT DISTINCT"
+          in sql
+        in: query
+        name: unique
+        schema:
+          title: mojo.core.Bool
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: '查询行的相关字段的统计值如果未设置stats字段，则检查columns中是否配置了statistical，如果有可以自动进行统计对于文本类型，只统计
+        group 的 count对于数字类型，则统计 count,sum,avg,max,min对于时间类型，则统计时间范围，并可以按年、按月、按天、按小时进行count统计如果设置了stats字段，则只按照stats字段的表达式进行统计对于文本类型，支持
+        group text_field   ==>  count text_field group text_field对于数字类型，支持 count number_field,
+        sum number_field对于时间类型，支持 range time_field, years time_field, months, days,
+        hours输出基本输出{ "field_name": {"function_name": "value" }}group函数{ "field_name":
+        {"group": {"field_value1": {"count": value}, "field_value2": {"count": value}}'
   /armory/unitable/v1/databases/{database}/tables/{table}/rows:batch:
     delete:
       description: ""
