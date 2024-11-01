@@ -13,14 +13,17 @@ type Column {
 
     type: String @8 //< 列的数据库类型 "integer", "number", "string"
     format: String @9 //< 当列为String时，指定更详细的类型，比如时间、几何等
+    repeated: Bool @10 //< is Array type
 
-    indexed: Bool @10  //< 是否需要被索引
-    unique: Bool @11   //< 是否需要在表内是唯一的
-    show: Bool @12     //< 是否需要显示
-    editable: Bool @13 //< 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限
-    filterable: Bool @14 //< 字段能够进行过滤操作
-    temporal: Bool @15 //< 是否是临时的
-    dimensional: Bool @16 //< 是否是维度相关的，即可枚举的值
+    indexed: Bool @11  //< 是否需要被索引
+    unique: Bool @12   //< 是否需要在表内是唯一的
+    show: Bool @13     //< 是否需要显示
+    editable: Bool @14 //< 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限
+    filterable: Bool @15 //< 字段能够进行过滤操作
+    temporal: Bool @16 //< 是否是临时的
+    dimensional: Bool @17 //< 是否是维度相关的，即可枚举的值
+
+    statistical: Bool @18 //< 是否可以被统计
 
     referenced: String @20 //< 是否为引用字段，可以设置是否自动join
 

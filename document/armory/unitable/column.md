@@ -14,7 +14,9 @@
 | `indexed` | `boolean` |  | N |  | 是否需要被索引 |
 | `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
 | `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
 | `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
 | `tableId` | `string` |  | N |  | 所属的表单名 |
 | `temporal` | `boolean` |  | N |  | 是否是临时的 |
 | `type` | `string` |  | N |  | 列的数据库类型 "integer", "number", "string" |

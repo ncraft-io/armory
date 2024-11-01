@@ -14,8 +14,9 @@ import (
 )
 
 type MetaTable struct {
-	Table  *unitable.Table
-	Struct *DynamicStruct
+	Table      *unitable.Table
+	Struct     *DynamicStruct
+	FieldsInfo db.FieldsInfo
 }
 
 type Synchro struct {
@@ -45,8 +46,13 @@ func (s *Synchro) GetMetaTable(tableName string, table *unitable.Table) *MetaTab
 		}
 
 		meta := &MetaTable{
-			Table:  table,
-			Struct: NewDynamicStruct(table),
+			Table:      table,
+			Struct:     NewDynamicStruct(table),
+			FieldsInfo: make(db.FieldsInfo),
+		}
+
+		for _, col := range table.Columns {
+			meta.FieldsInfo[col.Name] = col.ToFieldInfo()
 		}
 
 		// s.Tables[tableName] = meta
@@ -165,7 +171,7 @@ func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) 
 
 	tx := GetDataDB().WithContext(ctx).Table(table)
 	if query != nil {
-		tx = query.Apply(tx)
+		tx = query.Apply(tx, meta.FieldsInfo)
 	} else {
 		tx = tx.Select("*")
 	}
@@ -193,7 +199,7 @@ func (s *Synchro) QueryRows(ctx context.Context, table string, query *db.Query) 
 	// get the total count
 	tx = GetDataDB().WithContext(ctx).Table(table)
 	if query != nil {
-		tx = query.ApplyTotalCount(tx)
+		tx = query.ApplyTotalCount(tx, meta.FieldsInfo)
 	} else {
 		tx = tx.Select("COUNT(*)")
 	}

@@ -58,8 +58,16 @@ components:
           description: 是否为引用字段，可以设置是否自动join
           title: mojo.core.String
           type: string
+        repeated:
+          description: is Array type
+          title: mojo.core.Bool
+          type: boolean
         show:
           description: 是否需要显示
+          title: mojo.core.Bool
+          type: boolean
+        statistical:
+          description: 是否可以被统计
           title: mojo.core.Bool
           type: boolean
         tableId:

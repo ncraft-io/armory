@@ -33,7 +33,11 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 				now := time.Now()
 				field.Type = reflect.TypeOf(&now)
 			default:
-				field.Type = reflect.TypeOf("")
+				if col.Repeated {
+					field.Type = reflect.TypeOf(&core.StringValues{})
+				} else {
+					field.Type = reflect.TypeOf("")
+				}
 			}
 		}
 

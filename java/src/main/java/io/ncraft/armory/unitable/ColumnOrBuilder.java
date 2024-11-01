@@ -116,46 +116,58 @@ public interface ColumnOrBuilder extends
       getFormatBytes();
 
   /**
-   * <code>bool indexed = 10;</code>
+   * <code>bool repeated = 10;</code>
+   * @return The repeated.
+   */
+  boolean getRepeated();
+
+  /**
+   * <code>bool indexed = 11;</code>
    * @return The indexed.
    */
   boolean getIndexed();
 
   /**
-   * <code>bool unique = 11;</code>
+   * <code>bool unique = 12;</code>
    * @return The unique.
    */
   boolean getUnique();
 
   /**
-   * <code>bool show = 12;</code>
+   * <code>bool show = 13;</code>
    * @return The show.
    */
   boolean getShow();
 
   /**
-   * <code>bool editable = 13;</code>
+   * <code>bool editable = 14;</code>
    * @return The editable.
    */
   boolean getEditable();
 
   /**
-   * <code>bool filterable = 14;</code>
+   * <code>bool filterable = 15;</code>
    * @return The filterable.
    */
   boolean getFilterable();
 
   /**
-   * <code>bool temporal = 15;</code>
+   * <code>bool temporal = 16;</code>
    * @return The temporal.
    */
   boolean getTemporal();
 
   /**
-   * <code>bool dimensional = 16;</code>
+   * <code>bool dimensional = 17;</code>
    * @return The dimensional.
    */
   boolean getDimensional();
+
+  /**
+   * <code>bool statistical = 18;</code>
+   * @return The statistical.
+   */
+  boolean getStatistical();
 
   /**
    * <code>string referenced = 20;</code>

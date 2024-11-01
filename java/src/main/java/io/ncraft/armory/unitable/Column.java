@@ -395,10 +395,21 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int INDEXED_FIELD_NUMBER = 10;
+  public static final int REPEATED_FIELD_NUMBER = 10;
+  private boolean repeated_;
+  /**
+   * <code>bool repeated = 10;</code>
+   * @return The repeated.
+   */
+  @java.lang.Override
+  public boolean getRepeated() {
+    return repeated_;
+  }
+
+  public static final int INDEXED_FIELD_NUMBER = 11;
   private boolean indexed_;
   /**
-   * <code>bool indexed = 10;</code>
+   * <code>bool indexed = 11;</code>
    * @return The indexed.
    */
   @java.lang.Override
@@ -406,10 +417,10 @@ private static final long serialVersionUID = 0L;
     return indexed_;
   }
 
-  public static final int UNIQUE_FIELD_NUMBER = 11;
+  public static final int UNIQUE_FIELD_NUMBER = 12;
   private boolean unique_;
   /**
-   * <code>bool unique = 11;</code>
+   * <code>bool unique = 12;</code>
    * @return The unique.
    */
   @java.lang.Override
@@ -417,10 +428,10 @@ private static final long serialVersionUID = 0L;
     return unique_;
   }
 
-  public static final int SHOW_FIELD_NUMBER = 12;
+  public static final int SHOW_FIELD_NUMBER = 13;
   private boolean show_;
   /**
-   * <code>bool show = 12;</code>
+   * <code>bool show = 13;</code>
    * @return The show.
    */
   @java.lang.Override
@@ -428,10 +439,10 @@ private static final long serialVersionUID = 0L;
     return show_;
   }
 
-  public static final int EDITABLE_FIELD_NUMBER = 13;
+  public static final int EDITABLE_FIELD_NUMBER = 14;
   private boolean editable_;
   /**
-   * <code>bool editable = 13;</code>
+   * <code>bool editable = 14;</code>
    * @return The editable.
    */
   @java.lang.Override
@@ -439,10 +450,10 @@ private static final long serialVersionUID = 0L;
     return editable_;
   }
 
-  public static final int FILTERABLE_FIELD_NUMBER = 14;
+  public static final int FILTERABLE_FIELD_NUMBER = 15;
   private boolean filterable_;
   /**
-   * <code>bool filterable = 14;</code>
+   * <code>bool filterable = 15;</code>
    * @return The filterable.
    */
   @java.lang.Override
@@ -450,10 +461,10 @@ private static final long serialVersionUID = 0L;
     return filterable_;
   }
 
-  public static final int TEMPORAL_FIELD_NUMBER = 15;
+  public static final int TEMPORAL_FIELD_NUMBER = 16;
   private boolean temporal_;
   /**
-   * <code>bool temporal = 15;</code>
+   * <code>bool temporal = 16;</code>
    * @return The temporal.
    */
   @java.lang.Override
@@ -461,15 +472,26 @@ private static final long serialVersionUID = 0L;
     return temporal_;
   }
 
-  public static final int DIMENSIONAL_FIELD_NUMBER = 16;
+  public static final int DIMENSIONAL_FIELD_NUMBER = 17;
   private boolean dimensional_;
   /**
-   * <code>bool dimensional = 16;</code>
+   * <code>bool dimensional = 17;</code>
    * @return The dimensional.
    */
   @java.lang.Override
   public boolean getDimensional() {
     return dimensional_;
+  }
+
+  public static final int STATISTICAL_FIELD_NUMBER = 18;
+  private boolean statistical_;
+  /**
+   * <code>bool statistical = 18;</code>
+   * @return The statistical.
+   */
+  @java.lang.Override
+  public boolean getStatistical() {
+    return statistical_;
   }
 
   public static final int REFERENCED_FIELD_NUMBER = 20;
@@ -629,26 +651,32 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(format_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 9, format_);
     }
+    if (repeated_ != false) {
+      output.writeBool(10, repeated_);
+    }
     if (indexed_ != false) {
-      output.writeBool(10, indexed_);
+      output.writeBool(11, indexed_);
     }
     if (unique_ != false) {
-      output.writeBool(11, unique_);
+      output.writeBool(12, unique_);
     }
     if (show_ != false) {
-      output.writeBool(12, show_);
+      output.writeBool(13, show_);
     }
     if (editable_ != false) {
-      output.writeBool(13, editable_);
+      output.writeBool(14, editable_);
     }
     if (filterable_ != false) {
-      output.writeBool(14, filterable_);
+      output.writeBool(15, filterable_);
     }
     if (temporal_ != false) {
-      output.writeBool(15, temporal_);
+      output.writeBool(16, temporal_);
     }
     if (dimensional_ != false) {
-      output.writeBool(16, dimensional_);
+      output.writeBool(17, dimensional_);
+    }
+    if (statistical_ != false) {
+      output.writeBool(18, statistical_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(referenced_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 20, referenced_);
@@ -698,33 +726,41 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(format_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, format_);
     }
+    if (repeated_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(10, repeated_);
+    }
     if (indexed_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(10, indexed_);
+        .computeBoolSize(11, indexed_);
     }
     if (unique_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(11, unique_);
+        .computeBoolSize(12, unique_);
     }
     if (show_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(12, show_);
+        .computeBoolSize(13, show_);
     }
     if (editable_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(13, editable_);
+        .computeBoolSize(14, editable_);
     }
     if (filterable_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(14, filterable_);
+        .computeBoolSize(15, filterable_);
     }
     if (temporal_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(15, temporal_);
+        .computeBoolSize(16, temporal_);
     }
     if (dimensional_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(16, dimensional_);
+        .computeBoolSize(17, dimensional_);
+    }
+    if (statistical_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(18, statistical_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(referenced_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, referenced_);
@@ -774,6 +810,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getType())) return false;
     if (!getFormat()
         .equals(other.getFormat())) return false;
+    if (getRepeated()
+        != other.getRepeated()) return false;
     if (getIndexed()
         != other.getIndexed()) return false;
     if (getUnique()
@@ -788,6 +826,8 @@ private static final long serialVersionUID = 0L;
         != other.getTemporal()) return false;
     if (getDimensional()
         != other.getDimensional()) return false;
+    if (getStatistical()
+        != other.getStatistical()) return false;
     if (!getReferenced()
         .equals(other.getReferenced())) return false;
     if (hasExample() != other.hasExample()) return false;
@@ -834,6 +874,9 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getType().hashCode();
     hash = (37 * hash) + FORMAT_FIELD_NUMBER;
     hash = (53 * hash) + getFormat().hashCode();
+    hash = (37 * hash) + REPEATED_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getRepeated());
     hash = (37 * hash) + INDEXED_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getIndexed());
@@ -855,6 +898,9 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + DIMENSIONAL_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getDimensional());
+    hash = (37 * hash) + STATISTICAL_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getStatistical());
     hash = (37 * hash) + REFERENCED_FIELD_NUMBER;
     hash = (53 * hash) + getReferenced().hashCode();
     if (hasExample()) {
@@ -1015,6 +1061,8 @@ private static final long serialVersionUID = 0L;
 
       format_ = "";
 
+      repeated_ = false;
+
       indexed_ = false;
 
       unique_ = false;
@@ -1028,6 +1076,8 @@ private static final long serialVersionUID = 0L;
       temporal_ = false;
 
       dimensional_ = false;
+
+      statistical_ = false;
 
       referenced_ = "";
 
@@ -1084,6 +1134,7 @@ private static final long serialVersionUID = 0L;
       result.groupDisplayName_ = groupDisplayName_;
       result.type_ = type_;
       result.format_ = format_;
+      result.repeated_ = repeated_;
       result.indexed_ = indexed_;
       result.unique_ = unique_;
       result.show_ = show_;
@@ -1091,6 +1142,7 @@ private static final long serialVersionUID = 0L;
       result.filterable_ = filterable_;
       result.temporal_ = temporal_;
       result.dimensional_ = dimensional_;
+      result.statistical_ = statistical_;
       result.referenced_ = referenced_;
       if (exampleBuilder_ == null) {
         result.example_ = example_;
@@ -1191,6 +1243,9 @@ private static final long serialVersionUID = 0L;
         format_ = other.format_;
         onChanged();
       }
+      if (other.getRepeated() != false) {
+        setRepeated(other.getRepeated());
+      }
       if (other.getIndexed() != false) {
         setIndexed(other.getIndexed());
       }
@@ -1211,6 +1266,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getDimensional() != false) {
         setDimensional(other.getDimensional());
+      }
+      if (other.getStatistical() != false) {
+        setStatistical(other.getStatistical());
       }
       if (!other.getReferenced().isEmpty()) {
         referenced_ = other.referenced_;
@@ -1297,40 +1355,50 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 74
             case 80: {
-              indexed_ = input.readBool();
+              repeated_ = input.readBool();
 
               break;
             } // case 80
             case 88: {
-              unique_ = input.readBool();
+              indexed_ = input.readBool();
 
               break;
             } // case 88
             case 96: {
-              show_ = input.readBool();
+              unique_ = input.readBool();
 
               break;
             } // case 96
             case 104: {
-              editable_ = input.readBool();
+              show_ = input.readBool();
 
               break;
             } // case 104
             case 112: {
-              filterable_ = input.readBool();
+              editable_ = input.readBool();
 
               break;
             } // case 112
             case 120: {
-              temporal_ = input.readBool();
+              filterable_ = input.readBool();
 
               break;
             } // case 120
             case 128: {
-              dimensional_ = input.readBool();
+              temporal_ = input.readBool();
 
               break;
             } // case 128
+            case 136: {
+              dimensional_ = input.readBool();
+
+              break;
+            } // case 136
+            case 144: {
+              statistical_ = input.readBool();
+
+              break;
+            } // case 144
             case 162: {
               referenced_ = input.readStringRequireUtf8();
 
@@ -2057,9 +2125,40 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private boolean repeated_ ;
+    /**
+     * <code>bool repeated = 10;</code>
+     * @return The repeated.
+     */
+    @java.lang.Override
+    public boolean getRepeated() {
+      return repeated_;
+    }
+    /**
+     * <code>bool repeated = 10;</code>
+     * @param value The repeated to set.
+     * @return This builder for chaining.
+     */
+    public Builder setRepeated(boolean value) {
+      
+      repeated_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool repeated = 10;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearRepeated() {
+      
+      repeated_ = false;
+      onChanged();
+      return this;
+    }
+
     private boolean indexed_ ;
     /**
-     * <code>bool indexed = 10;</code>
+     * <code>bool indexed = 11;</code>
      * @return The indexed.
      */
     @java.lang.Override
@@ -2067,7 +2166,7 @@ private static final long serialVersionUID = 0L;
       return indexed_;
     }
     /**
-     * <code>bool indexed = 10;</code>
+     * <code>bool indexed = 11;</code>
      * @param value The indexed to set.
      * @return This builder for chaining.
      */
@@ -2078,7 +2177,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool indexed = 10;</code>
+     * <code>bool indexed = 11;</code>
      * @return This builder for chaining.
      */
     public Builder clearIndexed() {
@@ -2090,7 +2189,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean unique_ ;
     /**
-     * <code>bool unique = 11;</code>
+     * <code>bool unique = 12;</code>
      * @return The unique.
      */
     @java.lang.Override
@@ -2098,7 +2197,7 @@ private static final long serialVersionUID = 0L;
       return unique_;
     }
     /**
-     * <code>bool unique = 11;</code>
+     * <code>bool unique = 12;</code>
      * @param value The unique to set.
      * @return This builder for chaining.
      */
@@ -2109,7 +2208,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool unique = 11;</code>
+     * <code>bool unique = 12;</code>
      * @return This builder for chaining.
      */
     public Builder clearUnique() {
@@ -2121,7 +2220,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean show_ ;
     /**
-     * <code>bool show = 12;</code>
+     * <code>bool show = 13;</code>
      * @return The show.
      */
     @java.lang.Override
@@ -2129,7 +2228,7 @@ private static final long serialVersionUID = 0L;
       return show_;
     }
     /**
-     * <code>bool show = 12;</code>
+     * <code>bool show = 13;</code>
      * @param value The show to set.
      * @return This builder for chaining.
      */
@@ -2140,7 +2239,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool show = 12;</code>
+     * <code>bool show = 13;</code>
      * @return This builder for chaining.
      */
     public Builder clearShow() {
@@ -2152,7 +2251,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean editable_ ;
     /**
-     * <code>bool editable = 13;</code>
+     * <code>bool editable = 14;</code>
      * @return The editable.
      */
     @java.lang.Override
@@ -2160,7 +2259,7 @@ private static final long serialVersionUID = 0L;
       return editable_;
     }
     /**
-     * <code>bool editable = 13;</code>
+     * <code>bool editable = 14;</code>
      * @param value The editable to set.
      * @return This builder for chaining.
      */
@@ -2171,7 +2270,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool editable = 13;</code>
+     * <code>bool editable = 14;</code>
      * @return This builder for chaining.
      */
     public Builder clearEditable() {
@@ -2183,7 +2282,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean filterable_ ;
     /**
-     * <code>bool filterable = 14;</code>
+     * <code>bool filterable = 15;</code>
      * @return The filterable.
      */
     @java.lang.Override
@@ -2191,7 +2290,7 @@ private static final long serialVersionUID = 0L;
       return filterable_;
     }
     /**
-     * <code>bool filterable = 14;</code>
+     * <code>bool filterable = 15;</code>
      * @param value The filterable to set.
      * @return This builder for chaining.
      */
@@ -2202,7 +2301,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool filterable = 14;</code>
+     * <code>bool filterable = 15;</code>
      * @return This builder for chaining.
      */
     public Builder clearFilterable() {
@@ -2214,7 +2313,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean temporal_ ;
     /**
-     * <code>bool temporal = 15;</code>
+     * <code>bool temporal = 16;</code>
      * @return The temporal.
      */
     @java.lang.Override
@@ -2222,7 +2321,7 @@ private static final long serialVersionUID = 0L;
       return temporal_;
     }
     /**
-     * <code>bool temporal = 15;</code>
+     * <code>bool temporal = 16;</code>
      * @param value The temporal to set.
      * @return This builder for chaining.
      */
@@ -2233,7 +2332,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool temporal = 15;</code>
+     * <code>bool temporal = 16;</code>
      * @return This builder for chaining.
      */
     public Builder clearTemporal() {
@@ -2245,7 +2344,7 @@ private static final long serialVersionUID = 0L;
 
     private boolean dimensional_ ;
     /**
-     * <code>bool dimensional = 16;</code>
+     * <code>bool dimensional = 17;</code>
      * @return The dimensional.
      */
     @java.lang.Override
@@ -2253,7 +2352,7 @@ private static final long serialVersionUID = 0L;
       return dimensional_;
     }
     /**
-     * <code>bool dimensional = 16;</code>
+     * <code>bool dimensional = 17;</code>
      * @param value The dimensional to set.
      * @return This builder for chaining.
      */
@@ -2264,12 +2363,43 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool dimensional = 16;</code>
+     * <code>bool dimensional = 17;</code>
      * @return This builder for chaining.
      */
     public Builder clearDimensional() {
       
       dimensional_ = false;
+      onChanged();
+      return this;
+    }
+
+    private boolean statistical_ ;
+    /**
+     * <code>bool statistical = 18;</code>
+     * @return The statistical.
+     */
+    @java.lang.Override
+    public boolean getStatistical() {
+      return statistical_;
+    }
+    /**
+     * <code>bool statistical = 18;</code>
+     * @param value The statistical to set.
+     * @return This builder for chaining.
+     */
+    public Builder setStatistical(boolean value) {
+      
+      statistical_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool statistical = 18;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearStatistical() {
+      
+      statistical_ = false;
       onChanged();
       return this;
     }

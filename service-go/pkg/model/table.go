@@ -77,7 +77,7 @@ func (a *Table) Query(ctx context.Context, query *db.Query) ([]*unitable.Table, 
 
 	tx := a.DB.DB.WithContext(ctx)
 	if query != nil {
-		tx = query.Apply(tx)
+		tx = query.Apply(tx, nil)
 	}
 
 	return tables, tx.Find(&tables).Error

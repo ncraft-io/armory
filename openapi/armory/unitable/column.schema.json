@@ -69,9 +69,19 @@
             "description": "是否为引用字段，可以设置是否自动join",
             "type": "string"
         },
+        "repeated": {
+            "title": "mojo.core.Bool",
+            "description": "is Array type",
+            "type": "boolean"
+        },
         "show": {
             "title": "mojo.core.Bool",
             "description": "是否需要显示",
+            "type": "boolean"
+        },
+        "statistical": {
+            "title": "mojo.core.Bool",
+            "description": "是否可以被统计",
             "type": "boolean"
         },
         "tableId": {
