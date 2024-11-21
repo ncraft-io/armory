@@ -1,6 +1,6 @@
 module github.com/ncraft-io/armory/service-go
 
-go 1.21
+go 1.22
 
 toolchain go1.22.4
 
@@ -13,7 +13,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/mojo-lang/core/go v0.0.0-20241101072631-6f07aa735416
-	github.com/mojo-lang/db/go v0.0.0-20241101073505-29cb3d610a5d
+	github.com/mojo-lang/db/go v0.0.0-20241121074108-50ee5e6736ca
 	github.com/mojo-lang/http/go v0.0.0-20240627072315-89ee9c59b807
 	github.com/mojo-lang/mojo/go v0.0.0-20240807122300-2fee6f63223b
 	github.com/ncraft-io/armory/go v0.0.0
@@ -83,7 +83,7 @@ require (
 	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.5.4 // indirect
+	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -132,10 +132,10 @@ require (
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sync v0.9.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20230913181813-007df8e322eb // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230803162519-f966b187b2e5 // indirect
@@ -146,6 +146,6 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.3.3 // indirect
-	gorm.io/driver/postgres v1.5.0 // indirect
+	gorm.io/driver/postgres v1.5.9 // indirect
 	gorm.io/driver/sqlite v1.5.6 // indirect
 )

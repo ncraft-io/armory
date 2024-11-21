@@ -33,7 +33,7 @@ func ParseQuery(request interface{}) (*db.Query, error) {
 		if field, ok := typeOf.FieldByName("Order"); ok {
 			f := valueOf.FieldByIndex(field.Index)
 			if !f.IsNil() {
-				if order, ok := reflect.Indirect(f).Interface().(*core.Ordering); ok {
+				if order, ok := f.Interface().(*core.Ordering); ok {
 					query.Order = order
 				}
 			}
@@ -49,7 +49,7 @@ func ParseQuery(request interface{}) (*db.Query, error) {
 		if field, ok := typeOf.FieldByName("FieldMask"); ok {
 			f := valueOf.FieldByIndex(field.Index)
 			if !f.IsNil() {
-				if fm, ok := reflect.Indirect(f).Interface().(*core.FieldMask); ok {
+				if fm, ok := f.Interface().(*core.FieldMask); ok {
 					query.FieldMask = fm
 				}
 			}
