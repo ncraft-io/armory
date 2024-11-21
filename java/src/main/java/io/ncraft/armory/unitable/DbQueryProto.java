@@ -35,16 +35,16 @@ public final class DbQueryProto {
     java.lang.String[] descriptorData = {
       "\n\036armory/unitable/db_query.proto\022\017armory" +
       ".unitable\032\034armory/unitable/column.proto\032" +
-      "\017mojo/mojo.proto\"\346\001\n\007DbQuery\022\n\n\002id\030\001 \001(\t" +
+      "\017mojo/mojo.proto\"\370\001\n\007DbQuery\022\n\n\002id\030\001 \001(\t" +
       "\022\014\n\004name\030\002 \001(\t\022\013\n\003sql\030\003 \001(\t\0226\n\nparameter" +
       "s\030\004 \003(\0132\".armory.unitable.DbQuery.Parame" +
       "ter\022\r\n\005table\030\005 \001(\t\0222\n\007columns\030\017 \003(\0132\027.ar" +
-      "mory.unitable.ColumnB\010\332\317$\000\350\325$\001\0329\n\tParame" +
+      "mory.unitable.ColumnB\010\332\317$\000\350\325$\001\032K\n\tParame" +
       "ter\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\020\n\010is_ar" +
-      "ray\030\003 \001(\010Bh\n\031io.ncraft.armory.unitableB\014" +
-      "DbQueryProtoP\001Z;github.com/ncraft-io/arm" +
-      "ory/go/pkg/armory/unitable;unitableb\006pro" +
-      "to3"
+      "ray\030\003 \001(\010\022\020\n\010pg_array\030\004 \001(\010Bh\n\031io.ncraft" +
+      ".armory.unitableB\014DbQueryProtoP\001Z;github" +
+      ".com/ncraft-io/armory/go/pkg/armory/unit" +
+      "able;unitableb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -63,7 +63,7 @@ public final class DbQueryProto {
     internal_static_armory_unitable_DbQuery_Parameter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_armory_unitable_DbQuery_Parameter_descriptor,
-        new java.lang.String[] { "Name", "Type", "IsArray", });
+        new java.lang.String[] { "Name", "Type", "IsArray", "PgArray", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(org.mojolang.mojo.MojoProtos.dbJson);

@@ -12,13 +12,21 @@ func (x *DbQuery_Parameter) Format() string {
 				if pluralize.NewClient().IsPlural(x.Name) {
 					return x.Name
 				} else {
-					return x.Name + "::array"
+					if x.PgArray {
+						return x.Name + "::pgarray"
+					} else {
+						return x.Name + "::array"
+					}
 				}
 			} else {
 				if pluralize.NewClient().IsPlural(x.Name) {
 					return x.Name + ":" + x.Type
 				} else {
-					return x.Name + ":" + x.Type + ":array"
+					if x.PgArray {
+						return x.Name + ":" + x.Type + ":pgarray"
+					} else {
+						return x.Name + ":" + x.Type + ":array"
+					}
 				}
 			}
 		} else {
@@ -52,6 +60,9 @@ func (x *DbQuery_Parameter) Parse(value string) error {
 			switch strings.ToLower(segments[2]) {
 			case "true", "array":
 				x.IsArray = true
+			case "pgarray":
+				x.IsArray = true
+				x.PgArray = true
 			}
 		} else {
 			if pluralize.NewClient().IsPlural(x.Name) {

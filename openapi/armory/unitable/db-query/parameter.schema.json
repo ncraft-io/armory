@@ -11,6 +11,10 @@
             "title": "mojo.core.String",
             "type": "string"
         },
+        "pgArray": {
+            "title": "mojo.core.Bool",
+            "type": "boolean"
+        },
         "type": {
             "title": "mojo.core.String",
             "type": "string"

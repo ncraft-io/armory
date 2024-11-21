@@ -4,6 +4,7 @@ type DbQuery {
         name: String @1
         type: String @2
         is_array: Bool @3
+        pg_array: Bool @4
     }
 
     id: String @1

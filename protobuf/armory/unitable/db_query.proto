@@ -17,6 +17,7 @@ message DbQuery {
         string name = 1;
         string type = 2;
         bool is_array = 3;
+        bool pg_array = 4;
     }
 
     string id = 1;

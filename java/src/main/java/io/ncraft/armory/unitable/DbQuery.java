@@ -82,6 +82,12 @@ private static final long serialVersionUID = 0L;
      * @return The isArray.
      */
     boolean getIsArray();
+
+    /**
+     * <code>bool pg_array = 4;</code>
+     * @return The pgArray.
+     */
+    boolean getPgArray();
   }
   /**
    * Protobuf type {@code armory.unitable.DbQuery.Parameter}
@@ -212,6 +218,17 @@ private static final long serialVersionUID = 0L;
       return isArray_;
     }
 
+    public static final int PG_ARRAY_FIELD_NUMBER = 4;
+    private boolean pgArray_;
+    /**
+     * <code>bool pg_array = 4;</code>
+     * @return The pgArray.
+     */
+    @java.lang.Override
+    public boolean getPgArray() {
+      return pgArray_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -235,6 +252,9 @@ private static final long serialVersionUID = 0L;
       if (isArray_ != false) {
         output.writeBool(3, isArray_);
       }
+      if (pgArray_ != false) {
+        output.writeBool(4, pgArray_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -253,6 +273,10 @@ private static final long serialVersionUID = 0L;
       if (isArray_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, isArray_);
+      }
+      if (pgArray_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, pgArray_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -275,6 +299,8 @@ private static final long serialVersionUID = 0L;
           .equals(other.getType())) return false;
       if (getIsArray()
           != other.getIsArray()) return false;
+      if (getPgArray()
+          != other.getPgArray()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -293,6 +319,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + IS_ARRAY_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getIsArray());
+      hash = (37 * hash) + PG_ARRAY_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getPgArray());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -427,6 +456,8 @@ private static final long serialVersionUID = 0L;
 
         isArray_ = false;
 
+        pgArray_ = false;
+
         return this;
       }
 
@@ -456,6 +487,7 @@ private static final long serialVersionUID = 0L;
         result.name_ = name_;
         result.type_ = type_;
         result.isArray_ = isArray_;
+        result.pgArray_ = pgArray_;
         onBuilt();
         return result;
       }
@@ -515,6 +547,9 @@ private static final long serialVersionUID = 0L;
         if (other.getIsArray() != false) {
           setIsArray(other.getIsArray());
         }
+        if (other.getPgArray() != false) {
+          setPgArray(other.getPgArray());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -556,6 +591,11 @@ private static final long serialVersionUID = 0L;
 
                 break;
               } // case 24
+              case 32: {
+                pgArray_ = input.readBool();
+
+                break;
+              } // case 32
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -751,6 +791,37 @@ private static final long serialVersionUID = 0L;
       public Builder clearIsArray() {
         
         isArray_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean pgArray_ ;
+      /**
+       * <code>bool pg_array = 4;</code>
+       * @return The pgArray.
+       */
+      @java.lang.Override
+      public boolean getPgArray() {
+        return pgArray_;
+      }
+      /**
+       * <code>bool pg_array = 4;</code>
+       * @param value The pgArray to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPgArray(boolean value) {
+        
+        pgArray_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool pg_array = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPgArray() {
+        
+        pgArray_ = false;
         onChanged();
         return this;
       }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mojo-lang/core/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
+	"github.com/ncraft-io/armory/service-go/pkg/hook"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
@@ -14,6 +15,8 @@ import (
 	"strings"
 
 	"github.com/segmentio/ksuid"
+
+	_ "github.com/ncraft-io/armory/service-go/pkg/hook"
 
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/unitable/v1"
@@ -415,6 +418,8 @@ func (s unitableServer) CreateRow(ctx context.Context, in *pb.CreateRowRequest) 
 		return nil, core.NewInternalError("failed to insert the row in %s, (%v)", in.Table, in.Row.ToMapInterface())
 	}
 
+	hook.GetHook().Run(ctx)
+
 	resp := &core.Object{}
 	resp.SetString("id", id)
 	return resp, nil
@@ -444,6 +449,7 @@ func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) 
 		return nil, core.NewInternalError("failed to update the row in %s, (%v), err: %s", in.Table, in.Row.ToMapInterface(), err.Error())
 	}
 
+	hook.GetHook().Run(ctx)
 	return &core.Null{}, nil
 }
 
@@ -481,6 +487,7 @@ func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) 
 	if _, err := s.Synchro.DeleteRows(ctx, in.Table, in.Id); err != nil {
 		return nil, core.NewInternalError("failed to delete the row %s in %s, err: %s", in.Id, in.Table, err.Error())
 	} else {
+		hook.GetHook().Run(ctx)
 		return &core.Null{}, nil
 	}
 }
@@ -526,7 +533,13 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 						if len(v) == 1 {
 							v = strings.Split(v[0], ",")
 						}
-						values = append(values, v)
+
+						if p.PgArray {
+							//values = append(values, pgtype.FlatArray[string](v))
+							values = append(values, core.NewStringValues(v...))
+						} else {
+							values = append(values, v)
+						}
 					} else {
 						values = append(values, v[0])
 					}
