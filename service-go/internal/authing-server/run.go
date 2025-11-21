@@ -22,17 +22,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 
-	"github.com/ncraft-io/ncraft-gokit/pkg/utils/network"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/utils/network"
 	_ "go.uber.org/automaxprocs"
 
-	nclient "github.com/ncraft-io/ncraft-gokit/pkg/client"
+	nclient "github.com/ncraft-io/ncraft/go/pkg/gokit/client"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 
-	"github.com/ncraft-io/ncraft-gokit/pkg/kit"
-	"github.com/ncraft-io/ncraft-gokit/pkg/metrics"
-	"github.com/ncraft-io/ncraft-gokit/pkg/sd"
-	nserver "github.com/ncraft-io/ncraft-gokit/pkg/server"
-	"github.com/ncraft-io/ncraft-gokit/pkg/tracing"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/kit"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/metrics"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/sd"
+	nserver "github.com/ncraft-io/ncraft/go/pkg/gokit/server"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/tracing"
 
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -59,11 +59,27 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 
 	// Endpoint domain.
 	var (
-		createAccountEndpoint = svc.MakeCreateAccountEndpoint(service)
+		createUserEndpoint     = svc.MakeCreateUserEndpoint(service)
+		updateUserEndpoint     = svc.MakeUpdateUserEndpoint(service)
+		activeUserEndpoint     = svc.MakeActiveUserEndpoint(service)
+		getUserEndpoint        = svc.MakeGetUserEndpoint(service)
+		listUserEndpoint       = svc.MakeListUserEndpoint(service)
+		deleteUserEndpoint     = svc.MakeDeleteUserEndpoint(service)
+		updatePasswordEndpoint = svc.MakeUpdatePasswordEndpoint(service)
+		loginEndpoint          = svc.MakeLoginEndpoint(service)
+		logoutEndpoint         = svc.MakeLogoutEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
-		CreateAccountEndpoint: createAccountEndpoint,
+		CreateUserEndpoint:     createUserEndpoint,
+		UpdateUserEndpoint:     updateUserEndpoint,
+		ActiveUserEndpoint:     activeUserEndpoint,
+		GetUserEndpoint:        getUserEndpoint,
+		ListUserEndpoint:       listUserEndpoint,
+		DeleteUserEndpoint:     deleteUserEndpoint,
+		UpdatePasswordEndpoint: updatePasswordEndpoint,
+		LoginEndpoint:          loginEndpoint,
+		LogoutEndpoint:         logoutEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

@@ -1,0 +1,36 @@
+{
+    "title": "armory.auth.Role",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "description": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "domain": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "policies": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.auth.Policy"
+            }
+        },
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        }
+    }
+}

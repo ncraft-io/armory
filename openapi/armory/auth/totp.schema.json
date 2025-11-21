@@ -1,0 +1,16 @@
+{
+    "title": "armory.auth.TOTP",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "qrCode": {
+            "title": "mojo.core.String",
+            "description": "base64 encoded png image file",
+            "type": "string"
+        },
+        "secret": {
+            "title": "mojo.core.String",
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "title": "armory.auth.Permission",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "action": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "attributes": {
+            "$ref": "#/components/schemas/mojo.core.Object"
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "description": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "domain": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "resource": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        }
+    }
+}

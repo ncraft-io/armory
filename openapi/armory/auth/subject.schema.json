@@ -1,0 +1,27 @@
+{
+    "title": "armory.auth.Subject",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "attributes": {
+            "$ref": "#/components/schemas/mojo.core.Object"
+        },
+        "domain": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "type": {
+            "title": "mojo.core.String",
+            "description": "one of user,group,access_key",
+            "type": "string"
+        }
+    }
+}

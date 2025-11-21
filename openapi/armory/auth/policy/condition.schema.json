@@ -1,0 +1,22 @@
+{
+    "title": "armory.auth.Policy.Condition",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "key": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "operator": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "values": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/mojo.core.Value"
+            }
+        }
+    }
+}

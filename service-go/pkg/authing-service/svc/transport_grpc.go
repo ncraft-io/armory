@@ -19,6 +19,7 @@ import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/auth"
 
 	// this service api
@@ -26,7 +27,11 @@ import (
 )
 
 var (
-	_ = auth.Account{}
+	_ = auth.User{}
+	_ = core.Null{}
+	_ = auth.LogonUser{}
+	_ = core.Ordering{}
+	_ = core.FieldMask{}
 )
 
 // MakeGRPCServer makes a set of endpoints available as a gRPC AuthingServer.
@@ -46,12 +51,68 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 	return &grpcServer{
 		// Authing
 
-		createAccount: grpctransport.NewServer(
-			endpoints.CreateAccountEndpoint,
-			DecodeGRPCCreateAccountRequest,
-			EncodeGRPCCreateAccountResponse,
-			addTracerOption("create_account")...,
-		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "create_account", logger)))...,
+		createUser: grpctransport.NewServer(
+			endpoints.CreateUserEndpoint,
+			DecodeGRPCCreateUserRequest,
+			EncodeGRPCCreateUserResponse,
+			addTracerOption("create_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "create_user", logger)))...,
+		),
+		updateUser: grpctransport.NewServer(
+			endpoints.UpdateUserEndpoint,
+			DecodeGRPCUpdateUserRequest,
+			EncodeGRPCUpdateUserResponse,
+			addTracerOption("update_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "update_user", logger)))...,
+		),
+		activeUser: grpctransport.NewServer(
+			endpoints.ActiveUserEndpoint,
+			DecodeGRPCActiveUserRequest,
+			EncodeGRPCActiveUserResponse,
+			addTracerOption("active_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "active_user", logger)))...,
+		),
+		getUser: grpctransport.NewServer(
+			endpoints.GetUserEndpoint,
+			DecodeGRPCGetUserRequest,
+			EncodeGRPCGetUserResponse,
+			addTracerOption("get_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "get_user", logger)))...,
+		),
+		listUser: grpctransport.NewServer(
+			endpoints.ListUserEndpoint,
+			DecodeGRPCListUserRequest,
+			EncodeGRPCListUserResponse,
+			addTracerOption("list_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_user", logger)))...,
+		),
+		deleteUser: grpctransport.NewServer(
+			endpoints.DeleteUserEndpoint,
+			DecodeGRPCDeleteUserRequest,
+			EncodeGRPCDeleteUserResponse,
+			addTracerOption("delete_user")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "delete_user", logger)))...,
+		),
+		updatePassword: grpctransport.NewServer(
+			endpoints.UpdatePasswordEndpoint,
+			DecodeGRPCUpdatePasswordRequest,
+			EncodeGRPCUpdatePasswordResponse,
+			addTracerOption("update_password")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "update_password", logger)))...,
+		),
+		login: grpctransport.NewServer(
+			endpoints.LoginEndpoint,
+			DecodeGRPCLoginRequest,
+			EncodeGRPCLoginResponse,
+			addTracerOption("login")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "login", logger)))...,
+		),
+		logout: grpctransport.NewServer(
+			endpoints.LogoutEndpoint,
+			DecodeGRPCLogoutRequest,
+			EncodeGRPCLogoutResponse,
+			addTracerOption("logout")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "logout", logger)))...,
 		),
 	}
 }
@@ -60,34 +121,218 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 type grpcServer struct {
 	pb.UnimplementedAuthingServer
 
-	createAccount grpctransport.Handler
+	createUser     grpctransport.Handler
+	updateUser     grpctransport.Handler
+	activeUser     grpctransport.Handler
+	getUser        grpctransport.Handler
+	listUser       grpctransport.Handler
+	deleteUser     grpctransport.Handler
+	updatePassword grpctransport.Handler
+	login          grpctransport.Handler
+	logout         grpctransport.Handler
 }
 
 // Methods for grpcServer to implement AuthingServer interface
 
-func (s *grpcServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*auth.Account, error) {
-	_, rep, err := s.createAccount.ServeGRPC(ctx, req)
+func (s *grpcServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*auth.User, error) {
+	_, rep, err := s.createUser.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*auth.Account), nil
+	return rep.(*auth.User), nil
+}
+
+func (s *grpcServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*core.Null, error) {
+	_, rep, err := s.updateUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
+}
+
+func (s *grpcServer) ActiveUser(ctx context.Context, req *pb.ActiveUserRequest) (*auth.LogonUser, error) {
+	_, rep, err := s.activeUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*auth.LogonUser), nil
+}
+
+func (s *grpcServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*auth.User, error) {
+	_, rep, err := s.getUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*auth.User), nil
+}
+
+func (s *grpcServer) ListUser(ctx context.Context, req *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	_, rep, err := s.listUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.ListUserResponse), nil
+}
+
+func (s *grpcServer) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*core.Null, error) {
+	_, rep, err := s.deleteUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
+}
+
+func (s *grpcServer) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest) (*core.Null, error) {
+	_, rep, err := s.updatePassword.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
+}
+
+func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*auth.LogonUser, error) {
+	_, rep, err := s.login.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*auth.LogonUser), nil
+}
+
+func (s *grpcServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*core.Null, error) {
+	_, rep, err := s.logout.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
 }
 
 // Server Decode
 
-// DecodeGRPCCreateAccountRequest is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC CreateAccount request to a user-domain CreateAccount request. Primarily useful in a server.
-func DecodeGRPCCreateAccountRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-	req := grpcReq.(*pb.CreateAccountRequest)
+// DecodeGRPCCreateUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC CreateUser request to a user-domain CreateUser request. Primarily useful in a server.
+func DecodeGRPCCreateUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.CreateUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCUpdateUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC UpdateUser request to a user-domain UpdateUser request. Primarily useful in a server.
+func DecodeGRPCUpdateUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.UpdateUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCActiveUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ActiveUser request to a user-domain ActiveUser request. Primarily useful in a server.
+func DecodeGRPCActiveUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ActiveUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCGetUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC GetUser request to a user-domain GetUser request. Primarily useful in a server.
+func DecodeGRPCGetUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.GetUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCListUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ListUser request to a user-domain ListUser request. Primarily useful in a server.
+func DecodeGRPCListUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ListUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCDeleteUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC DeleteUser request to a user-domain DeleteUser request. Primarily useful in a server.
+func DecodeGRPCDeleteUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.DeleteUserRequest)
+	return req, nil
+}
+
+// DecodeGRPCUpdatePasswordRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC UpdatePassword request to a user-domain UpdatePassword request. Primarily useful in a server.
+func DecodeGRPCUpdatePasswordRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.UpdatePasswordRequest)
+	return req, nil
+}
+
+// DecodeGRPCLoginRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC Login request to a user-domain Login request. Primarily useful in a server.
+func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.LoginRequest)
+	return req, nil
+}
+
+// DecodeGRPCLogoutRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC Logout request to a user-domain Logout request. Primarily useful in a server.
+func DecodeGRPCLogoutRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.LogoutRequest)
 	return req, nil
 }
 
 // Server Encode
 
-// EncodeGRPCCreateAccountResponse is a transport/grpc.EncodeResponseFunc that converts a
-// user-domain CreateAccount response to a gRPC CreateAccount reply. Primarily useful in a server.
-func EncodeGRPCCreateAccountResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*auth.Account)
+// EncodeGRPCCreateUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain CreateUser response to a gRPC CreateUser reply. Primarily useful in a server.
+func EncodeGRPCCreateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*auth.User)
+	return resp, nil
+}
+
+// EncodeGRPCUpdateUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain UpdateUser response to a gRPC UpdateUser reply. Primarily useful in a server.
+func EncodeGRPCUpdateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCActiveUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ActiveUser response to a gRPC ActiveUser reply. Primarily useful in a server.
+func EncodeGRPCActiveUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*auth.LogonUser)
+	return resp, nil
+}
+
+// EncodeGRPCGetUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain GetUser response to a gRPC GetUser reply. Primarily useful in a server.
+func EncodeGRPCGetUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*auth.User)
+	return resp, nil
+}
+
+// EncodeGRPCListUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ListUser response to a gRPC ListUser reply. Primarily useful in a server.
+func EncodeGRPCListUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.ListUserResponse)
+	return resp, nil
+}
+
+// EncodeGRPCDeleteUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain DeleteUser response to a gRPC DeleteUser reply. Primarily useful in a server.
+func EncodeGRPCDeleteUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCUpdatePasswordResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain UpdatePassword response to a gRPC UpdatePassword reply. Primarily useful in a server.
+func EncodeGRPCUpdatePasswordResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCLoginResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain Login response to a gRPC Login reply. Primarily useful in a server.
+func EncodeGRPCLoginResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*auth.LogonUser)
+	return resp, nil
+}
+
+// EncodeGRPCLogoutResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain Logout response to a gRPC Logout reply. Primarily useful in a server.
+func EncodeGRPCLogoutResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
 	return resp, nil
 }
 

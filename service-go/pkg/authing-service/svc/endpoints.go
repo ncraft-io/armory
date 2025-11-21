@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/auth"
 
 	// this service api
@@ -23,7 +24,11 @@ import (
 )
 
 var (
-	_ = auth.Account{}
+	_ = auth.User{}
+	_ = core.Null{}
+	_ = auth.LogonUser{}
+	_ = core.Ordering{}
+	_ = core.FieldMask{}
 )
 
 // Endpoints collects all of the endpoints that compose an add service. It's
@@ -40,25 +45,185 @@ var (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
-	CreateAccountEndpoint endpoint.Endpoint
+	CreateUserEndpoint     endpoint.Endpoint
+	UpdateUserEndpoint     endpoint.Endpoint
+	ActiveUserEndpoint     endpoint.Endpoint
+	GetUserEndpoint        endpoint.Endpoint
+	ListUserEndpoint       endpoint.Endpoint
+	DeleteUserEndpoint     endpoint.Endpoint
+	UpdatePasswordEndpoint endpoint.Endpoint
+	LoginEndpoint          endpoint.Endpoint
+	LogoutEndpoint         endpoint.Endpoint
 }
 
 // Endpoints
 
-func (e Endpoints) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*auth.Account, error) {
-	response, err := e.CreateAccountEndpoint(ctx, in)
+func (e Endpoints) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*auth.User, error) {
+	response, err := e.CreateUserEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*auth.Account), nil
+	return response.(*auth.User), nil
+}
+
+func (e Endpoints) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*core.Null, error) {
+	response, err := e.UpdateUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
+}
+
+func (e Endpoints) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest) (*auth.LogonUser, error) {
+	response, err := e.ActiveUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*auth.LogonUser), nil
+}
+
+func (e Endpoints) GetUser(ctx context.Context, in *pb.GetUserRequest) (*auth.User, error) {
+	response, err := e.GetUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*auth.User), nil
+}
+
+func (e Endpoints) ListUser(ctx context.Context, in *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	response, err := e.ListUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.ListUserResponse), nil
+}
+
+func (e Endpoints) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*core.Null, error) {
+	response, err := e.DeleteUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
+}
+
+func (e Endpoints) UpdatePassword(ctx context.Context, in *pb.UpdatePasswordRequest) (*core.Null, error) {
+	response, err := e.UpdatePasswordEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
+}
+
+func (e Endpoints) Login(ctx context.Context, in *pb.LoginRequest) (*auth.LogonUser, error) {
+	response, err := e.LoginEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*auth.LogonUser), nil
+}
+
+func (e Endpoints) Logout(ctx context.Context, in *pb.LogoutRequest) (*core.Null, error) {
+	response, err := e.LogoutEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
 }
 
 // Make Endpoints
 
-func MakeCreateAccountEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+func MakeCreateUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*pb.CreateAccountRequest)
-		v, err := s.CreateAccount(ctx, req)
+		req := request.(*pb.CreateUserRequest)
+		v, err := s.CreateUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeUpdateUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.UpdateUserRequest)
+		v, err := s.UpdateUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeActiveUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ActiveUserRequest)
+		v, err := s.ActiveUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeGetUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.GetUserRequest)
+		v, err := s.GetUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeListUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ListUserRequest)
+		v, err := s.ListUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeDeleteUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.DeleteUserRequest)
+		v, err := s.DeleteUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeUpdatePasswordEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.UpdatePasswordRequest)
+		v, err := s.UpdatePassword(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeLoginEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.LoginRequest)
+		v, err := s.Login(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeLogoutEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.LogoutRequest)
+		v, err := s.Logout(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +238,15 @@ func MakeCreateAccountEndpoint(s pb.AuthingServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
-		"create_account": struct{}{},
+		"create_user":     struct{}{},
+		"update_user":     struct{}{},
+		"active_user":     struct{}{},
+		"get_user":        struct{}{},
+		"list_user":       struct{}{},
+		"delete_user":     struct{}{},
+		"update_password": struct{}{},
+		"login":           struct{}{},
+		"logout":          struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -84,8 +257,32 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	}
 
 	for inc, _ := range included {
-		if inc == "create_account" {
-			e.CreateAccountEndpoint = middleware(e.CreateAccountEndpoint)
+		if inc == "create_user" {
+			e.CreateUserEndpoint = middleware(e.CreateUserEndpoint)
+		}
+		if inc == "update_user" {
+			e.UpdateUserEndpoint = middleware(e.UpdateUserEndpoint)
+		}
+		if inc == "active_user" {
+			e.ActiveUserEndpoint = middleware(e.ActiveUserEndpoint)
+		}
+		if inc == "get_user" {
+			e.GetUserEndpoint = middleware(e.GetUserEndpoint)
+		}
+		if inc == "list_user" {
+			e.ListUserEndpoint = middleware(e.ListUserEndpoint)
+		}
+		if inc == "delete_user" {
+			e.DeleteUserEndpoint = middleware(e.DeleteUserEndpoint)
+		}
+		if inc == "update_password" {
+			e.UpdatePasswordEndpoint = middleware(e.UpdatePasswordEndpoint)
+		}
+		if inc == "login" {
+			e.LoginEndpoint = middleware(e.LoginEndpoint)
+		}
+		if inc == "logout" {
+			e.LogoutEndpoint = middleware(e.LogoutEndpoint)
 		}
 	}
 }
@@ -101,7 +298,15 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
-		"create_account": struct{}{},
+		"create_user":     struct{}{},
+		"update_user":     struct{}{},
+		"active_user":     struct{}{},
+		"get_user":        struct{}{},
+		"list_user":       struct{}{},
+		"delete_user":     struct{}{},
+		"update_password": struct{}{},
+		"login":           struct{}{},
+		"logout":          struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -112,8 +317,32 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	}
 
 	for inc, _ := range included {
-		if inc == "create_account" {
-			e.CreateAccountEndpoint = middleware("create_account", e.CreateAccountEndpoint)
+		if inc == "create_user" {
+			e.CreateUserEndpoint = middleware("create_user", e.CreateUserEndpoint)
+		}
+		if inc == "update_user" {
+			e.UpdateUserEndpoint = middleware("update_user", e.UpdateUserEndpoint)
+		}
+		if inc == "active_user" {
+			e.ActiveUserEndpoint = middleware("active_user", e.ActiveUserEndpoint)
+		}
+		if inc == "get_user" {
+			e.GetUserEndpoint = middleware("get_user", e.GetUserEndpoint)
+		}
+		if inc == "list_user" {
+			e.ListUserEndpoint = middleware("list_user", e.ListUserEndpoint)
+		}
+		if inc == "delete_user" {
+			e.DeleteUserEndpoint = middleware("delete_user", e.DeleteUserEndpoint)
+		}
+		if inc == "update_password" {
+			e.UpdatePasswordEndpoint = middleware("update_password", e.UpdatePasswordEndpoint)
+		}
+		if inc == "login" {
+			e.LoginEndpoint = middleware("login", e.LoginEndpoint)
+		}
+		if inc == "logout" {
+			e.LogoutEndpoint = middleware("logout", e.LogoutEndpoint)
 		}
 	}
 }

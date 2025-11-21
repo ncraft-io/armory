@@ -12,7 +12,7 @@ type SQLRunner struct {
 
 func (r *SQLRunner) Run(ctx context.Context) {
 	if r != nil {
-		err := synchro.GetDataDB().Exec(r.SQL).Error
+		err := synchro.GetDataDB("").Exec(r.SQL).Error
 		if err != nil {
 			logs.ErrLogw("failed to run the sql", "sql", r.SQL, "err", err)
 		} else {

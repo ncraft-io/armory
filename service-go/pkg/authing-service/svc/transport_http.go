@@ -30,12 +30,12 @@ import (
 	"github.com/pkg/errors"
 
 	httptransport "github.com/go-kit/kit/transport/http"
-	mjhttp "github.com/mojo-lang/http/go/pkg/mojo/http"
-	pagination "github.com/ncraft-io/ncraft-gokit/pkg/pagination"
-	nhttp "github.com/ncraft-io/ncraft-gokit/pkg/transport/http"
+	mjhttp "github.com/mojo-lang/mojo/go/pkg/mojo/http"
+	pagination "github.com/ncraft-io/ncraft/go/pkg/gokit/pagination"
+	nhttp "github.com/ncraft-io/ncraft/go/pkg/gokit/transport/http"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 
 	"github.com/ncraft-io/armory/go/pkg/armory/auth"
 
@@ -58,7 +58,11 @@ var (
 )
 
 var (
-	_ = auth.Account{}
+	_ = auth.User{}
+	_ = core.Null{}
+	_ = auth.LogonUser{}
+	_ = core.Ordering{}
+	_ = core.FieldMask{}
 )
 
 var cfg *nhttp.Config
@@ -83,13 +87,141 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		return serverOptions
 	}
 
-	router.Methods("POST").Path("armory/auth/v1/accounts").Handler(
+	router.Methods("POST").Path("/armory/auth/v1/users").Handler(
 		httptransport.NewServer(
-			endpoints.CreateAccountEndpoint,
-			DecodeHTTPCreateAccountZeroRequest,
+			endpoints.CreateUserEndpoint,
+			DecodeHTTPCreateUserZeroRequest,
 			EncodeHTTPGenericResponse,
-			addTracerOption("create_account")...,
-		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "create_account", logger)))...,
+			addTracerOption("create_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "create_user", logger)))...,
+		))
+	router.Methods("POST").Path("/armory/auth/v1/domains/{domain}/users").Handler(
+		httptransport.NewServer(
+			endpoints.CreateUserEndpoint,
+			DecodeHTTPCreateUserOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("create_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "create_user", logger)))...,
+		))
+
+	router.Methods("PUT").Path("/armory/auth/v1/users/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.UpdateUserEndpoint,
+			DecodeHTTPUpdateUserZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("update_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "update_user", logger)))...,
+		))
+	router.Methods("PUT").Path("/armory/auth/v1/domains/{domain}/users/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.UpdateUserEndpoint,
+			DecodeHTTPUpdateUserOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("update_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "update_user", logger)))...,
+		))
+
+	router.Methods("POST").Path("/armory/auth/v1/users/{id}:active").Handler(
+		httptransport.NewServer(
+			endpoints.ActiveUserEndpoint,
+			DecodeHTTPActiveUserZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("active_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "active_user", logger)))...,
+		))
+	router.Methods("POST").Path("/armory/auth/v1/domains/{domain}/users/{id}:active").Handler(
+		httptransport.NewServer(
+			endpoints.ActiveUserEndpoint,
+			DecodeHTTPActiveUserOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("active_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "active_user", logger)))...,
+		))
+
+	router.Methods("GET").Path("/armory/auth/v1/users/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.GetUserEndpoint,
+			DecodeHTTPGetUserZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("get_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_user", logger)))...,
+		))
+
+	router.Methods("GET").Path("/armory/auth/v1/users").Handler(
+		httptransport.NewServer(
+			endpoints.ListUserEndpoint,
+			DecodeHTTPListUserZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("list_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_user", logger)))...,
+		))
+	router.Methods("GET").Path("/armory/auth/v1/domains/{domain}/users").Handler(
+		httptransport.NewServer(
+			endpoints.ListUserEndpoint,
+			DecodeHTTPListUserOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("list_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_user", logger)))...,
+		))
+
+	router.Methods("DELETE").Path("/armory/auth/v1/users/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.DeleteUserEndpoint,
+			DecodeHTTPDeleteUserZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("delete_user")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "delete_user", logger)))...,
+		))
+
+	router.Methods("PUT").Path("/armory/auth/v1/users/{id}/passwords").Handler(
+		httptransport.NewServer(
+			endpoints.UpdatePasswordEndpoint,
+			DecodeHTTPUpdatePasswordZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("update_password")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "update_password", logger)))...,
+		))
+	router.Methods("PUT").Path("/armory/auth/v1/domains/{domain}/users/{id}/passwords").Handler(
+		httptransport.NewServer(
+			endpoints.UpdatePasswordEndpoint,
+			DecodeHTTPUpdatePasswordOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("update_password")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "update_password", logger)))...,
+		))
+
+	router.Methods("POST").Path("/armory/auth/v1/users:login").Handler(
+		httptransport.NewServer(
+			endpoints.LoginEndpoint,
+			DecodeHTTPLoginZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("login")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "login", logger)))...,
+		))
+	router.Methods("POST").Path("/armory/auth/v1/domains/{domain}/users:login").Handler(
+		httptransport.NewServer(
+			endpoints.LoginEndpoint,
+			DecodeHTTPLoginOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("login")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "login", logger)))...,
+		))
+
+	router.Methods("POST").Path("/armory/auth/v1/users:logout").Handler(
+		httptransport.NewServer(
+			endpoints.LogoutEndpoint,
+			DecodeHTTPLogoutZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("logout")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "logout", logger)))...,
+		))
+	router.Methods("POST").Path("/armory/auth/v1/domains/{domain}/users:logout").Handler(
+		httptransport.NewServer(
+			endpoints.LogoutEndpoint,
+			DecodeHTTPLogoutOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("logout")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "logout", logger)))...,
 		))
 }
 
@@ -169,11 +301,345 @@ func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 
 // Server Decode
 
-// DecodeHTTPCreateAccountZeroRequest is a transport/http.DecodeRequestFunc that
-// decodes a JSON-encoded create_account request from the HTTP request
+// DecodeHTTPCreateUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded create_user request from the HTTP request
 // body. Primarily useful in a server.
-func DecodeHTTPCreateAccountZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req pb.CreateAccountRequest
+func DecodeHTTPCreateUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.CreateUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.User = &auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.User); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	userInitialized := false
+	if req.User == nil {
+		userInitialized = true
+		req.User = &auth.User{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.User, "user")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if userInitialized {
+				req.User = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPCreateUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded create_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.CreateUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.User = &auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.User); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	userInitialized := false
+	if req.User == nil {
+		userInitialized = true
+		req.User = &auth.User{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.User, "user")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if userInitialized {
+				req.User = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPUpdateUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded update_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdateUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.UpdateUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.User = &auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.User); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	userInitialized := false
+	if req.User == nil {
+		userInitialized = true
+		req.User = &auth.User{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.User, "user")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if userInitialized {
+				req.User = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPUpdateUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded update_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdateUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.UpdateUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.User = &auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.User); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	userInitialized := false
+	if req.User == nil {
+		userInitialized = true
+		req.User = &auth.User{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.User, "user")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if userInitialized {
+				req.User = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPActiveUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded active_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPActiveUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ActiveUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ActiveUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -215,14 +681,915 @@ func DecodeHTTPCreateAccountZeroRequest(_ context.Context, r *http.Request) (int
 	parsedQueryParams := make(map[string]bool)
 	_ = parsedQueryParams
 
-	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Database, "database")
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
 	if err != nil && !core.IsNotFoundError(err) {
-		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
 	}
 
-	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Table, "table")
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
 	if err != nil && !core.IsNotFoundError(err) {
-		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Passcode, "passcode")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the passcode  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.ResetPassword, "reset_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the reset_password  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPActiveUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded active_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPActiveUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ActiveUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ActiveUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Passcode, "passcode")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the passcode  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.ResetPassword, "reset_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the reset_password  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPGetUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded get_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPGetUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.GetUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPListUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded list_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPListUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ListUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPListUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded list_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPListUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ListUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPDeleteUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded delete_user request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPDeleteUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.DeleteUserRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to DeleteUserRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPUpdatePasswordZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded update_password request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdatePasswordZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.UpdatePasswordRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdatePasswordRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.NewPassword, "new_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the new_password  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.OldPassword, "old_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the old_password  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPUpdatePasswordOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded update_password request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdatePasswordOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.UpdatePasswordRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdatePasswordRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.NewPassword, "new_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the new_password  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.OldPassword, "old_password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the old_password  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPLoginZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded login request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPLoginZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.LoginRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to LoginRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Captcha, "captcha")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the captcha  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Otp, "otp")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the otp  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Password, "password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the password  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Type, "type")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the type  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.User, "user")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPLoginOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded login request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPLoginOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.LoginRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to LoginRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Captcha, "captcha")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the captcha  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Otp, "otp")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the otp  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Password, "password")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the password  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Type, "type")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the type  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.User, "user")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPLogoutZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded logout request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPLogoutZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.LogoutRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to LogoutRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.User, "user")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPLogoutOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded logout request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPLogoutOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.LogoutRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to LogoutRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.User, "user")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
 	}
 
 	return &req, nil
@@ -327,6 +1694,22 @@ func headersToContext(ctx context.Context, r *http.Request) context.Context {
 	accessKey := r.URL.Query().Get("access_key")
 	if len(accessKey) > 0 {
 		ctx = context.WithValue(ctx, "access_key", accessKey)
+	}
+
+	// Authorization header
+	if auth := r.Header.Get("Authorization"); len(auth) > 0 {
+		if strings.HasPrefix(auth, "Bearer") {
+			auth = strings.TrimSpace(strings.TrimPrefix(auth, "Bearer"))
+			ctx = context.WithValue(ctx, "bearer_token", auth)
+		} else if strings.HasPrefix(auth, "Basic") {
+			auth = strings.TrimSpace(strings.TrimPrefix(auth, "Basic"))
+			ctx = context.WithValue(ctx, "basic_token", auth)
+		}
+	}
+
+	// Authorization cookie
+	if cookie, err := r.Cookie("auth_token"); err == nil && cookie != nil {
+		ctx = context.WithValue(ctx, "auth_token", cookie.Value)
 	}
 
 	// Tune specific change.

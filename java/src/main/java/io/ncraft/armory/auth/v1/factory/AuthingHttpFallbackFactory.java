@@ -26,8 +26,48 @@ public class AuthingHttpFallbackFactory implements FallbackFactory<AuthingHttp> 
         return new AuthingHttp() {
             
             @Override
-            public Result<Account> createAccount(String database, String table) {
-                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to create_account."));
+            public Result<User> createUser(String domain, User user) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to create_user."));
+            }
+            
+            @Override
+            public Result<Null> updateUser(String domain, String id, User user) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to update_user."));
+            }
+            
+            @Override
+            public Result<LogonUser> activeUser(String domain, String id, String resetPassword, String passcode) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to active_user."));
+            }
+            
+            @Override
+            public Result<User> getUser(String id) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to get_user."));
+            }
+            
+            @Override
+            public Pagination<User> listUser(String domain, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
+                 return Pagination.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to list_user."));
+            }
+            
+            @Override
+            public Result<Null> deleteUser(String id) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to delete_user."));
+            }
+            
+            @Override
+            public Result<Null> updatePassword(String domain, String id, String oldPassword, String newPassword) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to update_password."));
+            }
+            
+            @Override
+            public Result<LogonUser> login(String user, String captcha, String password, String otp, String type, String domain) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to login."));
+            }
+            
+            @Override
+            public Result<Null> logout(String user) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to logout."));
             }
             
         };

@@ -1,0 +1,71 @@
+{
+    "title": "armory.auth.User",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "active": {
+            "title": "mojo.core.Bool",
+            "description": "是否激活",
+            "type": "boolean"
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "deleteTime": {
+            "$ref": "#/components/schemas/mojo.db.DeleteTime"
+        },
+        "description": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "domain": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "emailAddress": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "loginTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "nickName": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "otpSecret": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "password": {
+            "title": "mojo.core.String",
+            "description": "存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密",
+            "type": "string"
+        },
+        "passwordAlgorithm": {
+            "title": "mojo.core.String",
+            "description": "default is md5",
+            "type": "string"
+        },
+        "phoneNumber": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "salt": {
+            "title": "mojo.core.String",
+            "description": "密码盐",
+            "type": "string"
+        },
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        }
+    }
+}

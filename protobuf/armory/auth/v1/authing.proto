@@ -4,18 +4,88 @@ syntax = "proto3";
 
 package armory.auth.v1;
 
-import "armory/auth/account.proto";
+import "armory/auth/logon_user.proto";
+import "armory/auth/user.proto";
+import "mojo/core/field_mask.proto";
+import "mojo/core/null.proto";
+import "mojo/core/ordering.proto";
 
 option go_package = "github.com/ncraft-io/armory/go/pkg/armory/auth/v1;auth";
 option java_multiple_files = true;
 option java_outer_classname = "AuthingProto";
 option java_package = "io.ncraft.armory.auth.v1";
 
-message CreateAccountRequest {
-    string database = 1;
-    string table = 2;
+message CreateUserRequest {
+    string domain = 1;
+    armory.auth.User user = 2;
+}
+
+message UpdateUserRequest {
+    string domain = 1;
+    string id = 2;
+    armory.auth.User user = 3;
+}
+
+message ActiveUserRequest {
+    string domain = 1;
+    string id = 2;
+    string reset_password = 3;
+    string passcode = 4;
+}
+
+message GetUserRequest {
+    string id = 1;
+}
+
+message ListUserRequest {
+    string domain = 1;
+    int32 page_size = 2000;
+    string page_token = 2001;
+    int32 skip = 2002;
+    string filter = 2011;
+    mojo.core.Ordering order = 2012;
+    mojo.core.FieldMask field_mask = 2013;
+    bool unique = 2014;
+}
+
+message ListUserResponse {
+    repeated armory.auth.User users = 1;
+    int32 total_count = 2000;
+    string next_page_token = 2001;
+}
+
+message DeleteUserRequest {
+    string id = 1;
+}
+
+message UpdatePasswordRequest {
+    string domain = 1;
+    string id = 2;
+    string old_password = 3;
+    string new_password = 4;
+}
+
+message LoginRequest {
+    string user = 1;
+    string captcha = 4;
+    string password = 5;
+    string otp = 6;
+    string type = 7;
+    string domain = 8;
+}
+
+message LogoutRequest {
+    string user = 1;
 }
 
 service Authing {
-    rpc create_account(CreateAccountRequest) returns (armory.auth.Account);
+    rpc create_user(CreateUserRequest) returns (armory.auth.User);
+    rpc update_user(UpdateUserRequest) returns (mojo.core.Null);
+    rpc active_user(ActiveUserRequest) returns (armory.auth.LogonUser);
+    rpc get_user(GetUserRequest) returns (armory.auth.User);
+    rpc list_user(ListUserRequest) returns (ListUserResponse);
+    rpc delete_user(DeleteUserRequest) returns (mojo.core.Null);
+    rpc update_password(UpdatePasswordRequest) returns (mojo.core.Null);
+    rpc login(LoginRequest) returns (armory.auth.LogonUser);
+    rpc logout(LogoutRequest) returns (mojo.core.Null);
 }

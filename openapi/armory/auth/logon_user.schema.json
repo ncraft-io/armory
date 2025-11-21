@@ -1,0 +1,20 @@
+{
+    "title": "armory.auth.LogonUser",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "loginTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "token": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "totp": {
+            "$ref": "#/components/schemas/armory.auth.TOTP"
+        },
+        "user": {
+            "$ref": "#/components/schemas/armory.auth.User"
+        }
+    }
+}

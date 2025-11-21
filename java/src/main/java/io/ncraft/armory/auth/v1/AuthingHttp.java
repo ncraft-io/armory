@@ -23,8 +23,60 @@ import io.ncraft.armory.auth.v1.factory.AuthingHttpFallbackFactory;
 public interface AuthingHttp {
     
     @ResponseBody
-    @PostMapping("armory/auth/v1/accounts")
-    Result<Account> createAccount(@RequestParam(name = "database", required = false) String database, 
-				@RequestParam(name = "table", required = false) String table);
+    @PostMapping("/armory/auth/v1/users")
+    Result<User> createUser(@RequestParam(name = "domain", required = false) String domain, 
+				@RequestBody User user);
+    
+    
+    @PutMapping("/armory/auth/v1/users/{id}")
+    Result<Null> updateUser(@RequestParam(name = "domain", required = false) String domain, 
+				@PathVariable("id") String id, 
+				@RequestBody User user);
+    
+    @ResponseBody
+    @PostMapping("/armory/auth/v1/users/{id}:active")
+    Result<LogonUser> activeUser(@RequestParam(name = "domain", required = false) String domain, 
+				@PathVariable("id") String id, 
+				@RequestParam(name = "reset_password", required = false) String resetPassword, 
+				@RequestParam(name = "passcode", required = false) String passcode);
+    
+    @ResponseBody
+    @GetMapping("/armory/auth/v1/users/{id}")
+    Result<User> getUser(@PathVariable("id") String id);
+    
+    @ResponseBody
+    @GetMapping("/armory/auth/v1/users")
+    Pagination<User> listUser(@RequestParam(name = "domain", required = false) String domain, 
+				@RequestParam(name = "page_size", required = false) int pageSize, 
+				@RequestParam(name = "page_token", required = false) String pageToken, 
+				@RequestParam(name = "skip", required = false) int skip, 
+				@RequestParam(name = "filter", required = false) String filter, 
+				@RequestParam(name = "order", required = false) String order, 
+				@RequestParam(name = "field_mask", required = false) String fieldMask, 
+				@RequestParam(name = "unique", required = false) boolean unique);
+    
+    
+    @DeleteMapping("/armory/auth/v1/users/{id}")
+    Result<Null> deleteUser(@PathVariable("id") String id);
+    
+    
+    @PutMapping("/armory/auth/v1/users/{id}/passwords")
+    Result<Null> updatePassword(@RequestParam(name = "domain", required = false) String domain, 
+				@PathVariable("id") String id, 
+				@RequestParam(name = "old_password", required = false) String oldPassword, 
+				@RequestParam(name = "new_password", required = false) String newPassword);
+    
+    @ResponseBody
+    @PostMapping("/armory/auth/v1/users:login")
+    Result<LogonUser> login(@RequestParam(name = "user", required = false) String user, 
+				@RequestParam(name = "captcha", required = false) String captcha, 
+				@RequestParam(name = "password", required = false) String password, 
+				@RequestParam(name = "otp", required = false) String otp, 
+				@RequestParam(name = "type", required = false) String type, 
+				@RequestParam(name = "domain", required = false) String domain);
+    
+    
+    @PostMapping("/armory/auth/v1/users:logout")
+    Result<Null> logout(@RequestParam(name = "user", required = false) String user);
     
 }

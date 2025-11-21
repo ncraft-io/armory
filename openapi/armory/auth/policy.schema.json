@@ -1,0 +1,58 @@
+{
+    "title": "armory.auth.Policy",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "conditions": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.auth.Policy.Condition"
+            }
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "description": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "domain": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "effect": {
+            "title": "armory.auth.Policy.Effect",
+            "type": "string",
+            "enum": [
+                "allow",
+                "deny"
+            ]
+        },
+        "id": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "type": "string"
+        },
+        "permissions": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.auth.Permission"
+            }
+        },
+        "subjects": {
+            "title": "mojo.core.Array",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.auth.Subject"
+            }
+        },
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        }
+    }
+}
