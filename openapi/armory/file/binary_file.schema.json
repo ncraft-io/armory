@@ -1,0 +1,35 @@
+{
+    "title": "armory.file.BinaryFile",
+    "description": "二进制文件，包括文件的元信息及内容",
+    "type": "object",
+    "properties": {
+        "content": {
+            "title": "mojo.core.Bytes",
+            "description": "文件内容",
+            "type": "string",
+            "format": "Bytes"
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "mineType": {
+            "title": "mojo.core.String",
+            "description": "文件的mine-type",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "description": "文件名",
+            "type": "string"
+        },
+        "size": {
+            "title": "mojo.core.Int64",
+            "description": "文件大小，单位：Byte",
+            "type": "integer",
+            "format": "Int64"
+        },
+        "url": {
+            "$ref": "#/components/schemas/mojo.core.Url"
+        }
+    }
+}

@@ -1,0 +1,611 @@
+components:
+  schemas:
+    armory.auth.Binding:
+      title: armory.auth.Binding
+      type: object
+    armory.auth.LogonUser:
+      description: ""
+      properties:
+        loginTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        token:
+          title: mojo.core.String
+          type: string
+        totp:
+          $ref: '#/components/schemas/armory.auth.TOTP'
+        user:
+          $ref: '#/components/schemas/armory.auth.User'
+      title: armory.auth.LogonUser
+      type: object
+    armory.auth.Permission:
+      description: ""
+      properties:
+        action:
+          title: mojo.core.String
+          type: string
+        attributes:
+          $ref: '#/components/schemas/mojo.core.Object'
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        description:
+          title: mojo.core.String
+          type: string
+        domain:
+          title: mojo.core.String
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        resource:
+          title: mojo.core.String
+          type: string
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.auth.Permission
+      type: object
+    armory.auth.Policy:
+      description: ""
+      properties:
+        conditions:
+          items:
+            $ref: '#/components/schemas/armory.auth.Policy.Condition'
+          title: mojo.core.Array
+          type: array
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        description:
+          title: mojo.core.String
+          type: string
+        domain:
+          title: mojo.core.String
+          type: string
+        effect:
+          enum:
+          - allow
+          - deny
+          title: armory.auth.Policy.Effect
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        permissions:
+          items:
+            $ref: '#/components/schemas/armory.auth.Permission'
+          title: mojo.core.Array
+          type: array
+        subjects:
+          items:
+            $ref: '#/components/schemas/armory.auth.Subject'
+          title: mojo.core.Array
+          type: array
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.auth.Policy
+      type: object
+    armory.auth.Policy.Condition:
+      description: ""
+      properties:
+        key:
+          title: mojo.core.String
+          type: string
+        operator:
+          title: mojo.core.String
+          type: string
+        values:
+          items:
+            $ref: '#/components/schemas/mojo.core.Value'
+          title: mojo.core.Array
+          type: array
+      title: armory.auth.Policy.Condition
+      type: object
+    armory.auth.Role:
+      description: ""
+      properties:
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        description:
+          title: mojo.core.String
+          type: string
+        domain:
+          title: mojo.core.String
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        policies:
+          items:
+            $ref: '#/components/schemas/armory.auth.Policy'
+          title: mojo.core.Array
+          type: array
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.auth.Role
+      type: object
+    armory.auth.Subject:
+      description: ""
+      properties:
+        attributes:
+          $ref: '#/components/schemas/mojo.core.Object'
+        domain:
+          title: mojo.core.String
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        type:
+          description: one of user,group,access_key
+          title: mojo.core.String
+          type: string
+      title: armory.auth.Subject
+      type: object
+    armory.auth.TOTP:
+      description: ""
+      properties:
+        qrCode:
+          description: base64 encoded png image file
+          title: mojo.core.String
+          type: string
+        secret:
+          title: mojo.core.String
+          type: string
+      title: armory.auth.TOTP
+      type: object
+    armory.auth.User:
+      description: ""
+      properties:
+        active:
+          description: 是否激活
+          title: mojo.core.Bool
+          type: boolean
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        deleteTime:
+          $ref: '#/components/schemas/mojo.db.DeleteTime'
+        description:
+          title: mojo.core.String
+          type: string
+        domain:
+          title: mojo.core.String
+          type: string
+        emailAddress:
+          title: mojo.core.String
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        loginTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        name:
+          title: mojo.core.String
+          type: string
+        nickName:
+          title: mojo.core.String
+          type: string
+        otpSecret:
+          title: mojo.core.String
+          type: string
+        password:
+          description: 存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密
+          title: mojo.core.String
+          type: string
+        passwordAlgorithm:
+          description: default is md5
+          title: mojo.core.String
+          type: string
+        phoneNumber:
+          title: mojo.core.String
+          type: string
+        salt:
+          description: 密码盐
+          title: mojo.core.String
+          type: string
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.auth.User
+      type: object
+    armory.file.BinaryFile:
+      description: 二进制文件，包括文件的元信息及内容
+      properties:
+        content:
+          description: 文件内容
+          format: Bytes
+          title: mojo.core.Bytes
+          type: string
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        mineType:
+          description: 文件的mine-type
+          title: mojo.core.String
+          type: string
+        name:
+          description: 文件名
+          title: mojo.core.String
+          type: string
+        size:
+          description: 文件大小，单位：Byte
+          format: Int64
+          title: mojo.core.Int64
+          type: integer
+        url:
+          $ref: '#/components/schemas/mojo.core.Url'
+      title: armory.file.BinaryFile
+      type: object
+    armory.unitable.Column:
+      description: unitable的列的元信息
+      properties:
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        database:
+          description: 所属的表单所在的数据库名称
+          title: mojo.core.String
+          type: string
+        dimensional:
+          description: 是否是维度相关的，即可枚举的值
+          title: mojo.core.Bool
+          type: boolean
+        displayName:
+          description: 可以是显示中文的名称
+          title: mojo.core.String
+          type: string
+        editable:
+          description: 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限
+          title: mojo.core.Bool
+          type: boolean
+        example:
+          $ref: '#/components/schemas/mojo.core.Value'
+        exportName:
+          description: 导出时使用的名称，比如Excel导出时
+          title: mojo.core.String
+          type: string
+        filterable:
+          description: 字段能够进行过滤操作
+          title: mojo.core.Bool
+          type: boolean
+        format:
+          description: 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry"
+          title: mojo.core.String
+          type: string
+        groupDisplayName:
+          description: 所属的列的组合名称
+          title: mojo.core.String
+          type: string
+        id:
+          description: 列的ID
+          title: mojo.core.String
+          type: string
+        indexed:
+          description: 是否需要被索引
+          title: mojo.core.Bool
+          type: boolean
+        name:
+          description: 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格
+          title: mojo.core.String
+          type: string
+        originalName:
+          description: 如果该列名为使用函数后的组合名称时，其为原始字段的名称
+          title: mojo.core.String
+          type: string
+        referenced:
+          description: 是否为引用字段，可以设置是否自动join
+          title: mojo.core.String
+          type: string
+        repeated:
+          description: is Array type
+          title: mojo.core.Bool
+          type: boolean
+        show:
+          description: 是否需要显示
+          title: mojo.core.Bool
+          type: boolean
+        statistical:
+          description: 是否可以被统计
+          title: mojo.core.Bool
+          type: boolean
+        tableId:
+          description: 所属的表单ID
+          title: mojo.core.String
+          type: string
+        temporal:
+          description: 是否是临时的
+          title: mojo.core.Bool
+          type: boolean
+        type:
+          description: 列的数据库类型 "bool", "integer", "float", "string"
+          title: mojo.core.String
+          type: string
+        unique:
+          description: 是否需要在表内是唯一的
+          title: mojo.core.Bool
+          type: boolean
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.unitable.Column
+      type: object
+    armory.unitable.Database:
+      description: 数据库元信息
+      properties:
+        description:
+          description: 数据库的描述
+          title: mojo.core.String
+          type: string
+        displayName:
+          description: 数据库的可显示的名称
+          title: mojo.core.String
+          type: string
+        name:
+          description: 数据的名称
+          title: mojo.core.String
+          type: string
+        tables:
+          description: '数据库包含的表单信息 '
+          items:
+            $ref: '#/components/schemas/armory.unitable.Table'
+          title: mojo.core.Array
+          type: array
+      title: armory.unitable.Database
+      type: object
+    armory.unitable.DbQuery:
+      description: Database Query Entity
+      properties:
+        columns:
+          description: the meta info of the column in the query
+          items:
+            $ref: '#/components/schemas/armory.unitable.Column'
+          title: mojo.core.Array
+          type: array
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        database:
+          title: mojo.core.String
+          type: string
+        id:
+          title: mojo.core.String
+          type: string
+        name:
+          title: mojo.core.String
+          type: string
+        parameters:
+          items:
+            $ref: '#/components/schemas/armory.unitable.DbQuery.Parameter'
+          title: mojo.core.Array
+          type: array
+        sql:
+          title: mojo.core.String
+          type: string
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.unitable.DbQuery
+      type: object
+    armory.unitable.DbQuery.Parameter:
+      description: ""
+      properties:
+        isArray:
+          title: mojo.core.Bool
+          type: boolean
+        name:
+          title: mojo.core.String
+          type: string
+        pgArray:
+          title: mojo.core.Bool
+          type: boolean
+        type:
+          title: mojo.core.String
+          type: string
+      title: armory.unitable.DbQuery.Parameter
+      type: object
+    armory.unitable.DbQueryConfig:
+      description: ""
+      properties:
+        queries:
+          items:
+            $ref: '#/components/schemas/armory.unitable.DbQuery'
+          title: mojo.core.Array
+          type: array
+      title: armory.unitable.DbQueryConfig
+      type: object
+    armory.unitable.Table:
+      description: 动态table的元信息
+      properties:
+        columns:
+          description: 表单包含的列的元信息
+          items:
+            $ref: '#/components/schemas/armory.unitable.Column'
+          title: mojo.core.Array
+          type: array
+        createTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+        database:
+          description: 表单所在的数据库名
+          title: mojo.core.String
+          type: string
+        displayName:
+          description: 可以是显示中文的名称
+          title: mojo.core.String
+          type: string
+        exportName:
+          description: 导出时使用的名称，比如Excel导出时，作为sheet名称
+          title: mojo.core.String
+          type: string
+        id:
+          description: 表单ID
+          title: mojo.core.String
+          type: string
+        name:
+          description: 表单名
+          title: mojo.core.String
+          type: string
+        tenant:
+          description: 租户名
+          title: mojo.core.String
+          type: string
+        updateTime:
+          $ref: '#/components/schemas/mojo.core.Timestamp'
+      title: armory.unitable.Table
+      type: object
+    mojo.core.FieldMask:
+      description: ""
+      format: FieldMask
+      title: mojo.core.FieldMask
+      type: string
+    mojo.core.Object:
+      description: Object type
+      title: mojo.core.Object
+      type: object
+    mojo.core.Ordering:
+      title: mojo.core.Ordering
+      type: object
+    mojo.core.Timestamp:
+      description: ""
+      format: Timestamp
+      title: mojo.core.Timestamp
+      type: string
+    mojo.core.Url:
+      description: |+
+        URl type
+
+        Uniform Resource Identifier (URI) is a string of characters used to identify a resource.
+
+        A Uniform Resource Name (URN) may be compared to a person's name,
+        while a Uniform Resource Locator (URL) may be compared to their street address.
+        In other words, a URN identifies an item and a URL provides a method for finding it.
+
+        https://tools.ietf.org/html/rfc3986
+
+      format: Url
+      title: mojo.core.Url
+      type: string
+    mojo.core.Url.Authority:
+      description: ""
+      properties:
+        host:
+          title: mojo.core.String
+          type: string
+        port:
+          format: Int64
+          title: mojo.core.Int64
+          type: integer
+        userInfo:
+          title: mojo.core.String
+          type: string
+      title: mojo.core.Url.Authority
+      type: object
+    mojo.core.Url.Query:
+      additionalProperties:
+        items:
+          title: mojo.core.String
+          type: string
+        title: mojo.core.Array
+        type: array
+      description: ""
+      title: mojo.core.Url.Query
+      type: object
+    mojo.core.Value:
+      oneOf:
+      - title: mojo.core.Null
+        type: "null"
+      - title: mojo.core.Bool
+        type: boolean
+      - title: mojo.core.String
+        type: string
+      - description: 'the format is: `b64.{base64 encoded bytes}`'
+        format: Bytes
+        title: mojo.core.Bytes
+        type: string
+      - format: Int64
+        title: mojo.core.Int64
+        type: integer
+      - format: Float64
+        title: mojo.core.Float64
+        type: number
+      - title: mojo.core.Object
+        type: object
+      - title: mojo.core.Values
+        type: array
+      title: mojo.core.Value
+    mojo.db.DeleteTime:
+      description: |-
+        Wrapper type for the Generic T type
+
+        实例化名称规格， TValue  TValues  TValuesMap
+      format: Timestamp
+      title: mojo.db.DeleteTime
+      type: string
+info:
+  description: ""
+  title: 文件服务
+  version: 0.1.0
+openapi: 3.0.3
+paths:
+  /armory/file/v1/files:
+    post:
+      description: ""
+      operationId: create_file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.file.BinaryFile'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.file.BinaryFile'
+          description: OK
+      summary: 上传文件，采用http form的形式进行上传，返回文件元信息
+  /armory/file/v1/files/{name}:
+    get:
+      description: ""
+      operationId: get_file
+      parameters:
+      - description: 文件名称
+        in: path
+        name: name
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.file.BinaryFile'
+          description: OK
+      summary: 查询服务范围内的所有数据库及表单
+  /armory/file/v1/files:batch:
+    post:
+      description: ""
+      operationId: batch_create_file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/armory.file.BinaryFile'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.file.BinaryFile'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 批量上传文件，采用http form的形式进行上传，返回文件元信息

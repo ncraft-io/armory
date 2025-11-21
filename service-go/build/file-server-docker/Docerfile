@@ -1,0 +1,6 @@
+FROM centos:8
+
+ADD v1-file-server /v1-file-server
+
+WORKDIR /
+ENTRYPOINT [ "/v1-file-server" ]

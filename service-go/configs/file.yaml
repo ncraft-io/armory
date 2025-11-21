@@ -1,0 +1,4 @@
+file:
+  rootUrl: "https://xx.xddigital.cn"
+  staticProvider:
+    root: /opt/data/file/
