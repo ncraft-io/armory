@@ -22,17 +22,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 
-	"github.com/ncraft-io/ncraft-gokit/pkg/utils/network"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/utils/network"
 	_ "go.uber.org/automaxprocs"
 
-	nclient "github.com/ncraft-io/ncraft-gokit/pkg/client"
+	nclient "github.com/ncraft-io/ncraft/go/pkg/gokit/client"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 
-	"github.com/ncraft-io/ncraft-gokit/pkg/kit"
-	"github.com/ncraft-io/ncraft-gokit/pkg/metrics"
-	"github.com/ncraft-io/ncraft-gokit/pkg/sd"
-	nserver "github.com/ncraft-io/ncraft-gokit/pkg/server"
-	"github.com/ncraft-io/ncraft-gokit/pkg/tracing"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/kit"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/metrics"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/sd"
+	nserver "github.com/ncraft-io/ncraft/go/pkg/gokit/server"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/tracing"
 
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -59,6 +59,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 
 	// Endpoint domain.
 	var (
+		listDatabasesEndpoint      = svc.MakeListDatabasesEndpoint(service)
 		createTableEndpoint        = svc.MakeCreateTableEndpoint(service)
 		updateTableEndpoint        = svc.MakeUpdateTableEndpoint(service)
 		getTableEndpoint           = svc.MakeGetTableEndpoint(service)
@@ -78,7 +79,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		getRowEndpoint             = svc.MakeGetRowEndpoint(service)
 		deleteRowEndpoint          = svc.MakeDeleteRowEndpoint(service)
 		listRowEndpoint            = svc.MakeListRowEndpoint(service)
-		listRowStatEndpoint        = svc.MakeListRowStatEndpoint(service)
+		getRowStatEndpoint         = svc.MakeGetRowStatEndpoint(service)
 		exportRowEndpoint          = svc.MakeExportRowEndpoint(service)
 		batchCreateRowsEndpoint    = svc.MakeBatchCreateRowsEndpoint(service)
 		batchUpdateRowsEndpoint    = svc.MakeBatchUpdateRowsEndpoint(service)
@@ -86,6 +87,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 	)
 
 	endpoints := svc.Endpoints{
+		ListDatabasesEndpoint:      listDatabasesEndpoint,
 		CreateTableEndpoint:        createTableEndpoint,
 		UpdateTableEndpoint:        updateTableEndpoint,
 		GetTableEndpoint:           getTableEndpoint,
@@ -105,7 +107,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		GetRowEndpoint:             getRowEndpoint,
 		DeleteRowEndpoint:          deleteRowEndpoint,
 		ListRowEndpoint:            listRowEndpoint,
-		ListRowStatEndpoint:        listRowStatEndpoint,
+		GetRowStatEndpoint:         getRowStatEndpoint,
 		ExportRowEndpoint:          exportRowEndpoint,
 		BatchCreateRowsEndpoint:    batchCreateRowsEndpoint,
 		BatchUpdateRowsEndpoint:    batchUpdateRowsEndpoint,

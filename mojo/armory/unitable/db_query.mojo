@@ -1,4 +1,5 @@
 
+/// Database Query Entity
 type DbQuery {
     type Parameter {
         name: String @1
@@ -12,8 +13,12 @@ type DbQuery {
 
     sql: String @3
 
-    parameters: [Parameter] @4
-    table: String @5
+    parameters: [Parameter] @4 @db.json
+    // table: String @5
+    database: String @6
 
-    columns: [Column] @15 @db.json //< Query 包含的列的元信息
+    columns: [Column] @15 @db.json //< the meta info of the column in the query
+
+    create_time: Timestamp @100
+    update_time: Timestamp @101
 }

@@ -5,7 +5,7 @@ package unitable
 
 import (
 	"database/sql/driver"
-	"github.com/mojo-lang/db/go/pkg/mojo/db"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )

@@ -1,12 +1,21 @@
 db:
   driver: postgres
-  dsn: postgresql://localhost:5432/unitable
+  dsn: postgresql://postgres:daju@2024!@localhost:5432/unitable
   debug: false
   maxIdleConnections: 0
   maxOpenConnections: 0
 dataDB:
-  driver: postgres
-  dsn: postgresql://localhost:5432/unidata
-  debug: false
-  maxIdleConnections: 0
-  maxOpenConnections: 0
+  default: residence
+  dbs:
+    residence:
+      driver: postgres
+      dsn: postgresql://postgres:daju@2024!@localhost:5432/residence
+      debug: true
+      maxIdleConnections: 0
+      maxOpenConnections: 0
+    xddigital:
+      driver: postgres
+      dsn: postgresql://postgres:daju@2024!@localhost:5433/xddigital
+      debug: true
+      maxIdleConnections: 0
+      maxOpenConnections: 0

@@ -1,15 +1,22 @@
 {
     "title": "armory.unitable.DbQuery",
-    "description": "",
+    "description": "Database Query Entity",
     "type": "object",
     "properties": {
         "columns": {
             "title": "mojo.core.Array",
-            "description": "Query 包含的列的元信息",
+            "description": "the meta info of the column in the query",
             "type": "array",
             "items": {
                 "$ref": "#/components/schemas/armory.unitable.Column"
             }
+        },
+        "createTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
+        },
+        "database": {
+            "title": "mojo.core.String",
+            "type": "string"
         },
         "id": {
             "title": "mojo.core.String",
@@ -30,9 +37,8 @@
             "title": "mojo.core.String",
             "type": "string"
         },
-        "table": {
-            "title": "mojo.core.String",
-            "type": "string"
+        "updateTime": {
+            "$ref": "#/components/schemas/mojo.core.Timestamp"
         }
     }
 }

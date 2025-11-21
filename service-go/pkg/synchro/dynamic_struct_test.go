@@ -1,7 +1,7 @@
 package synchro
 
 import (
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/zeebo/assert"
 	"testing"

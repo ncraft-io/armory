@@ -10,7 +10,7 @@ import (
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 
-	nserver "github.com/ncraft-io/ncraft-gokit/pkg/server"
+	nserver "github.com/ncraft-io/ncraft/go/pkg/gokit/server"
 
 	// This Service
 	"github.com/ncraft-io/armory/service-go/internal/unitable-server"
@@ -19,13 +19,13 @@ import (
 //go:generate go run github.com/ncraft-io/go-evaluate/cmd/evaluate
 
 //go:evaluate date "+%Y-%m-%d %H:%M:%S %Z"
-const BuildTime = ""
+const BuildTime = "2025-11-21 12:42:28 CST"
 
 //go:evaluate git rev-list -1 HEAD
-const GitHash = ""
+const GitHash = "4ad3d8e8863f3b328d991c7cb428174561bf7213"
 
 //go:evaluate git branch --show-current
-const GitBranch = ""
+const GitBranch = "main"
 
 func main() {
 	flag.String("http_addr", ":20171", "default ip address for http server")

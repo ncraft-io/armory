@@ -1,6 +1,10 @@
 
 /// 统一表单服务
 interface Unitable {
+    /// 查询服务范围内的所有数据库及表单
+    @http.get("/armory/unitable/v1/databases")
+    list_databases() -> [Database]
+
     /// 创建表单
     @entity("Table")
     @http.post("/armory/unitable/v1/databases/{database}/tables")
@@ -107,16 +111,18 @@ interface Unitable {
     ///     基本输出
     ///         { "field_name": {"function_name": "value" }}
     ///     group函数
-    ///         { "field_name": {"group": {"field_value1": {"count": value}, "field_value2": {"count": value}}
-    @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows/stat")
-    list_row_stat(database: String @1, //< specify the database name
+    ///         { "field_name": {"group_by": {"field_value1": {"count": value}, "field_value2": {"count": value}}
+    @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:stat")
+    get_row_stat(database: String @1, //< specify the database name
              table: String @2, //< specify the table name
-             stats: [String] @3) //< specify the statistics field expression, like `sum field`
-             -> [Object]
+             filter: String @3 //< additional filter expression
+             stats: [String] @4) //< specify the statistics field expression, like `sum field`
+             -> Object
 
     /// 导出行(实现不同的权限控制)
     @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export")
-    export_row(database: String @1, table: String @2) -> [Object]
+    @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export/{filename}")
+    export_row(database: String @1, table: String @2, filename: String @3) -> [Object]
 
     /// 批量创建行数据
     @http.post("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
@@ -129,4 +135,14 @@ interface Unitable {
     /// 批量删除行
     @http.delete("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
     batch_delete_rows(database: String @1, table: String @2, ids: [String] @3)
+
+    ///// Create the Database query
+    //@entity("DBQuery")
+    //@http.post("/armory/unitable/v1/databases/{database}/queries")
+    //create_db_query(query: DBQuery @2 @http.body) -> DBQuery
+
+    ///// Run the Database query
+    //@entity("DBQuery")
+    //@http.post("/armory/unitable/v1/databases/{database}/queries:run")
+    //run_db_query(database: String @1, query: DBQuery @2 @http.body) -> [Object]
 }

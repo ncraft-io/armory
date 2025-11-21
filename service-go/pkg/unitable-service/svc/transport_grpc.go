@@ -19,7 +19,7 @@ import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 
 	// this service api
@@ -27,10 +27,10 @@ import (
 )
 
 var (
-	_ = unitable.Table{}
-	_ = core.Null{}
 	_ = core.Ordering{}
 	_ = core.FieldMask{}
+	_ = unitable.Table{}
+	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
 )
@@ -52,6 +52,13 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 	return &grpcServer{
 		// Unitable
 
+		listDatabases: grpctransport.NewServer(
+			endpoints.ListDatabasesEndpoint,
+			DecodeGRPCListDatabasesRequest,
+			EncodeGRPCListDatabasesResponse,
+			addTracerOption("list_databases")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_databases", logger)))...,
+		),
 		createTable: grpctransport.NewServer(
 			endpoints.CreateTableEndpoint,
 			DecodeGRPCCreateTableRequest,
@@ -185,12 +192,12 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 			addTracerOption("list_row")...,
 		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_row", logger)))...,
 		),
-		listRowStat: grpctransport.NewServer(
-			endpoints.ListRowStatEndpoint,
-			DecodeGRPCListRowStatRequest,
-			EncodeGRPCListRowStatResponse,
-			addTracerOption("list_row_stat")...,
-		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_row_stat", logger)))...,
+		getRowStat: grpctransport.NewServer(
+			endpoints.GetRowStatEndpoint,
+			DecodeGRPCGetRowStatRequest,
+			EncodeGRPCGetRowStatResponse,
+			addTracerOption("get_row_stat")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "get_row_stat", logger)))...,
 		),
 		exportRow: grpctransport.NewServer(
 			endpoints.ExportRowEndpoint,
@@ -227,6 +234,7 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 type grpcServer struct {
 	pb.UnimplementedUnitableServer
 
+	listDatabases      grpctransport.Handler
 	createTable        grpctransport.Handler
 	updateTable        grpctransport.Handler
 	getTable           grpctransport.Handler
@@ -246,7 +254,7 @@ type grpcServer struct {
 	getRow             grpctransport.Handler
 	deleteRow          grpctransport.Handler
 	listRow            grpctransport.Handler
-	listRowStat        grpctransport.Handler
+	getRowStat         grpctransport.Handler
 	exportRow          grpctransport.Handler
 	batchCreateRows    grpctransport.Handler
 	batchUpdateRows    grpctransport.Handler
@@ -254,6 +262,14 @@ type grpcServer struct {
 }
 
 // Methods for grpcServer to implement UnitableServer interface
+
+func (s *grpcServer) ListDatabases(ctx context.Context, req *pb.ListDatabasesRequest) (*pb.ListDatabasesResponse, error) {
+	_, rep, err := s.listDatabases.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.ListDatabasesResponse), nil
+}
 
 func (s *grpcServer) CreateTable(ctx context.Context, req *pb.CreateTableRequest) (*unitable.Table, error) {
 	_, rep, err := s.createTable.ServeGRPC(ctx, req)
@@ -407,12 +423,12 @@ func (s *grpcServer) ListRow(ctx context.Context, req *pb.ListRowRequest) (*pb.L
 	return rep.(*pb.ListRowResponse), nil
 }
 
-func (s *grpcServer) ListRowStat(ctx context.Context, req *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
-	_, rep, err := s.listRowStat.ServeGRPC(ctx, req)
+func (s *grpcServer) GetRowStat(ctx context.Context, req *pb.GetRowStatRequest) (*core.Object, error) {
+	_, rep, err := s.getRowStat.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*pb.ListRowStatResponse), nil
+	return rep.(*core.Object), nil
 }
 
 func (s *grpcServer) ExportRow(ctx context.Context, req *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
@@ -448,6 +464,13 @@ func (s *grpcServer) BatchDeleteRows(ctx context.Context, req *pb.BatchDeleteRow
 }
 
 // Server Decode
+
+// DecodeGRPCListDatabasesRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ListDatabases request to a user-domain ListDatabases request. Primarily useful in a server.
+func DecodeGRPCListDatabasesRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ListDatabasesRequest)
+	return req, nil
+}
 
 // DecodeGRPCCreateTableRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC CreateTable request to a user-domain CreateTable request. Primarily useful in a server.
@@ -582,10 +605,10 @@ func DecodeGRPCListRowRequest(_ context.Context, grpcReq interface{}) (interface
 	return req, nil
 }
 
-// DecodeGRPCListRowStatRequest is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC ListRowStat request to a user-domain ListRowStat request. Primarily useful in a server.
-func DecodeGRPCListRowStatRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-	req := grpcReq.(*pb.ListRowStatRequest)
+// DecodeGRPCGetRowStatRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC GetRowStat request to a user-domain GetRowStat request. Primarily useful in a server.
+func DecodeGRPCGetRowStatRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.GetRowStatRequest)
 	return req, nil
 }
 
@@ -618,6 +641,13 @@ func DecodeGRPCBatchDeleteRowsRequest(_ context.Context, grpcReq interface{}) (i
 }
 
 // Server Encode
+
+// EncodeGRPCListDatabasesResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ListDatabases response to a gRPC ListDatabases reply. Primarily useful in a server.
+func EncodeGRPCListDatabasesResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.ListDatabasesResponse)
+	return resp, nil
+}
 
 // EncodeGRPCCreateTableResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain CreateTable response to a gRPC CreateTable reply. Primarily useful in a server.
@@ -752,10 +782,10 @@ func EncodeGRPCListRowResponse(_ context.Context, response interface{}) (interfa
 	return resp, nil
 }
 
-// EncodeGRPCListRowStatResponse is a transport/grpc.EncodeResponseFunc that converts a
-// user-domain ListRowStat response to a gRPC ListRowStat reply. Primarily useful in a server.
-func EncodeGRPCListRowStatResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*pb.ListRowStatResponse)
+// EncodeGRPCGetRowStatResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain GetRowStat response to a gRPC GetRowStat reply. Primarily useful in a server.
+func EncodeGRPCGetRowStatResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Object)
 	return resp, nil
 }
 

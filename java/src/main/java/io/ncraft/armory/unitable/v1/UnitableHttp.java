@@ -23,6 +23,16 @@ import io.ncraft.armory.unitable.v1.factory.UnitableHttpFallbackFactory;
 public interface UnitableHttp {
     
     @ResponseBody
+    @GetMapping("/armory/unitable/v1/databases")
+    Pagination<Database> listDatabases(@RequestParam(name = "page_size", required = false) int pageSize, 
+				@RequestParam(name = "page_token", required = false) String pageToken, 
+				@RequestParam(name = "skip", required = false) int skip, 
+				@RequestParam(name = "filter", required = false) String filter, 
+				@RequestParam(name = "order", required = false) String order, 
+				@RequestParam(name = "field_mask", required = false) String fieldMask, 
+				@RequestParam(name = "unique", required = false) boolean unique);
+    
+    @ResponseBody
     @PostMapping("/armory/unitable/v1/databases/{database}/tables")
     Result<Table> createTable(@PathVariable("database") String database, 
 				@RequestBody Table table);
@@ -155,22 +165,17 @@ public interface UnitableHttp {
 				@RequestParam(name = "unique", required = false) boolean unique);
     
     @ResponseBody
-    @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows/stat")
-    Pagination<org.mojolang.mojo.core.Object> listRowStat(@PathVariable("database") String database, 
+    @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:stat")
+    Result<org.mojolang.mojo.core.Object> getRowStat(@PathVariable("database") String database, 
 				@PathVariable("table") String table, 
-				@RequestParam(name = "stats", required = false) List<String> stats, 
-				@RequestParam(name = "page_size", required = false) int pageSize, 
-				@RequestParam(name = "page_token", required = false) String pageToken, 
-				@RequestParam(name = "skip", required = false) int skip, 
 				@RequestParam(name = "filter", required = false) String filter, 
-				@RequestParam(name = "order", required = false) String order, 
-				@RequestParam(name = "field_mask", required = false) String fieldMask, 
-				@RequestParam(name = "unique", required = false) boolean unique);
+				@RequestParam(name = "stats", required = false) List<String> stats);
     
     @ResponseBody
     @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export")
     Pagination<org.mojolang.mojo.core.Object> exportRow(@PathVariable("database") String database, 
 				@PathVariable("table") String table, 
+				@RequestParam(name = "filename", required = false) String filename, 
 				@RequestParam(name = "page_size", required = false) int pageSize, 
 				@RequestParam(name = "page_token", required = false) String pageToken, 
 				@RequestParam(name = "skip", required = false) int skip, 

@@ -3,10 +3,10 @@ package handlers
 import (
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	"github.com/go-kit/kit/tracing/opentracing"
-	"github.com/ncraft-io/ncraft-gokit/pkg/middleware"
+	"github.com/ncraft-io/ncraft/go/pkg/gokit/middleware"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 
 	"github.com/ncraft-io/armory/service-go/pkg/unitable-service/svc"

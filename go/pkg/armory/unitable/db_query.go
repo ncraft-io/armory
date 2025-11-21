@@ -1,8 +1,8 @@
 package unitable
 
 import (
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
-	"github.com/mojo-lang/core/go/pkg/mojo/core/strcase"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core/strcase"
 )
 
 func (x *DbQuery) Example() *core.Object {

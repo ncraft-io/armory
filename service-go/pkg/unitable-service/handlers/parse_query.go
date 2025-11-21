@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
-	"github.com/mojo-lang/db/go/pkg/mojo/db"
-	"github.com/mojo-lang/mojo/go/pkg/mojo/parser/syntax"
+	"github.com/mojo-lang/mojo/go/pkg/compiler/mojo/parser/syntax"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
 	"reflect"
 )
 
-func ParseQuery(request interface{}) (*db.Query, error) {
+func ParseQuery(request interface{}) (*query.Query, error) {
 	if request == nil {
 		return nil, nil
 	}
@@ -16,7 +16,7 @@ func ParseQuery(request interface{}) (*db.Query, error) {
 	typeOf := valueOf.Type()
 
 	if typeOf.Kind() == reflect.Struct {
-		query := &db.Query{}
+		query := &query.Query{}
 
 		if field, ok := typeOf.FieldByName("Filter"); ok {
 			f := valueOf.FieldByIndex(field.Index)

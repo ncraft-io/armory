@@ -11,7 +11,7 @@ import (
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 
 	"github.com/ncraft-io/armory/service-go/internal/server"
-	nserver "github.com/ncraft-io/ncraft-gokit/pkg/server"
+	nserver "github.com/ncraft-io/ncraft/go/pkg/gokit/server"
 )
 
 func main() {

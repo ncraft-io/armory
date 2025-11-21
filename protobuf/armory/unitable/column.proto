@@ -33,6 +33,7 @@ message Column {
     bool dimensional = 17;
     bool statistical = 18;
     string referenced = 20;
+    string original_name = 21;
     mojo.core.Value example = 30;
     mojo.core.Timestamp create_time = 100;
     mojo.core.Timestamp update_time = 101;

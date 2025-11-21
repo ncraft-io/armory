@@ -24,11 +24,12 @@ import (
 	"syscall"
 	"time"
 
-	nserver "github.com/ncraft-io/ncraft-gokit/pkg/server"
+	nserver "github.com/ncraft-io/ncraft/go/pkg/gokit/server"
 
 	// Services
 
 	authing "github.com/ncraft-io/armory/service-go/internal/authing-server"
+	file "github.com/ncraft-io/armory/service-go/internal/file-server"
 	unitable "github.com/ncraft-io/armory/service-go/internal/unitable-server"
 )
 
@@ -75,6 +76,7 @@ func Run(cfg nserver.Config) {
 	//register servers.
 
 	authing.RegisterService(cfg, r, s)
+	file.RegisterService(cfg, r, s)
 	unitable.RegisterService(cfg, r, s)
 
 	// HTTP transport.

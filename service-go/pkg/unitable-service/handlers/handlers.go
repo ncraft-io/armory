@@ -1,18 +1,24 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/iancoleman/strcase"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/hook"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
+	"github.com/xuri/excelize/v2"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/segmentio/ksuid"
 
@@ -29,29 +35,47 @@ var (
 	_ = core.Object{}
 )
 
-type unitableServer struct {
-	pb.UnimplementedUnitableServer
+var unitableOnce sync.Once
+var ut *Instance
 
+type Instance struct {
 	Synchro *synchro.Synchro
 	Queries map[string]*unitable.DbQuery
 }
 
+type unitableServer struct {
+	pb.UnimplementedUnitableServer
+	instance *Instance
+}
+
 // NewService returns a naive, stateless implementation of Interface.
 func NewService() pb.UnitableServer {
-	server := unitableServer{
-		Synchro: synchro.New(),
-		Queries: make(map[string]*unitable.DbQuery),
-	}
-	conf := &unitable.DbQueryConfig{}
-	_ = config.ScanFrom(conf, "dbQuery")
-	for _, query := range conf.Queries {
-		server.Queries[query.Name] = query
-	}
+	unitableOnce.Do(func() {
+		ut = &Instance{
+			Synchro: synchro.New(),
+			Queries: make(map[string]*unitable.DbQuery),
+		}
+		conf := &unitable.DbQueryConfig{}
+		_ = config.ScanFrom(conf, "dbQuery")
+		for _, dbQuery := range conf.Queries {
+			ut.Queries[dbQuery.Name] = dbQuery
+		}
+	})
 
-	return server
+	return unitableServer{
+		instance: ut,
+	}
 }
 
 var nameRegex = regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
+
+func (s unitableServer) Synchro() *synchro.Synchro {
+	return s.instance.Synchro
+}
+
+func (s unitableServer) Queries() map[string]*unitable.DbQuery {
+	return s.instance.Queries
+}
 
 // CreateTable implements Interface.
 func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*unitable.Table, error) {
@@ -78,17 +102,34 @@ func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableReque
 			return nil, core.NewInvalidArgumentError("the No. %d column (%s) in table type %s is invalid", i, col.Name, col.Type)
 		}
 	}
+	if len(in.Table.Id) == 0 {
+		in.Table.Id = in.Table.Database + "." + in.Table.Name
+	}
+	if table, err := model.GetTableModel().Get(ctx, in.Table.Id); err == nil && table != nil {
+		_, err = s.UpdateTable(ctx, &pb.UpdateTableRequest{Table: in.Table, Force: true})
+		if err != nil {
+			return nil, err
+		}
+		return &unitable.Table{Id: in.Table.Id}, nil
+	}
 
-	in.Table.Id = in.Table.Name
-	in.Table.CreateTime = core.Now()
+	if in.Table.CreateTime == nil {
+		in.Table.CreateTime = core.Now()
+	}
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.MigrateTable(ctx, in.Table, nil, nil); err != nil {
+	if err := s.Synchro().MigrateTable(ctx, in.Table, nil, nil); err != nil {
 		return nil, core.NewInternalError("failed to create table in %s", in.Table.Database)
 	}
 
 	for _, col := range in.Table.Columns {
 		if len(col.Id) == 0 {
 			col.Id = ksuid.New().String()
+		}
+		if col.CreateTime == nil {
+			col.CreateTime = core.Now()
+			col.UpdateTime = col.CreateTime
+		} else {
+			col.UpdateTime = core.Now()
 		}
 	}
 	if _, err := model.GetTableModel().Create(ctx, in.Table); err != nil {
@@ -156,7 +197,11 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 	}
 
 	if len(in.Table.Id) == 0 {
-		in.Table.Id = in.Table.Name
+		if len(in.Id) > 0 {
+			in.Table.Id = in.Id
+		} else {
+			in.Table.Id = in.Table.Database + "." + in.Table.Name
+		}
 	}
 
 	var dropCols []string
@@ -192,7 +237,7 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 			} else if len(col.Id) == 0 {
 				col.Id = ksuid.New().String()
 				col.CreateTime = core.Now()
-				col.UpdateTime = core.Now()
+				col.UpdateTime = col.CreateTime
 			} else {
 				if c, ok := columns[col.Id]; ok {
 					if len(col.Name) > 0 && len(c.Name) > 0 && col.Name != c.Name {
@@ -219,7 +264,7 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 	}
 
 	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro.MigrateTable(ctx, in.Table, renamedCols, dropCols); err != nil {
+	if err := s.Synchro().MigrateTable(ctx, in.Table, renamedCols, dropCols); err != nil {
 		return nil, core.NewInternalError("failed to update table in %s, err: %s", in.Table.Database, err.Error())
 	}
 
@@ -245,7 +290,12 @@ func (s unitableServer) GetTable(ctx context.Context, in *pb.GetTableRequest) (*
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
 
-	return model.GetTableModel().Get(ctx, in.Id)
+	id := in.Id
+	if !strings.Contains(in.Id, ".") {
+		id = in.Database + "." + in.Id
+	}
+
+	return model.GetTableModel().Get(ctx, id)
 }
 
 // ListTables implements Interface.
@@ -254,12 +304,15 @@ func (s unitableServer) ListTables(ctx context.Context, in *pb.ListTablesRequest
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 
-	query, err := ParseQuery(in)
+	qry, err := ParseQuery(in)
 	if err != nil {
-		return nil, err
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
+	}
+	if err = qry.Normalize(); err != nil {
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
 	}
 
-	tables, err := model.GetTableModel().Query(ctx, query)
+	tables, err := model.GetTableModel().Query(ctx, qry)
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +467,8 @@ func (s unitableServer) CreateRow(ctx context.Context, in *pb.CreateRowRequest) 
 		in.Row.SetString("id", id)
 	}
 
-	if _, err := s.Synchro.InsertRow(ctx, in.Table, in.Row); err != nil {
+	tableID := in.Database + "." + in.Table
+	if _, err := s.Synchro().InsertRow(ctx, tableID, in.Row); err != nil {
 		return nil, core.NewInternalError("failed to insert the row in %s, (%v)", in.Table, in.Row.ToMapInterface())
 	}
 
@@ -445,7 +499,8 @@ func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) 
 		in.Row.SetString("id", in.Id)
 	}
 
-	if _, err := s.Synchro.UpdateRow(ctx, in.Table, in.Row); err != nil {
+	tableId := in.Database + "." + in.Table
+	if _, err := s.Synchro().UpdateRow(ctx, tableId, in.Row); err != nil {
 		return nil, core.NewInternalError("failed to update the row in %s, (%v), err: %s", in.Table, in.Row.ToMapInterface(), err.Error())
 	}
 
@@ -465,7 +520,8 @@ func (s unitableServer) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
 
-	if row, err := s.Synchro.GetRow(ctx, in.Table, in.Id); err != nil {
+	tableId := in.Database + "." + in.Table
+	if row, err := s.Synchro().GetRow(ctx, tableId, in.Id); err != nil {
 		return nil, core.NewInternalError("failed to get the row %s in %s, err: %s", in.Id, in.Table, err.Error())
 	} else {
 		return row, nil
@@ -484,7 +540,8 @@ func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) 
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
 
-	if _, err := s.Synchro.DeleteRows(ctx, in.Table, in.Id); err != nil {
+	tableId := in.Database + "." + in.Table
+	if _, err := s.Synchro().DeleteRows(ctx, tableId, in.Id); err != nil {
 		return nil, core.NewInternalError("failed to delete the row %s in %s, err: %s", in.Id, in.Table, err.Error())
 	} else {
 		hook.GetHook().Run(ctx)
@@ -516,7 +573,7 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
 
-	if q, ok := s.Queries[in.Query]; ok && len(in.Query) > 0 {
+	if q, ok := s.Queries()[in.Query]; ok && len(in.Query) > 0 {
 		var values []interface{}
 		query := &unitable.DbQuery{
 			Id:         q.Id,
@@ -564,7 +621,7 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 				query.Sql = strings.Replace(query.Sql, "]", "", -1)
 			}
 
-			objs, err := s.Synchro.QueryBy(ctx, in.Table, query, values)
+			objs, err := s.Synchro().QueryBy(ctx, in.Database, in.Table, query, values)
 			if err != nil {
 				return nil, err
 			}
@@ -575,13 +632,17 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 		}
 	}
 
-	query, err := ParseQuery(in)
+	qry, err := ParseQuery(in)
 	if err != nil {
-		return nil, err
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
+	}
+	if err = qry.Normalize(); err != nil {
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
 	}
 
-	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
-		return nil, core.NewInternalError("failed to query the row in %s, err: %s", in.Table, err.Error())
+	tableId := in.Database + "." + in.Table
+	if rows, totalCnt, err := s.Synchro().QueryRows(ctx, tableId, qry); err != nil {
+		return nil, core.NewInternalError("failed to query the row in %s, err: %s", tableId, err.Error())
 	} else {
 		index := ""
 		if len(in.PageToken) > 0 {
@@ -609,18 +670,75 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
 
-	query, err := ParseQuery(in)
+	qry, err := ParseQuery(in)
 	if err != nil {
-		return nil, err
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
+	}
+	if err = qry.Normalize(); err != nil {
+		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
 	}
 
-	if rows, totalCnt, err := s.Synchro.QueryRows(ctx, in.Table, query); err != nil {
-		return nil, core.NewInternalError("failed to query the row in %s, err: %s", in.Table, err.Error())
+	tableId := in.Database + "." + in.Table
+	if rows, totalCnt, err := s.Synchro().QueryRows(ctx, tableId, qry); err != nil {
+		return nil, core.NewInternalError("failed to query the row in %s, err: %s", tableId, err.Error())
 	} else {
-		return &pb.ExportRowResponse{
-			Objects:    rows,
-			TotalCount: int32(totalCnt),
-		}, nil
+		if len(in.Filename) > 0 {
+			meta := s.Synchro().GetMetaTable(synchro.TableId(in.Database, in.Table), nil)
+			columns := meta.Table.Columns
+
+			f := excelize.NewFile()
+			defer func() {
+				if err = f.Close(); err != nil {
+					logs.Warnw("failed to close the excelize's file", "error", err)
+				}
+			}()
+
+			sname := "Sheet1"
+			_, err := f.NewSheet(sname)
+			if err != nil {
+				return nil, err
+			}
+
+			colIndex := make(map[string]int)
+			for i, col := range columns {
+				_ = f.SetCellValue(sname, getColIndex(i)+"1", col.DisplayName)
+				colIndex[col.Name] = i
+			}
+
+			for i, row := range rows {
+				vals := row.GetVals()
+				for k, v := range vals {
+					col := colIndex[strcase.ToSnake(k)]
+					cell := getColIndex(col) + strconv.Itoa(i+2)
+					switch v.GetKind() {
+					case core.ValueKind_VALUE_KIND_NULL:
+					case core.ValueKind_VALUE_KIND_BOOLEAN:
+						_ = f.SetCellValue(sname, cell, v.GetBoolVal())
+					case core.ValueKind_VALUE_KIND_INTEGER:
+						_ = f.SetCellValue(sname, cell, v.GetInt64())
+					case core.ValueKind_VALUE_KIND_NUMBER:
+						_ = f.SetCellValue(sname, cell, v.GetFloat64())
+					case core.ValueKind_VALUE_KIND_STRING:
+						_ = f.SetCellValue(sname, cell, v.GetStringVal())
+					}
+				}
+			}
+			buf := bytes.NewBuffer(nil)
+			if err = f.Write(buf); err != nil {
+				return nil, err
+			}
+
+			return &pb.ExportRowResponse{
+				Objects: []*core.Object{core.NewObject().
+					SetString("@fileName", in.Filename).
+					SetValue("@fileContent", core.NewBytesValue(buf.Bytes()))},
+			}, nil
+		} else {
+			return &pb.ExportRowResponse{
+				Objects:    rows,
+				TotalCount: int32(totalCnt),
+			}, nil
+		}
 	}
 }
 
@@ -637,15 +755,21 @@ func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateR
 	}
 
 	for _, row := range in.Rows {
-		id := row.GetString("id")
-		if len(id) == 0 {
-			id = ksuid.New().String()
-			row.SetString("id", id)
+		idv := row.GetValue("id")
+		if idv != nil {
+			if idv.GetInt64() == 0 {
+				id := idv.GetString()
+				if len(id) == 0 {
+					id = ksuid.New().String()
+					row.SetString("id", id)
+				}
+			}
 		}
 	}
 
-	if _, err := s.Synchro.InsertRows(ctx, in.Table, in.Rows...); err != nil {
-		return nil, core.NewInternalError("failed to batch create the rows in %s, err: %s", in.Table, err.Error())
+	tableId := in.Database + "." + in.Table
+	if _, err := s.Synchro().InsertRows(ctx, tableId, in.Rows...); err != nil {
+		return nil, core.NewInternalError("failed to batch create the rows in %s, err: %s", tableId, err.Error())
 	}
 
 	return &core.Null{}, nil
@@ -663,15 +787,16 @@ func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateR
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
-	//for i, row := range in.Rows {
-	//	id := row.GetString("id")
-	//	if len(id) == 0 {
-	//		return nil, core.NewInvalidArgumentError("the No. %d (begin with 1) row have not set the id in batch", i+1)
-	//	}
-	//}
+	for i, row := range in.Rows {
+		idv := row.GetValue("id")
+		if idv == nil || idv.GetInt64() == 0 || len(idv.GetString()) == 0 {
+			return nil, core.NewInvalidArgumentError("the No. %d (begin with 1) row have not set the id in batch", i+1)
+		}
+	}
 
-	if _, err := s.Synchro.UpdateInsertRows(ctx, in.Table, in.Rows...); err != nil {
-		return nil, core.NewInternalError("failed to batch update the rows in %s, err: %s", in.Table, err.Error())
+	tableId := in.Database + "." + in.Table
+	if _, err := s.Synchro().UpdateInsertRows(ctx, tableId, in.Rows...); err != nil {
+		return nil, core.NewInternalError("failed to batch update the rows in %s, err: %s", tableId, err.Error())
 	}
 
 	return &core.Null{}, nil
@@ -689,56 +814,127 @@ func (s unitableServer) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteR
 		return nil, core.NewInvalidArgumentError("not set the row ids")
 	}
 
-	if _, err := s.Synchro.DeleteRows(ctx, in.Table, in.Ids...); err != nil {
-		return nil, core.NewInternalError("failed to batch delete the row in %s, err: %s", in.Table, err.Error())
+	tableId := in.Database + "." + in.Table
+	if _, err := s.Synchro().DeleteRows(ctx, tableId, in.Ids...); err != nil {
+		return nil, core.NewInternalError("failed to batch delete the row in %s, err: %s", tableId, err.Error())
 	}
 
 	return &core.Null{}, nil
 }
 
-// ListRowStat implements Interface.
-func (s unitableServer) ListRowStat(ctx context.Context, in *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
+// ListDatabases implements Interface.
+func (s unitableServer) ListDatabases(ctx context.Context, in *pb.ListDatabasesRequest) (*pb.ListDatabasesResponse, error) {
+	resp := &pb.ListDatabasesResponse{
+		// Databases:
+		// TotalCount:
+		// NextPageToken:
+	}
+	return resp, nil
+}
+
+// GetRowStat implements Interface.
+func (s unitableServer) GetRowStat(ctx context.Context, in *pb.GetRowStatRequest) (*core.Object, error) {
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	if len(in.Stats) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the stat expression")
+	}
 
-	query, err := ParseQuery(in)
+	stat := strings.Join(in.Stats, "|")
+
+	qry, err := ParseQuery(in)
 	if err != nil {
-		return nil, err
+		return nil, core.NewInvalidArgumentError("invalid the filter expression: %s", in.Filter)
 	}
 
-	_ = query
-
-	//if len(in.Stats) == 0 {
-	//	// get the meta table
-	//} else {
-	//	for _, stat := range in.Stats {
-	//		segemnts := strings.Split(stat, " ")
-	//		if len(segemnts) == 2 {
-	//			fun := strings.TrimSpace(segemnts[0])
-	//			if fun == "group" {
-	//
-	//			} else {
-	//				query.CalcFields = append(query.CalcFields, &db.CalcField{
-	//					Name:      strings.TrimSpace(segemnts[1]),
-	//					Functions: fun,
-	//					Alias:     nil,
-	//					GroupBy:   "",
-	//				})
-	//			}
-	//		} else if len(segemnts) == 4 {
-	//
-	//		}
-	//	}
-	//}
-
-	resp := &pb.ListRowStatResponse{
-		// Objects:
-		// TotalCount:
-		// NextPageToken:
+	exprs := strings.Split(stat, "|")
+	cals := make(map[string][]string)
+	for _, expr := range exprs {
+		expr = strings.TrimSpace(expr)
+		segments := strings.Split(expr, " ")
+		if len(segments) == 2 {
+			fun := strings.TrimSpace(segments[0])
+			op := strings.TrimSpace(segments[1])
+			if fun == "group" {
+				qry.Groups = append(qry.Groups, op)
+			} else {
+				cals[op] = append(cals[op], fun)
+			}
+		} else if len(segments) == 3 {
+		} else if len(segments) == 4 {
+		}
 	}
-	return resp, nil
+
+	for op, funs := range cals {
+		prj := &query.FieldProjection{
+			Name:      op,
+			Functions: funs,
+			Alias:     nil,
+		}
+
+		qry.Projections = append(qry.Projections, prj)
+	}
+
+	if err = qry.Normalize(); err != nil {
+		return nil, core.NewInvalidArgumentError("invalid query or stats expressions, error: %s", err.Error())
+	}
+
+ 	tableId := in.Database + "." + in.Table
+	rows, err := s.Synchro().CalcStats(ctx, tableId, qry)
+	if err != nil {
+		return nil, core.NewInternalError("faild to get data from db, error: %s", err.Error())
+	}
+
+	if len(rows) == 0 {
+		return nil, core.NewNotFoundError("failed to found data from db")
+	} else if len(rows) > 0 {
+		resp := &core.Object{
+			Vals: make(map[string]*core.Value),
+		}
+
+		groups := make(map[string]bool)
+		for _, group := range qry.Groups {
+			groups[group] = true
+		}
+
+		fieldNames := make(map[string]bool)
+		for k := range rows[0].GetVals() {
+			if ok := groups[k]; ok {
+				continue
+			}
+
+			name := qry.GetField(k).GetName()
+			if len(name) > 0 {
+				fieldNames[name] = true
+			}
+		}
+
+		for field := range fieldNames {
+			var nrs []*core.Value
+			for _, row := range rows {
+				nr := core.NewObject()
+				for k, v := range row.GetVals() {
+					if ok := groups[k]; ok {
+						nr.SetValue(k, v)
+						continue
+					}
+
+					f := qry.GetField(k)
+					name, fun := f.GetName(), f.GetFunction()
+					if name == field {
+						nr.SetValue(fun, v)
+					}
+				}
+
+				nrs = append(nrs, core.NewObjectValue(nr))
+			}
+			resp.SetValue(field, core.NewArrayValue(nrs...))
+		}
+		return resp, nil
+	}
+	return nil, nil
 }

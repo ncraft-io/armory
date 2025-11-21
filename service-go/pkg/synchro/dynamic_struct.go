@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/iancoleman/strcase"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/geom"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"reflect"
 	"strings"
@@ -32,16 +34,19 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 			case "datetime", "time":
 				now := time.Now()
 				field.Type = reflect.TypeOf(&now)
+			case "geometry":
+				geo := &geom.Geometry{}
+				field.Type = reflect.TypeOf(geo)
 			default:
 				if col.Repeated {
-					field.Type = reflect.TypeOf(&core.StringValues{})
+					field.Type = reflect.TypeOf([]string{})
 				} else {
 					field.Type = reflect.TypeOf("")
 				}
 			}
 		}
 
-		field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, strcase.ToLowerCamel(col.Name)))
+		field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, col.Name))
 
 		var gtags []string
 		gtags = append(gtags, fmt.Sprintf("column:%s", col.Name))
@@ -65,6 +70,43 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 	}
 }
 
+func NewDynamicStructWith(qry *query.Query, meta *MetaTable) *DynamicStruct {
+	if len(qry.Fields) == 0 {
+		return NewDynamicStruct(meta.Table)
+	}
+
+	columnIndex := meta.Table.ColumnIndex()
+	table := &unitable.Table{}
+	for name, field := range qry.Fields {
+		c := &unitable.Column{
+			Name:         name,
+			OriginalName: field.GetName(),
+		}
+
+		if len(field.Projection.Functions) == 0 {
+			if ci, ok := columnIndex[c.OriginalName]; ok {
+				c.Type = ci.Type
+				c.Format = ci.Format
+			}
+		} else {
+			fun := field.GetFunction()
+			switch fun {
+			case "count":
+				c.Type = "integer"
+			case "sum", "avg", "min", "max":
+				if ci, ok := columnIndex[c.OriginalName]; ok {
+					c.Type = ci.Type
+					c.Format = ci.Format
+				}
+			default:
+				c.Type = "string"
+			}
+		}
+		table.Columns = append(table.Columns, c)
+	}
+	return NewDynamicStruct(table)
+}
+
 func (s *DynamicStruct) GetType() reflect.Type {
 	if s.Type == nil {
 		s.Type = reflect.StructOf(s.Fields)
@@ -79,7 +121,7 @@ func (s *DynamicStruct) New() interface{} {
 func (s *DynamicStruct) NewOf(object *core.Object) (interface{}, error) {
 	instance := s.New()
 
-	json, err := jsoniter.Marshal(object)
+	json, err := jsoniter.Marshal(object.ToSnakeKeys())
 	if err != nil {
 		return nil, err
 	}

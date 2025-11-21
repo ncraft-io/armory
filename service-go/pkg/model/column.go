@@ -2,13 +2,14 @@ package model
 
 import (
 	"context"
-	"gorm.io/gorm/clause"
 	"sync"
 
-	"github.com/mojo-lang/db/go/pkg/mojo/db"
-	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+
+	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 )
 
 var clmn *Column

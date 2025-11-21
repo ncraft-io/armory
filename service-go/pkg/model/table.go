@@ -2,9 +2,11 @@ package model
 
 import (
 	"context"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
+	"gorm.io/gorm/clause"
 	"sync"
 
-	"github.com/mojo-lang/db/go/pkg/mojo/db"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"gorm.io/gorm"
@@ -48,10 +50,9 @@ func (a *Table) Create(ctx context.Context, tables ...*unitable.Table) (int64, e
 	if tablesLen == 0 {
 		return 0, nil
 	} else if tablesLen == 1 {
-		//executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).Create(tables[0])
-		executionResult = a.DB.WithContext(ctx).Create(tables[0])
+		executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).Create(tables[0])
 	} else {
-		executionResult = a.DB.WithContext(ctx).CreateInBatches(tables, len(tables))
+		executionResult = a.DB.WithContext(ctx).Clauses(clause.OnConflict{UpdateAll: true}).CreateInBatches(tables, len(tables))
 	}
 
 	return executionResult.RowsAffected, executionResult.Error
@@ -72,7 +73,7 @@ func (a *Table) BatchGet(ctx context.Context, ids []string) ([]*unitable.Table, 
 	return tables, a.DB.WithContext(ctx).Find(&tables, ids).Error
 }
 
-func (a *Table) Query(ctx context.Context, query *db.Query) ([]*unitable.Table, error) {
+func (a *Table) Query(ctx context.Context, query *query.Query) ([]*unitable.Table, error) {
 	var tables []*unitable.Table
 
 	tx := a.DB.DB.WithContext(ctx)

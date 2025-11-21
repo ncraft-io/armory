@@ -3,7 +3,7 @@
 type Column {
     id: String @1 //< 列的ID
     database: String @2 @db.index //< 所属的表单所在的数据库名称
-    table_id: String @3 @db.index //< 所属的表单名
+    table_id: String @3 @db.index //< 所属的表单ID
 
     name: String @4 @db.index //< 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格
     display_name: String @5 //< 可以是显示中文的名称
@@ -11,8 +11,8 @@ type Column {
 
     group_display_name: String @7 //< 所属的列的组合名称
 
-    type: String @8 //< 列的数据库类型 "integer", "number", "string"
-    format: String @9 //< 当列为String时，指定更详细的类型，比如时间、几何等
+    type: String @8 //< 列的数据库类型 "bool", "integer", "float", "string"
+    format: String @9 //< 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry"
     repeated: Bool @10 //< is Array type
 
     indexed: Bool @11  //< 是否需要被索引
@@ -26,6 +26,7 @@ type Column {
     statistical: Bool @18 //< 是否可以被统计
 
     referenced: String @20 //< 是否为引用字段，可以设置是否自动join
+    original_name: String @21 //< 如果该列名为使用函数后的组合名称时，其为原始字段的名称
 
     example: Value @30 //< 示例的值
 

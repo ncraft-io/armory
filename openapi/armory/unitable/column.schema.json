@@ -41,7 +41,7 @@
         },
         "format": {
             "title": "mojo.core.String",
-            "description": "当列为String时，指定更详细的类型，比如时间、几何等",
+            "description": "当列为String时，指定更详细的类型，比如时间、几何等 \"time\", \"geometry\"",
             "type": "string"
         },
         "groupDisplayName": {
@@ -62,6 +62,11 @@
         "name": {
             "title": "mojo.core.String",
             "description": "表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格",
+            "type": "string"
+        },
+        "originalName": {
+            "title": "mojo.core.String",
+            "description": "如果该列名为使用函数后的组合名称时，其为原始字段的名称",
             "type": "string"
         },
         "referenced": {
@@ -86,7 +91,7 @@
         },
         "tableId": {
             "title": "mojo.core.String",
-            "description": "所属的表单名",
+            "description": "所属的表单ID",
             "type": "string"
         },
         "temporal": {
@@ -96,7 +101,7 @@
         },
         "type": {
             "title": "mojo.core.String",
-            "description": "列的数据库类型 \"integer\", \"number\", \"string\"",
+            "description": "列的数据库类型 \"bool\", \"integer\", \"float\", \"string\"",
             "type": "string"
         },
         "unique": {

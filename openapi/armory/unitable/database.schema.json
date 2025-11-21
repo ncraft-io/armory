@@ -1,0 +1,30 @@
+{
+    "title": "armory.unitable.Database",
+    "description": "数据库元信息",
+    "type": "object",
+    "properties": {
+        "description": {
+            "title": "mojo.core.String",
+            "description": "数据库的描述",
+            "type": "string"
+        },
+        "displayName": {
+            "title": "mojo.core.String",
+            "description": "数据库的可显示的名称",
+            "type": "string"
+        },
+        "name": {
+            "title": "mojo.core.String",
+            "description": "数据的名称",
+            "type": "string"
+        },
+        "tables": {
+            "title": "mojo.core.Array",
+            "description": "数据库包含的表单信息 ",
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/armory.unitable.Table"
+            }
+        }
+    }
+}

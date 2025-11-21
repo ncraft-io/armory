@@ -26,6 +26,11 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
         return new UnitableHttp() {
             
             @Override
+            public Pagination<Database> listDatabases(int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
+                 return Pagination.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to list_databases."));
+            }
+            
+            @Override
             public Result<Table> createTable(String database, Table table) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to create_table."));
             }
@@ -121,12 +126,12 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
             }
             
             @Override
-            public Pagination<org.mojolang.mojo.core.Object> listRowStat(String database, String table, List<String> stats, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
-                 return Pagination.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to list_row_stat."));
+            public Result<org.mojolang.mojo.core.Object> getRowStat(String database, String table, String filter, List<String> stats) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to get_row_stat."));
             }
             
             @Override
-            public Pagination<org.mojolang.mojo.core.Object> exportRow(String database, String table, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
+            public Pagination<org.mojolang.mojo.core.Object> exportRow(String database, String table, String filename, int pageSize, String pageToken, int skip, String filter, String order, String fieldMask, boolean unique) {
                  return Pagination.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to export_row."));
             }
             

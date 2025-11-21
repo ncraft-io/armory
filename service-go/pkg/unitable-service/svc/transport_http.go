@@ -30,12 +30,12 @@ import (
 	"github.com/pkg/errors"
 
 	httptransport "github.com/go-kit/kit/transport/http"
-	mjhttp "github.com/mojo-lang/http/go/pkg/mojo/http"
-	pagination "github.com/ncraft-io/ncraft-gokit/pkg/pagination"
-	nhttp "github.com/ncraft-io/ncraft-gokit/pkg/transport/http"
+	mjhttp "github.com/mojo-lang/mojo/go/pkg/mojo/http"
+	nhttp "github.com/ncraft-io/ncraft/go/pkg/gokit/transport/http"
+	pagination "github.com/ncraft-io/ncraft/go/pkg/gokit/pagination"
 	stdopentracing "github.com/opentracing/opentracing-go"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 
@@ -58,10 +58,10 @@ var (
 )
 
 var (
-	_ = unitable.Table{}
-	_ = core.Null{}
 	_ = core.Ordering{}
 	_ = core.FieldMask{}
+	_ = unitable.Table{}
+	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
 )
@@ -87,6 +87,15 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		}
 		return serverOptions
 	}
+
+	router.Methods("GET").Path("/armory/unitable/v1/databases").Handler(
+		httptransport.NewServer(
+			endpoints.ListDatabasesEndpoint,
+			DecodeHTTPListDatabasesZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("list_databases")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_databases", logger)))...,
+		))
 
 	router.Methods("POST").Path("/armory/unitable/v1/databases/{database}/tables").Handler(
 		httptransport.NewServer(
@@ -259,19 +268,27 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_row", logger)))...,
 		))
 
-	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows/stat").Handler(
+	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows:stat").Handler(
 		httptransport.NewServer(
-			endpoints.ListRowStatEndpoint,
-			DecodeHTTPListRowStatZeroRequest,
+			endpoints.GetRowStatEndpoint,
+			DecodeHTTPGetRowStatZeroRequest,
 			EncodeHTTPGenericResponse,
-			addTracerOption("list_row_stat")...,
-		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_row_stat", logger)))...,
+			addTracerOption("get_row_stat")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_row_stat", logger)))...,
 		))
 
 	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export").Handler(
 		httptransport.NewServer(
 			endpoints.ExportRowEndpoint,
 			DecodeHTTPExportRowZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("export_row")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "export_row", logger)))...,
+		))
+	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows:export/{filename}").Handler(
+		httptransport.NewServer(
+			endpoints.ExportRowEndpoint,
+			DecodeHTTPExportRowOneRequest,
 			EncodeHTTPGenericResponse,
 			addTracerOption("export_row")...,
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "export_row", logger)))...,
@@ -381,11 +398,133 @@ func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 
 // Server Decode
 
+// DecodeHTTPListDatabasesZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded list_databases request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPListDatabasesZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ListDatabasesRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListDatabasesRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
+	}
+
+	return &req, nil
+}
+
 // DecodeHTTPCreateTableZeroRequest is a transport/http.DecodeRequestFunc that
 // decodes a JSON-encoded create_table request from the HTTP request
 // body. Primarily useful in a server.
 func DecodeHTTPCreateTableZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.CreateTableRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateTableRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -457,6 +596,14 @@ func DecodeHTTPCreateTableZeroRequest(_ context.Context, r *http.Request) (inter
 // body. Primarily useful in a server.
 func DecodeHTTPUpdateTableZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.UpdateTableRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateTableRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -539,6 +686,14 @@ func DecodeHTTPUpdateTableZeroRequest(_ context.Context, r *http.Request) (inter
 func DecodeHTTPGetTableZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.GetTableRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetTableRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -597,6 +752,14 @@ func DecodeHTTPGetTableZeroRequest(_ context.Context, r *http.Request) (interfac
 // body. Primarily useful in a server.
 func DecodeHTTPListTablesZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.ListTablesRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListTablesRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -709,6 +872,14 @@ func DecodeHTTPListTablesZeroRequest(_ context.Context, r *http.Request) (interf
 func DecodeHTTPDeleteTableZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.DeleteTableRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to DeleteTableRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -773,6 +944,14 @@ func DecodeHTTPDeleteTableZeroRequest(_ context.Context, r *http.Request) (inter
 func DecodeHTTPSyncTableZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.SyncTableRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to SyncTableRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -831,6 +1010,14 @@ func DecodeHTTPSyncTableZeroRequest(_ context.Context, r *http.Request) (interfa
 // body. Primarily useful in a server.
 func DecodeHTTPCreateColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.CreateColumnRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -907,6 +1094,14 @@ func DecodeHTTPCreateColumnZeroRequest(_ context.Context, r *http.Request) (inte
 // body. Primarily useful in a server.
 func DecodeHTTPUpdateColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.UpdateColumnRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -989,6 +1184,14 @@ func DecodeHTTPUpdateColumnZeroRequest(_ context.Context, r *http.Request) (inte
 func DecodeHTTPGetColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.GetColumnRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1053,6 +1256,14 @@ func DecodeHTTPGetColumnZeroRequest(_ context.Context, r *http.Request) (interfa
 func DecodeHTTPDeleteColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.DeleteColumnRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to DeleteColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1116,6 +1327,14 @@ func DecodeHTTPDeleteColumnZeroRequest(_ context.Context, r *http.Request) (inte
 // body. Primarily useful in a server.
 func DecodeHTTPListColumnsZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.ListColumnsRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListColumnsRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1233,6 +1452,14 @@ func DecodeHTTPListColumnsZeroRequest(_ context.Context, r *http.Request) (inter
 func DecodeHTTPBatchCreateColumnsZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchCreateColumnsRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchCreateColumnsRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1297,6 +1524,14 @@ func DecodeHTTPBatchCreateColumnsZeroRequest(_ context.Context, r *http.Request)
 // body. Primarily useful in a server.
 func DecodeHTTPBatchUpdateColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchUpdateColumnRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchUpdateColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1363,6 +1598,14 @@ func DecodeHTTPBatchUpdateColumnZeroRequest(_ context.Context, r *http.Request) 
 func DecodeHTTPBatchDeleteColumnZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchDeleteColumnRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchDeleteColumnRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1426,6 +1669,14 @@ func DecodeHTTPBatchDeleteColumnZeroRequest(_ context.Context, r *http.Request) 
 // body. Primarily useful in a server.
 func DecodeHTTPCreateRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.CreateRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1502,6 +1753,14 @@ func DecodeHTTPCreateRowZeroRequest(_ context.Context, r *http.Request) (interfa
 // body. Primarily useful in a server.
 func DecodeHTTPUpdateRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.UpdateRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1584,6 +1843,14 @@ func DecodeHTTPUpdateRowZeroRequest(_ context.Context, r *http.Request) (interfa
 func DecodeHTTPGetRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.GetRowRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1648,6 +1915,14 @@ func DecodeHTTPGetRowZeroRequest(_ context.Context, r *http.Request) (interface{
 func DecodeHTTPDeleteRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.DeleteRowRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to DeleteRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -1711,6 +1986,14 @@ func DecodeHTTPDeleteRowZeroRequest(_ context.Context, r *http.Request) (interfa
 // body. Primarily useful in a server.
 func DecodeHTTPListRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.ListRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1827,11 +2110,96 @@ func DecodeHTTPListRowZeroRequest(_ context.Context, r *http.Request) (interface
 	return &req, nil
 }
 
-// DecodeHTTPListRowStatZeroRequest is a transport/http.DecodeRequestFunc that
-// decodes a JSON-encoded list_row_stat request from the HTTP request
+// DecodeHTTPGetRowStatZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded get_row_stat request from the HTTP request
 // body. Primarily useful in a server.
-func DecodeHTTPListRowStatZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req pb.ListRowStatRequest
+func DecodeHTTPGetRowStatZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.GetRowStatRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetRowStatRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Stats, "stats")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the stats  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPExportRowZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded export_row request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPExportRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ExportRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ExportRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -1892,6 +2260,11 @@ func DecodeHTTPListRowStatZeroRequest(_ context.Context, r *http.Request) (inter
 		} else {
 			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
 		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filename, "filename")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filename  query parameter")
 	}
 
 	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
@@ -1930,11 +2303,6 @@ func DecodeHTTPListRowStatZeroRequest(_ context.Context, r *http.Request) (inter
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
 	}
 
-	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Stats, "stats")
-	if err != nil && !core.IsNotFoundError(err) {
-		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the stats  query parameter")
-	}
-
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
@@ -1948,11 +2316,19 @@ func DecodeHTTPListRowStatZeroRequest(_ context.Context, r *http.Request) (inter
 	return &req, nil
 }
 
-// DecodeHTTPExportRowZeroRequest is a transport/http.DecodeRequestFunc that
+// DecodeHTTPExportRowOneRequest is a transport/http.DecodeRequestFunc that
 // decodes a JSON-encoded export_row request from the HTTP request
 // body. Primarily useful in a server.
-func DecodeHTTPExportRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func DecodeHTTPExportRowOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.ExportRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ExportRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -2013,6 +2389,11 @@ func DecodeHTTPExportRowZeroRequest(_ context.Context, r *http.Request) (interfa
 		} else {
 			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
 		}
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Filename, "filename")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filename  query parameter")
 	}
 
 	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
@@ -2069,6 +2450,14 @@ func DecodeHTTPExportRowZeroRequest(_ context.Context, r *http.Request) (interfa
 // body. Primarily useful in a server.
 func DecodeHTTPBatchCreateRowsZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchCreateRowsRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchCreateRowsRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -2135,6 +2524,14 @@ func DecodeHTTPBatchCreateRowsZeroRequest(_ context.Context, r *http.Request) (i
 func DecodeHTTPBatchUpdateRowsZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchUpdateRowsRequest
 
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchUpdateRowsRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
 	// to support gzip input
 	var reader io.ReadCloser
 	var err error
@@ -2199,6 +2596,14 @@ func DecodeHTTPBatchUpdateRowsZeroRequest(_ context.Context, r *http.Request) (i
 // body. Primarily useful in a server.
 func DecodeHTTPBatchDeleteRowsZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.BatchDeleteRowsRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchDeleteRowsRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
 
 	// to support gzip input
 	var reader io.ReadCloser
@@ -2357,6 +2762,22 @@ func headersToContext(ctx context.Context, r *http.Request) context.Context {
 	accessKey := r.URL.Query().Get("access_key")
 	if len(accessKey) > 0 {
 		ctx = context.WithValue(ctx, "access_key", accessKey)
+	}
+
+	// Authorization header
+	if auth := r.Header.Get("Authorization"); len(auth) > 0 {
+		if strings.HasPrefix(auth, "Bearer") {
+			auth = strings.TrimSpace(strings.TrimPrefix(auth, "Bearer"))
+			ctx = context.WithValue(ctx, "bearer_token", auth)
+		} else if strings.HasPrefix(auth, "Basic") {
+			auth = strings.TrimSpace(strings.TrimPrefix(auth, "Basic"))
+			ctx = context.WithValue(ctx, "basic_token", auth)
+		}
+	}
+
+	// Authorization cookie
+	if cookie, err := r.Cookie("auth_token"); err == nil && cookie != nil {
+		ctx = context.WithValue(ctx, "auth_token", cookie.Value)
 	}
 
 	// Tune specific change.

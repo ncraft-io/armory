@@ -16,7 +16,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 
-	"github.com/mojo-lang/core/go/pkg/mojo/core"
+	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 
 	// this service api
@@ -24,10 +24,10 @@ import (
 )
 
 var (
-	_ = unitable.Table{}
-	_ = core.Null{}
 	_ = core.Ordering{}
 	_ = core.FieldMask{}
+	_ = unitable.Table{}
+	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
 )
@@ -46,6 +46,7 @@ var (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
+	ListDatabasesEndpoint      endpoint.Endpoint
 	CreateTableEndpoint        endpoint.Endpoint
 	UpdateTableEndpoint        endpoint.Endpoint
 	GetTableEndpoint           endpoint.Endpoint
@@ -65,7 +66,7 @@ type Endpoints struct {
 	GetRowEndpoint             endpoint.Endpoint
 	DeleteRowEndpoint          endpoint.Endpoint
 	ListRowEndpoint            endpoint.Endpoint
-	ListRowStatEndpoint        endpoint.Endpoint
+	GetRowStatEndpoint         endpoint.Endpoint
 	ExportRowEndpoint          endpoint.Endpoint
 	BatchCreateRowsEndpoint    endpoint.Endpoint
 	BatchUpdateRowsEndpoint    endpoint.Endpoint
@@ -73,6 +74,14 @@ type Endpoints struct {
 }
 
 // Endpoints
+
+func (e Endpoints) ListDatabases(ctx context.Context, in *pb.ListDatabasesRequest) (*pb.ListDatabasesResponse, error) {
+	response, err := e.ListDatabasesEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.ListDatabasesResponse), nil
+}
 
 func (e Endpoints) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*unitable.Table, error) {
 	response, err := e.CreateTableEndpoint(ctx, in)
@@ -226,12 +235,12 @@ func (e Endpoints) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb.List
 	return response.(*pb.ListRowResponse), nil
 }
 
-func (e Endpoints) ListRowStat(ctx context.Context, in *pb.ListRowStatRequest) (*pb.ListRowStatResponse, error) {
-	response, err := e.ListRowStatEndpoint(ctx, in)
+func (e Endpoints) GetRowStat(ctx context.Context, in *pb.GetRowStatRequest) (*core.Object, error) {
+	response, err := e.GetRowStatEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*pb.ListRowStatResponse), nil
+	return response.(*core.Object), nil
 }
 
 func (e Endpoints) ExportRow(ctx context.Context, in *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
@@ -267,6 +276,17 @@ func (e Endpoints) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteRowsRe
 }
 
 // Make Endpoints
+
+func MakeListDatabasesEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ListDatabasesRequest)
+		v, err := s.ListDatabases(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
 
 func MakeCreateTableEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
@@ -477,10 +497,10 @@ func MakeListRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	}
 }
 
-func MakeListRowStatEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+func MakeGetRowStatEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*pb.ListRowStatRequest)
-		v, err := s.ListRowStat(ctx, req)
+		req := request.(*pb.GetRowStatRequest)
+		v, err := s.GetRowStat(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -539,6 +559,7 @@ func MakeBatchDeleteRowsEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
+		"list_databases":       struct{}{},
 		"create_table":         struct{}{},
 		"update_table":         struct{}{},
 		"get_table":            struct{}{},
@@ -558,7 +579,7 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"get_row":              struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
-		"list_row_stat":        struct{}{},
+		"get_row_stat":         struct{}{},
 		"export_row":           struct{}{},
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
@@ -573,6 +594,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	}
 
 	for inc, _ := range included {
+		if inc == "list_databases" {
+			e.ListDatabasesEndpoint = middleware(e.ListDatabasesEndpoint)
+		}
 		if inc == "create_table" {
 			e.CreateTableEndpoint = middleware(e.CreateTableEndpoint)
 		}
@@ -630,8 +654,8 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "list_row" {
 			e.ListRowEndpoint = middleware(e.ListRowEndpoint)
 		}
-		if inc == "list_row_stat" {
-			e.ListRowStatEndpoint = middleware(e.ListRowStatEndpoint)
+		if inc == "get_row_stat" {
+			e.GetRowStatEndpoint = middleware(e.GetRowStatEndpoint)
 		}
 		if inc == "export_row" {
 			e.ExportRowEndpoint = middleware(e.ExportRowEndpoint)
@@ -659,6 +683,7 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
+		"list_databases":       struct{}{},
 		"create_table":         struct{}{},
 		"update_table":         struct{}{},
 		"get_table":            struct{}{},
@@ -678,7 +703,7 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"get_row":              struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
-		"list_row_stat":        struct{}{},
+		"get_row_stat":         struct{}{},
 		"export_row":           struct{}{},
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
@@ -693,6 +718,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	}
 
 	for inc, _ := range included {
+		if inc == "list_databases" {
+			e.ListDatabasesEndpoint = middleware("list_databases", e.ListDatabasesEndpoint)
+		}
 		if inc == "create_table" {
 			e.CreateTableEndpoint = middleware("create_table", e.CreateTableEndpoint)
 		}
@@ -750,8 +778,8 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		if inc == "list_row" {
 			e.ListRowEndpoint = middleware("list_row", e.ListRowEndpoint)
 		}
-		if inc == "list_row_stat" {
-			e.ListRowStatEndpoint = middleware("list_row_stat", e.ListRowStatEndpoint)
+		if inc == "get_row_stat" {
+			e.GetRowStatEndpoint = middleware("get_row_stat", e.GetRowStatEndpoint)
 		}
 		if inc == "export_row" {
 			e.ExportRowEndpoint = middleware("export_row", e.ExportRowEndpoint)
