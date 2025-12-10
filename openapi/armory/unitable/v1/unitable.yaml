@@ -185,6 +185,10 @@ components:
         id:
           title: mojo.core.String
           type: string
+        isAdmin:
+          description: 是否是管理员
+          title: mojo.core.Bool
+          type: boolean
         loginTime:
           $ref: '#/components/schemas/mojo.core.Timestamp'
         name:

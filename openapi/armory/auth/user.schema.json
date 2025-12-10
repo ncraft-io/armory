@@ -30,6 +30,11 @@
             "title": "mojo.core.String",
             "type": "string"
         },
+        "isAdmin": {
+            "title": "mojo.core.Bool",
+            "description": "是否是管理员",
+            "type": "boolean"
+        },
         "loginTime": {
             "$ref": "#/components/schemas/mojo.core.Timestamp"
         },

@@ -59,27 +59,29 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 
 	// Endpoint domain.
 	var (
-		createUserEndpoint     = svc.MakeCreateUserEndpoint(service)
-		updateUserEndpoint     = svc.MakeUpdateUserEndpoint(service)
-		activeUserEndpoint     = svc.MakeActiveUserEndpoint(service)
-		getUserEndpoint        = svc.MakeGetUserEndpoint(service)
-		listUserEndpoint       = svc.MakeListUserEndpoint(service)
-		deleteUserEndpoint     = svc.MakeDeleteUserEndpoint(service)
-		updatePasswordEndpoint = svc.MakeUpdatePasswordEndpoint(service)
-		loginEndpoint          = svc.MakeLoginEndpoint(service)
-		logoutEndpoint         = svc.MakeLogoutEndpoint(service)
+		createUserEndpoint       = svc.MakeCreateUserEndpoint(service)
+		batchCreateUsersEndpoint = svc.MakeBatchCreateUsersEndpoint(service)
+		updateUserEndpoint       = svc.MakeUpdateUserEndpoint(service)
+		activeUserEndpoint       = svc.MakeActiveUserEndpoint(service)
+		getUserEndpoint          = svc.MakeGetUserEndpoint(service)
+		listUserEndpoint         = svc.MakeListUserEndpoint(service)
+		deleteUserEndpoint       = svc.MakeDeleteUserEndpoint(service)
+		updatePasswordEndpoint   = svc.MakeUpdatePasswordEndpoint(service)
+		loginEndpoint            = svc.MakeLoginEndpoint(service)
+		logoutEndpoint           = svc.MakeLogoutEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
-		CreateUserEndpoint:     createUserEndpoint,
-		UpdateUserEndpoint:     updateUserEndpoint,
-		ActiveUserEndpoint:     activeUserEndpoint,
-		GetUserEndpoint:        getUserEndpoint,
-		ListUserEndpoint:       listUserEndpoint,
-		DeleteUserEndpoint:     deleteUserEndpoint,
-		UpdatePasswordEndpoint: updatePasswordEndpoint,
-		LoginEndpoint:          loginEndpoint,
-		LogoutEndpoint:         logoutEndpoint,
+		CreateUserEndpoint:       createUserEndpoint,
+		BatchCreateUsersEndpoint: batchCreateUsersEndpoint,
+		UpdateUserEndpoint:       updateUserEndpoint,
+		ActiveUserEndpoint:       activeUserEndpoint,
+		GetUserEndpoint:          getUserEndpoint,
+		ListUserEndpoint:         listUserEndpoint,
+		DeleteUserEndpoint:       deleteUserEndpoint,
+		UpdatePasswordEndpoint:   updatePasswordEndpoint,
+		LoginEndpoint:            loginEndpoint,
+		LogoutEndpoint:           logoutEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

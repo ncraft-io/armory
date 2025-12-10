@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/auth/jwt"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"github.com/pquerna/otp/totp"
 	"github.com/segmentio/ksuid"
 	"image/png"
@@ -70,6 +71,28 @@ func (s authingServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest)
 	return resp, nil
 }
 
+// BatchCreateUsers implements Interface.
+func (s authingServer) BatchCreateUsers(ctx context.Context, in *pb.BatchCreateUsersRequest) (*pb.BatchCreateUsersResponse, error) {
+	if len(in.Users) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the user")
+	}
+
+	resp := &pb.BatchCreateUsersResponse{}
+	for _, user := range in.Users {
+		request := &pb.CreateUserRequest{
+			Domain: in.Domain,
+			User:   user,
+		}
+		if response, err := s.CreateUser(ctx, request); err != nil {
+			logs.ErrLogw("failed to create the user", "user", user.Name)
+		} else {
+			resp.Users = append(resp.Users, response)
+		}
+	}
+
+	return resp, nil
+}
+
 // UpdateUser implements Interface.
 func (s authingServer) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*core.Null, error) {
 	if len(in.Id) == 0 {
@@ -102,8 +125,11 @@ func (s authingServer) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest)
 	if len(in.ResetPassword) == 0 {
 		return nil, core.NewInvalidArgumentError("active user should reset new password")
 	}
-	if len(in.Passcode) == 0 {
-		return nil, core.NewInvalidArgumentError("active user should set the totp passcode")
+	disableOTP := GetAuthing().Config.DisableOTP
+	if !disableOTP {
+		if len(in.Passcode) == 0 {
+			return nil, core.NewInvalidArgumentError("active user should set the totp passcode")
+		}
 	}
 
 	// test the auth token
@@ -112,15 +138,17 @@ func (s authingServer) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest)
 	if user, err := model.GetUserModel().Get(ctx, in.Id); err != nil || user == nil {
 		return nil, core.NewUnauthenticatedError("user or password is not valid")
 	} else {
-		secret, _ := base32.StdEncoding.DecodeString(user.OtpSecret)
-		key, _ := totp.Generate(totp.GenerateOpts{
-			Issuer:      "xd",
-			AccountName: user.Name,
-			Secret:      secret,
-		})
-		if valid := totp.Validate(in.Passcode, key.Secret()); !valid {
-			GetUserToken().DeleteSession(user)
-			return nil, core.NewInvalidArgumentError("the passcode is not valid")
+		if !disableOTP {
+			secret, _ := base32.StdEncoding.DecodeString(user.OtpSecret)
+			key, _ := totp.Generate(totp.GenerateOpts{
+				Issuer:      "xd",
+				AccountName: user.Name,
+				Secret:      secret,
+			})
+			if valid := totp.Validate(in.Passcode, key.Secret()); !valid {
+				GetUserToken().DeleteSession(user)
+				return nil, core.NewInvalidArgumentError("the passcode is not valid")
+			}
 		}
 
 		sum := sha256.New().Sum([]byte(in.ResetPassword + user.Salt))
@@ -230,48 +258,60 @@ func (s authingServer) Login(ctx context.Context, in *pb.LoginRequest) (*auth.Lo
 			LoginTime: user.LoginTime,
 		}
 
-		if user.Active {
-			if len(in.Otp) == 0 {
-				return nil, core.NewInvalidArgumentError("active user should set the totp passcode")
-			}
-
-			secret, _ := base32.StdEncoding.DecodeString(user.OtpSecret)
-			key, _ := totp.Generate(totp.GenerateOpts{
-				Issuer:      "xd",
-				AccountName: user.Name,
-				Secret:      secret,
-			})
-			if valid := totp.Validate(in.Otp, key.Secret()); !valid {
-				return nil, core.NewUnauthenticatedError("user or password is not valid")
-			}
-
-			GetUserToken().SetSession(user)
-		} else {
-			key, _ := totp.Generate(totp.GenerateOpts{
-				Issuer:      "xd", // user.Domain ?? "ARMORY"
-				AccountName: user.Name,
-			})
-
-			// Convert TOTP key into a PNG
-			var buf bytes.Buffer
-			if img, err := key.Image(200, 200); err != nil {
-				return nil, core.NewInternalError("failed to generate the QR code")
+		if GetAuthing().Config.DisableOTP {
+			if user.Active {
+				GetUserToken().SetSession(user)
 			} else {
-				if err = png.Encode(&buf, img); err != nil {
-					return nil, core.NewInternalError("failed to generate the QR code")
-				}
-
-				if _, err = model.GetUserModel().Update(ctx, &auth.User{
-					Id:        user.Id,
-					OtpSecret: key.Secret(),
-					LoginTime: core.Now(),
-				}); err != nil {
-					return nil, core.NewInternalError("failed to update the user info")
-				}
-
 				logon.Totp = &auth.TOTP{
 					// Secret: key.Secret(),
-					QrCode: base64.StdEncoding.EncodeToString(buf.Bytes()),
+					QrCode: "empty",
+				}
+				// return nil, core.NewUnauthenticatedError("user is not active")
+			}
+		} else {
+			if user.Active {
+				if len(in.Otp) == 0 {
+					return nil, core.NewInvalidArgumentError("active user should set the totp passcode")
+				}
+
+				secret, _ := base32.StdEncoding.DecodeString(user.OtpSecret)
+				key, _ := totp.Generate(totp.GenerateOpts{
+					Issuer:      "xd",
+					AccountName: user.Name,
+					Secret:      secret,
+				})
+				if valid := totp.Validate(in.Otp, key.Secret()); !valid {
+					return nil, core.NewUnauthenticatedError("user or password is not valid")
+				}
+
+				GetUserToken().SetSession(user)
+			} else {
+				key, _ := totp.Generate(totp.GenerateOpts{
+					Issuer:      "xd", // user.Domain ?? "ARMORY"
+					AccountName: user.Name,
+				})
+
+				// Convert TOTP key into a PNG
+				var buf bytes.Buffer
+				if img, err := key.Image(200, 200); err != nil {
+					return nil, core.NewInternalError("failed to generate the QR code")
+				} else {
+					if err = png.Encode(&buf, img); err != nil {
+						return nil, core.NewInternalError("failed to generate the QR code")
+					}
+
+					if _, err = model.GetUserModel().Update(ctx, &auth.User{
+						Id:        user.Id,
+						OtpSecret: key.Secret(),
+						LoginTime: core.Now(),
+					}); err != nil {
+						return nil, core.NewInternalError("failed to update the user info")
+					}
+
+					logon.Totp = &auth.TOTP{
+						// Secret: key.Secret(),
+						QrCode: base64.StdEncoding.EncodeToString(buf.Bytes()),
+					}
 				}
 			}
 		}

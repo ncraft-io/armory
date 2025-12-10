@@ -45,15 +45,16 @@ var (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
-	CreateUserEndpoint     endpoint.Endpoint
-	UpdateUserEndpoint     endpoint.Endpoint
-	ActiveUserEndpoint     endpoint.Endpoint
-	GetUserEndpoint        endpoint.Endpoint
-	ListUserEndpoint       endpoint.Endpoint
-	DeleteUserEndpoint     endpoint.Endpoint
-	UpdatePasswordEndpoint endpoint.Endpoint
-	LoginEndpoint          endpoint.Endpoint
-	LogoutEndpoint         endpoint.Endpoint
+	CreateUserEndpoint       endpoint.Endpoint
+	BatchCreateUsersEndpoint endpoint.Endpoint
+	UpdateUserEndpoint       endpoint.Endpoint
+	ActiveUserEndpoint       endpoint.Endpoint
+	GetUserEndpoint          endpoint.Endpoint
+	ListUserEndpoint         endpoint.Endpoint
+	DeleteUserEndpoint       endpoint.Endpoint
+	UpdatePasswordEndpoint   endpoint.Endpoint
+	LoginEndpoint            endpoint.Endpoint
+	LogoutEndpoint           endpoint.Endpoint
 }
 
 // Endpoints
@@ -64,6 +65,14 @@ func (e Endpoints) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*a
 		return nil, err
 	}
 	return response.(*auth.User), nil
+}
+
+func (e Endpoints) BatchCreateUsers(ctx context.Context, in *pb.BatchCreateUsersRequest) (*pb.BatchCreateUsersResponse, error) {
+	response, err := e.BatchCreateUsersEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.BatchCreateUsersResponse), nil
 }
 
 func (e Endpoints) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*core.Null, error) {
@@ -136,6 +145,17 @@ func MakeCreateUserEndpoint(s pb.AuthingServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.CreateUserRequest)
 		v, err := s.CreateUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeBatchCreateUsersEndpoint(s pb.AuthingServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.BatchCreateUsersRequest)
+		v, err := s.BatchCreateUsers(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -238,15 +258,16 @@ func MakeLogoutEndpoint(s pb.AuthingServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
-		"create_user":     struct{}{},
-		"update_user":     struct{}{},
-		"active_user":     struct{}{},
-		"get_user":        struct{}{},
-		"list_user":       struct{}{},
-		"delete_user":     struct{}{},
-		"update_password": struct{}{},
-		"login":           struct{}{},
-		"logout":          struct{}{},
+		"create_user":        struct{}{},
+		"batch_create_users": struct{}{},
+		"update_user":        struct{}{},
+		"active_user":        struct{}{},
+		"get_user":           struct{}{},
+		"list_user":          struct{}{},
+		"delete_user":        struct{}{},
+		"update_password":    struct{}{},
+		"login":              struct{}{},
+		"logout":             struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -259,6 +280,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	for inc, _ := range included {
 		if inc == "create_user" {
 			e.CreateUserEndpoint = middleware(e.CreateUserEndpoint)
+		}
+		if inc == "batch_create_users" {
+			e.BatchCreateUsersEndpoint = middleware(e.BatchCreateUsersEndpoint)
 		}
 		if inc == "update_user" {
 			e.UpdateUserEndpoint = middleware(e.UpdateUserEndpoint)
@@ -298,15 +322,16 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
-		"create_user":     struct{}{},
-		"update_user":     struct{}{},
-		"active_user":     struct{}{},
-		"get_user":        struct{}{},
-		"list_user":       struct{}{},
-		"delete_user":     struct{}{},
-		"update_password": struct{}{},
-		"login":           struct{}{},
-		"logout":          struct{}{},
+		"create_user":        struct{}{},
+		"batch_create_users": struct{}{},
+		"update_user":        struct{}{},
+		"active_user":        struct{}{},
+		"get_user":           struct{}{},
+		"list_user":          struct{}{},
+		"delete_user":        struct{}{},
+		"update_password":    struct{}{},
+		"login":              struct{}{},
+		"logout":             struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -319,6 +344,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	for inc, _ := range included {
 		if inc == "create_user" {
 			e.CreateUserEndpoint = middleware("create_user", e.CreateUserEndpoint)
+		}
+		if inc == "batch_create_users" {
+			e.BatchCreateUsersEndpoint = middleware("batch_create_users", e.BatchCreateUsersEndpoint)
 		}
 		if inc == "update_user" {
 			e.UpdateUserEndpoint = middleware("update_user", e.UpdateUserEndpoint)

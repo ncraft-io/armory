@@ -27,6 +27,11 @@ public interface AuthingHttp {
     Result<User> createUser(@RequestParam(name = "domain", required = false) String domain, 
 				@RequestBody User user);
     
+    @ResponseBody
+    @PostMapping("/armory/auth/v1/users:batch")
+    Result<BatchCreateUsersResponse> batchCreateUsers(@RequestParam(name = "domain", required = false) String domain, 
+				@RequestBody List<User> users);
+    
     
     @PutMapping("/armory/auth/v1/users/{id}")
     Result<Null> updateUser(@RequestParam(name = "domain", required = false) String domain, 

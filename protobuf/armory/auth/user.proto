@@ -25,6 +25,7 @@ message User {
     string nick_name = 13;
     bool active = 20;
     string otp_secret = 21;
+    bool is_admin = 25;
     mojo.core.Timestamp login_time = 30;
     mojo.core.Timestamp create_time = 1000;
     mojo.core.Timestamp update_time = 1001;

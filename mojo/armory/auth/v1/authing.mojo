@@ -7,6 +7,12 @@ interface Authing {
     create_user(domain: String @1
                 user: User @2 @http.body) -> User
 
+    @entity("User")
+    @http.post("/armory/auth/v1/users:batch")
+    @http.post("/armory/auth/v1/domains/{domain}/users:batch")
+    batch_create_users(domain: String @1
+                       users: [User] @2 @http.body) -> [User]
+
     /// 更新用户
     @entity("User")
     @http.put("/armory/auth/v1/users/{id}")

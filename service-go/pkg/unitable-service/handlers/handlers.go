@@ -883,7 +883,7 @@ func (s unitableServer) GetRowStat(ctx context.Context, in *pb.GetRowStatRequest
 		return nil, core.NewInvalidArgumentError("invalid query or stats expressions, error: %s", err.Error())
 	}
 
- 	tableId := in.Database + "." + in.Table
+	tableId := in.Database + "." + in.Table
 	rows, err := s.Synchro().CalcStats(ctx, tableId, qry)
 	if err != nil {
 		return nil, core.NewInternalError("faild to get data from db, error: %s", err.Error())

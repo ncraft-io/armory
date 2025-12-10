@@ -19,13 +19,13 @@ import (
 //go:generate go run github.com/ncraft-io/go-evaluate/cmd/evaluate
 
 //go:evaluate date "+%Y-%m-%d %H:%M:%S %Z"
-const BuildTime = "2025-11-21 12:42:28 CST"
+const BuildTime = ""
 
 //go:evaluate git rev-list -1 HEAD
-const GitHash = "4ad3d8e8863f3b328d991c7cb428174561bf7213"
+const GitHash = ""
 
 //go:evaluate git branch --show-current
-const GitBranch = "main"
+const GitBranch = ""
 
 func main() {
 	flag.String("http_addr", ":20171", "default ip address for http server")

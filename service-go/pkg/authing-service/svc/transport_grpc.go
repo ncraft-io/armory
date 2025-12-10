@@ -58,6 +58,13 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 			addTracerOption("create_user")...,
 		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "create_user", logger)))...,
 		),
+		batchCreateUsers: grpctransport.NewServer(
+			endpoints.BatchCreateUsersEndpoint,
+			DecodeGRPCBatchCreateUsersRequest,
+			EncodeGRPCBatchCreateUsersResponse,
+			addTracerOption("batch_create_users")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "batch_create_users", logger)))...,
+		),
 		updateUser: grpctransport.NewServer(
 			endpoints.UpdateUserEndpoint,
 			DecodeGRPCUpdateUserRequest,
@@ -121,15 +128,16 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 type grpcServer struct {
 	pb.UnimplementedAuthingServer
 
-	createUser     grpctransport.Handler
-	updateUser     grpctransport.Handler
-	activeUser     grpctransport.Handler
-	getUser        grpctransport.Handler
-	listUser       grpctransport.Handler
-	deleteUser     grpctransport.Handler
-	updatePassword grpctransport.Handler
-	login          grpctransport.Handler
-	logout         grpctransport.Handler
+	createUser       grpctransport.Handler
+	batchCreateUsers grpctransport.Handler
+	updateUser       grpctransport.Handler
+	activeUser       grpctransport.Handler
+	getUser          grpctransport.Handler
+	listUser         grpctransport.Handler
+	deleteUser       grpctransport.Handler
+	updatePassword   grpctransport.Handler
+	login            grpctransport.Handler
+	logout           grpctransport.Handler
 }
 
 // Methods for grpcServer to implement AuthingServer interface
@@ -140,6 +148,14 @@ func (s *grpcServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 		return nil, err
 	}
 	return rep.(*auth.User), nil
+}
+
+func (s *grpcServer) BatchCreateUsers(ctx context.Context, req *pb.BatchCreateUsersRequest) (*pb.BatchCreateUsersResponse, error) {
+	_, rep, err := s.batchCreateUsers.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.BatchCreateUsersResponse), nil
 }
 
 func (s *grpcServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*core.Null, error) {
@@ -215,6 +231,13 @@ func DecodeGRPCCreateUserRequest(_ context.Context, grpcReq interface{}) (interf
 	return req, nil
 }
 
+// DecodeGRPCBatchCreateUsersRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC BatchCreateUsers request to a user-domain BatchCreateUsers request. Primarily useful in a server.
+func DecodeGRPCBatchCreateUsersRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.BatchCreateUsersRequest)
+	return req, nil
+}
+
 // DecodeGRPCUpdateUserRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC UpdateUser request to a user-domain UpdateUser request. Primarily useful in a server.
 func DecodeGRPCUpdateUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -277,6 +300,13 @@ func DecodeGRPCLogoutRequest(_ context.Context, grpcReq interface{}) (interface{
 // user-domain CreateUser response to a gRPC CreateUser reply. Primarily useful in a server.
 func EncodeGRPCCreateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*auth.User)
+	return resp, nil
+}
+
+// EncodeGRPCBatchCreateUsersResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain BatchCreateUsers response to a gRPC BatchCreateUsers reply. Primarily useful in a server.
+func EncodeGRPCBatchCreateUsersResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.BatchCreateUsersResponse)
 	return resp, nil
 }
 

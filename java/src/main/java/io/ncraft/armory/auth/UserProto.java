@@ -41,19 +41,20 @@ public final class UserProto {
     java.lang.String[] descriptorData = {
       "\n\026armory/auth/user.proto\022\013armory.auth\032\024m" +
       "ojo/core/time.proto\032\031mojo/db/delete_time" +
-      ".proto\"\222\003\n\004User\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(" +
+      ".proto\"\244\003\n\004User\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(" +
       "\t\022\023\n\013description\030\003 \001(\t\022\016\n\006domain\030\004 \001(\t\022\020" +
       "\n\010password\030\005 \001(\t\022\014\n\004salt\030\006 \001(\t\022\032\n\022passwo" +
       "rd_algorithm\030\007 \001(\t\022\024\n\014phone_number\030\n \001(\t" +
       "\022\025\n\remail_address\030\013 \001(\t\022\021\n\tnick_name\030\r \001" +
-      "(\t\022\016\n\006active\030\024 \001(\010\022\022\n\notp_secret\030\025 \001(\t\022(" +
-      "\n\nlogin_time\030\036 \001(\0132\024.mojo.core.Timestamp" +
-      "\022*\n\013create_time\030\350\007 \001(\0132\024.mojo.core.Times" +
-      "tamp\022*\n\013update_time\030\351\007 \001(\0132\024.mojo.core.T" +
-      "imestamp\022)\n\013delete_time\030\352\007 \001(\0132\023.mojo.db" +
-      ".DeleteTimeBY\n\025io.ncraft.armory.authB\tUs" +
-      "erProtoP\001Z3github.com/ncraft-io/armory/g" +
-      "o/pkg/armory/auth;authb\006proto3"
+      "(\t\022\016\n\006active\030\024 \001(\010\022\022\n\notp_secret\030\025 \001(\t\022\020" +
+      "\n\010is_admin\030\031 \001(\010\022(\n\nlogin_time\030\036 \001(\0132\024.m" +
+      "ojo.core.Timestamp\022*\n\013create_time\030\350\007 \001(\013" +
+      "2\024.mojo.core.Timestamp\022*\n\013update_time\030\351\007" +
+      " \001(\0132\024.mojo.core.Timestamp\022)\n\013delete_tim" +
+      "e\030\352\007 \001(\0132\023.mojo.db.DeleteTimeBY\n\025io.ncra" +
+      "ft.armory.authB\tUserProtoP\001Z3github.com/" +
+      "ncraft-io/armory/go/pkg/armory/auth;auth" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -66,7 +67,7 @@ public final class UserProto {
     internal_static_armory_auth_User_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_User_descriptor,
-        new java.lang.String[] { "Id", "Name", "Description", "Domain", "Password", "Salt", "PasswordAlgorithm", "PhoneNumber", "EmailAddress", "NickName", "Active", "OtpSecret", "LoginTime", "CreateTime", "UpdateTime", "DeleteTime", });
+        new java.lang.String[] { "Id", "Name", "Description", "Domain", "Password", "Salt", "PasswordAlgorithm", "PhoneNumber", "EmailAddress", "NickName", "Active", "OtpSecret", "IsAdmin", "LoginTime", "CreateTime", "UpdateTime", "DeleteTime", });
     descriptor.resolveAllFeaturesImmutable();
     org.mojolang.mojo.core.TimeProto.getDescriptor();
     org.mojolang.mojo.db.DeleteTimeProto.getDescriptor();

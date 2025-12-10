@@ -80,6 +80,7 @@ GET /armory/auth/v1/domains/{domain}/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -117,6 +118,7 @@ POST /armory/auth/v1/domains/{domain}/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -140,6 +142,7 @@ POST /armory/auth/v1/domains/{domain}/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -179,6 +182,7 @@ GET /armory/auth/v1/domains/{domain}/users/{id}
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -217,6 +221,7 @@ PUT /armory/auth/v1/domains/{domain}/users/{id}
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -335,6 +340,81 @@ POST /armory/auth/v1/domains/{domain}/users/{id}:active
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
+| `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+| `deleteTime` | `string` | `Timestamp` | N |  | 是否删除 |
+
+
+## 
+
+### 请求路径
+```http
+POST /armory/auth/v1/domains/{domain}/users:batch
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `domain` | `string` |  |  |
+
+
+#### Body 请求对象
+| type | description |
+|---|---|
+| `Array<armory.auth.User>` |  |
+
+
+#### `armory.auth.User`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `description` | `string` |  | N |  |
+| `domain` | `string` |  | N |  |
+| `password` | `string` |  | N |  | 存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密 |
+| `salt` | `string` |  | N |  | 密码盐 |
+| `passwordAlgorithm` | `string` |  | N |  | default is md5 |
+| `phoneNumber` | `string` |  | N |  |
+| `emailAddress` | `string` |  | N |  |
+| `nickName` | `string` |  | N |  |
+| `active` | `boolean` |  | N |  | 是否激活 |
+| `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
+| `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+| `deleteTime` | `string` | `Timestamp` | N |  | 是否删除 |
+
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<armory.auth.User>` |  |
+
+
+#### `armory.auth.User`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `description` | `string` |  | N |  |
+| `domain` | `string` |  | N |  |
+| `password` | `string` |  | N |  | 存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密 |
+| `salt` | `string` |  | N |  | 密码盐 |
+| `passwordAlgorithm` | `string` |  | N |  | default is md5 |
+| `phoneNumber` | `string` |  | N |  |
+| `emailAddress` | `string` |  | N |  |
+| `nickName` | `string` |  | N |  |
+| `active` | `boolean` |  | N |  | 是否激活 |
+| `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -400,6 +480,7 @@ POST /armory/auth/v1/domains/{domain}/users:login
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -478,6 +559,7 @@ GET /armory/auth/v1/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -515,6 +597,7 @@ POST /armory/auth/v1/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -538,6 +621,7 @@ POST /armory/auth/v1/users
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -577,6 +661,7 @@ GET /armory/auth/v1/users/{id}
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -615,6 +700,7 @@ PUT /armory/auth/v1/users/{id}
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -733,6 +819,81 @@ POST /armory/auth/v1/users/{id}:active
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
+| `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+| `deleteTime` | `string` | `Timestamp` | N |  | 是否删除 |
+
+
+## 
+
+### 请求路径
+```http
+POST /armory/auth/v1/users:batch
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `domain` | `string` |  |  |
+
+
+#### Body 请求对象
+| type | description |
+|---|---|
+| `Array<armory.auth.User>` |  |
+
+
+#### `armory.auth.User`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `description` | `string` |  | N |  |
+| `domain` | `string` |  | N |  |
+| `password` | `string` |  | N |  | 存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密 |
+| `salt` | `string` |  | N |  | 密码盐 |
+| `passwordAlgorithm` | `string` |  | N |  | default is md5 |
+| `phoneNumber` | `string` |  | N |  |
+| `emailAddress` | `string` |  | N |  |
+| `nickName` | `string` |  | N |  |
+| `active` | `boolean` |  | N |  | 是否激活 |
+| `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
+| `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+| `deleteTime` | `string` | `Timestamp` | N |  | 是否删除 |
+
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<armory.auth.User>` |  |
+
+
+#### `armory.auth.User`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `description` | `string` |  | N |  |
+| `domain` | `string` |  | N |  |
+| `password` | `string` |  | N |  | 存储密码 sh256(md5(raw_password) + salt)，客户端传输的密码必须采用md5加密 |
+| `salt` | `string` |  | N |  | 密码盐 |
+| `passwordAlgorithm` | `string` |  | N |  | default is md5 |
+| `phoneNumber` | `string` |  | N |  |
+| `emailAddress` | `string` |  | N |  |
+| `nickName` | `string` |  | N |  |
+| `active` | `boolean` |  | N |  | 是否激活 |
+| `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |
@@ -798,6 +959,7 @@ POST /armory/auth/v1/users:login
 | `nickName` | `string` |  | N |  |
 | `active` | `boolean` |  | N |  | 是否激活 |
 | `otpSecret` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `createTime` | `string` | `Timestamp` | N |  |  |
 | `updateTime` | `string` | `Timestamp` | N |  |  |

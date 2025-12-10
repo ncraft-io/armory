@@ -494,6 +494,17 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int IS_ADMIN_FIELD_NUMBER = 25;
+  private boolean isAdmin_ = false;
+  /**
+   * <code>bool is_admin = 25;</code>
+   * @return The isAdmin.
+   */
+  @java.lang.Override
+  public boolean getIsAdmin() {
+    return isAdmin_;
+  }
+
   public static final int LOGIN_TIME_FIELD_NUMBER = 30;
   private org.mojolang.mojo.core.Timestamp loginTime_;
   /**
@@ -648,6 +659,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessage.isStringEmpty(otpSecret_)) {
       com.google.protobuf.GeneratedMessage.writeString(output, 21, otpSecret_);
     }
+    if (isAdmin_ != false) {
+      output.writeBool(25, isAdmin_);
+    }
     if (((bitField0_ & 0x00000001) != 0)) {
       output.writeMessage(30, getLoginTime());
     }
@@ -706,6 +720,10 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessage.isStringEmpty(otpSecret_)) {
       size += com.google.protobuf.GeneratedMessage.computeStringSize(21, otpSecret_);
     }
+    if (isAdmin_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(25, isAdmin_);
+    }
     if (((bitField0_ & 0x00000001) != 0)) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(30, getLoginTime());
@@ -761,6 +779,8 @@ private static final long serialVersionUID = 0L;
         != other.getActive()) return false;
     if (!getOtpSecret()
         .equals(other.getOtpSecret())) return false;
+    if (getIsAdmin()
+        != other.getIsAdmin()) return false;
     if (hasLoginTime() != other.hasLoginTime()) return false;
     if (hasLoginTime()) {
       if (!getLoginTime()
@@ -817,6 +837,9 @@ private static final long serialVersionUID = 0L;
         getActive());
     hash = (37 * hash) + OTP_SECRET_FIELD_NUMBER;
     hash = (53 * hash) + getOtpSecret().hashCode();
+    hash = (37 * hash) + IS_ADMIN_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getIsAdmin());
     if (hasLoginTime()) {
       hash = (37 * hash) + LOGIN_TIME_FIELD_NUMBER;
       hash = (53 * hash) + getLoginTime().hashCode();
@@ -985,6 +1008,7 @@ private static final long serialVersionUID = 0L;
       nickName_ = "";
       active_ = false;
       otpSecret_ = "";
+      isAdmin_ = false;
       loginTime_ = null;
       if (loginTimeBuilder_ != null) {
         loginTimeBuilder_.dispose();
@@ -1074,26 +1098,29 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000800) != 0)) {
         result.otpSecret_ = otpSecret_;
       }
-      int to_bitField0_ = 0;
       if (((from_bitField0_ & 0x00001000) != 0)) {
+        result.isAdmin_ = isAdmin_;
+      }
+      int to_bitField0_ = 0;
+      if (((from_bitField0_ & 0x00002000) != 0)) {
         result.loginTime_ = loginTimeBuilder_ == null
             ? loginTime_
             : loginTimeBuilder_.build();
         to_bitField0_ |= 0x00000001;
       }
-      if (((from_bitField0_ & 0x00002000) != 0)) {
+      if (((from_bitField0_ & 0x00004000) != 0)) {
         result.createTime_ = createTimeBuilder_ == null
             ? createTime_
             : createTimeBuilder_.build();
         to_bitField0_ |= 0x00000002;
       }
-      if (((from_bitField0_ & 0x00004000) != 0)) {
+      if (((from_bitField0_ & 0x00008000) != 0)) {
         result.updateTime_ = updateTimeBuilder_ == null
             ? updateTime_
             : updateTimeBuilder_.build();
         to_bitField0_ |= 0x00000004;
       }
-      if (((from_bitField0_ & 0x00008000) != 0)) {
+      if (((from_bitField0_ & 0x00010000) != 0)) {
         result.deleteTime_ = deleteTimeBuilder_ == null
             ? deleteTime_
             : deleteTimeBuilder_.build();
@@ -1171,6 +1198,9 @@ private static final long serialVersionUID = 0L;
         otpSecret_ = other.otpSecret_;
         bitField0_ |= 0x00000800;
         onChanged();
+      }
+      if (other.getIsAdmin() != false) {
+        setIsAdmin(other.getIsAdmin());
       }
       if (other.hasLoginTime()) {
         mergeLoginTime(other.getLoginTime());
@@ -1270,32 +1300,37 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000800;
               break;
             } // case 170
+            case 200: {
+              isAdmin_ = input.readBool();
+              bitField0_ |= 0x00001000;
+              break;
+            } // case 200
             case 242: {
               input.readMessage(
                   getLoginTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00002000;
               break;
             } // case 242
             case 8002: {
               input.readMessage(
                   getCreateTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00002000;
+              bitField0_ |= 0x00004000;
               break;
             } // case 8002
             case 8010: {
               input.readMessage(
                   getUpdateTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00008000;
               break;
             } // case 8010
             case 8018: {
               input.readMessage(
                   getDeleteTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00010000;
               break;
             } // case 8018
             default: {
@@ -2139,6 +2174,38 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private boolean isAdmin_ ;
+    /**
+     * <code>bool is_admin = 25;</code>
+     * @return The isAdmin.
+     */
+    @java.lang.Override
+    public boolean getIsAdmin() {
+      return isAdmin_;
+    }
+    /**
+     * <code>bool is_admin = 25;</code>
+     * @param value The isAdmin to set.
+     * @return This builder for chaining.
+     */
+    public Builder setIsAdmin(boolean value) {
+
+      isAdmin_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool is_admin = 25;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearIsAdmin() {
+      bitField0_ = (bitField0_ & ~0x00001000);
+      isAdmin_ = false;
+      onChanged();
+      return this;
+    }
+
     private org.mojolang.mojo.core.Timestamp loginTime_;
     private com.google.protobuf.SingleFieldBuilder<
         org.mojolang.mojo.core.Timestamp, org.mojolang.mojo.core.Timestamp.Builder, org.mojolang.mojo.core.TimestampOrBuilder> loginTimeBuilder_;
@@ -2147,7 +2214,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the loginTime field is set.
      */
     public boolean hasLoginTime() {
-      return ((bitField0_ & 0x00001000) != 0);
+      return ((bitField0_ & 0x00002000) != 0);
     }
     /**
      * <code>.mojo.core.Timestamp login_time = 30;</code>
@@ -2172,7 +2239,7 @@ private static final long serialVersionUID = 0L;
       } else {
         loginTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00001000;
+      bitField0_ |= 0x00002000;
       onChanged();
       return this;
     }
@@ -2186,7 +2253,7 @@ private static final long serialVersionUID = 0L;
       } else {
         loginTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00001000;
+      bitField0_ |= 0x00002000;
       onChanged();
       return this;
     }
@@ -2195,7 +2262,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeLoginTime(org.mojolang.mojo.core.Timestamp value) {
       if (loginTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00001000) != 0) &&
+        if (((bitField0_ & 0x00002000) != 0) &&
           loginTime_ != null &&
           loginTime_ != org.mojolang.mojo.core.Timestamp.getDefaultInstance()) {
           getLoginTimeBuilder().mergeFrom(value);
@@ -2206,7 +2273,7 @@ private static final long serialVersionUID = 0L;
         loginTimeBuilder_.mergeFrom(value);
       }
       if (loginTime_ != null) {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         onChanged();
       }
       return this;
@@ -2215,7 +2282,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp login_time = 30;</code>
      */
     public Builder clearLoginTime() {
-      bitField0_ = (bitField0_ & ~0x00001000);
+      bitField0_ = (bitField0_ & ~0x00002000);
       loginTime_ = null;
       if (loginTimeBuilder_ != null) {
         loginTimeBuilder_.dispose();
@@ -2228,7 +2295,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp login_time = 30;</code>
      */
     public org.mojolang.mojo.core.Timestamp.Builder getLoginTimeBuilder() {
-      bitField0_ |= 0x00001000;
+      bitField0_ |= 0x00002000;
       onChanged();
       return getLoginTimeFieldBuilder().getBuilder();
     }
@@ -2268,7 +2335,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the createTime field is set.
      */
     public boolean hasCreateTime() {
-      return ((bitField0_ & 0x00002000) != 0);
+      return ((bitField0_ & 0x00004000) != 0);
     }
     /**
      * <code>.mojo.core.Timestamp create_time = 1000;</code>
@@ -2293,7 +2360,7 @@ private static final long serialVersionUID = 0L;
       } else {
         createTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00004000;
       onChanged();
       return this;
     }
@@ -2307,7 +2374,7 @@ private static final long serialVersionUID = 0L;
       } else {
         createTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00004000;
       onChanged();
       return this;
     }
@@ -2316,7 +2383,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeCreateTime(org.mojolang.mojo.core.Timestamp value) {
       if (createTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00002000) != 0) &&
+        if (((bitField0_ & 0x00004000) != 0) &&
           createTime_ != null &&
           createTime_ != org.mojolang.mojo.core.Timestamp.getDefaultInstance()) {
           getCreateTimeBuilder().mergeFrom(value);
@@ -2327,7 +2394,7 @@ private static final long serialVersionUID = 0L;
         createTimeBuilder_.mergeFrom(value);
       }
       if (createTime_ != null) {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         onChanged();
       }
       return this;
@@ -2336,7 +2403,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp create_time = 1000;</code>
      */
     public Builder clearCreateTime() {
-      bitField0_ = (bitField0_ & ~0x00002000);
+      bitField0_ = (bitField0_ & ~0x00004000);
       createTime_ = null;
       if (createTimeBuilder_ != null) {
         createTimeBuilder_.dispose();
@@ -2349,7 +2416,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp create_time = 1000;</code>
      */
     public org.mojolang.mojo.core.Timestamp.Builder getCreateTimeBuilder() {
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00004000;
       onChanged();
       return getCreateTimeFieldBuilder().getBuilder();
     }
@@ -2389,7 +2456,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the updateTime field is set.
      */
     public boolean hasUpdateTime() {
-      return ((bitField0_ & 0x00004000) != 0);
+      return ((bitField0_ & 0x00008000) != 0);
     }
     /**
      * <code>.mojo.core.Timestamp update_time = 1001;</code>
@@ -2414,7 +2481,7 @@ private static final long serialVersionUID = 0L;
       } else {
         updateTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00004000;
+      bitField0_ |= 0x00008000;
       onChanged();
       return this;
     }
@@ -2428,7 +2495,7 @@ private static final long serialVersionUID = 0L;
       } else {
         updateTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00004000;
+      bitField0_ |= 0x00008000;
       onChanged();
       return this;
     }
@@ -2437,7 +2504,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeUpdateTime(org.mojolang.mojo.core.Timestamp value) {
       if (updateTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00004000) != 0) &&
+        if (((bitField0_ & 0x00008000) != 0) &&
           updateTime_ != null &&
           updateTime_ != org.mojolang.mojo.core.Timestamp.getDefaultInstance()) {
           getUpdateTimeBuilder().mergeFrom(value);
@@ -2448,7 +2515,7 @@ private static final long serialVersionUID = 0L;
         updateTimeBuilder_.mergeFrom(value);
       }
       if (updateTime_ != null) {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         onChanged();
       }
       return this;
@@ -2457,7 +2524,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp update_time = 1001;</code>
      */
     public Builder clearUpdateTime() {
-      bitField0_ = (bitField0_ & ~0x00004000);
+      bitField0_ = (bitField0_ & ~0x00008000);
       updateTime_ = null;
       if (updateTimeBuilder_ != null) {
         updateTimeBuilder_.dispose();
@@ -2470,7 +2537,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp update_time = 1001;</code>
      */
     public org.mojolang.mojo.core.Timestamp.Builder getUpdateTimeBuilder() {
-      bitField0_ |= 0x00004000;
+      bitField0_ |= 0x00008000;
       onChanged();
       return getUpdateTimeFieldBuilder().getBuilder();
     }
@@ -2510,7 +2577,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the deleteTime field is set.
      */
     public boolean hasDeleteTime() {
-      return ((bitField0_ & 0x00008000) != 0);
+      return ((bitField0_ & 0x00010000) != 0);
     }
     /**
      * <code>.mojo.db.DeleteTime delete_time = 1002;</code>
@@ -2535,7 +2602,7 @@ private static final long serialVersionUID = 0L;
       } else {
         deleteTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00008000;
+      bitField0_ |= 0x00010000;
       onChanged();
       return this;
     }
@@ -2549,7 +2616,7 @@ private static final long serialVersionUID = 0L;
       } else {
         deleteTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00008000;
+      bitField0_ |= 0x00010000;
       onChanged();
       return this;
     }
@@ -2558,7 +2625,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeDeleteTime(org.mojolang.mojo.db.DeleteTime value) {
       if (deleteTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00008000) != 0) &&
+        if (((bitField0_ & 0x00010000) != 0) &&
           deleteTime_ != null &&
           deleteTime_ != org.mojolang.mojo.db.DeleteTime.getDefaultInstance()) {
           getDeleteTimeBuilder().mergeFrom(value);
@@ -2569,7 +2636,7 @@ private static final long serialVersionUID = 0L;
         deleteTimeBuilder_.mergeFrom(value);
       }
       if (deleteTime_ != null) {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         onChanged();
       }
       return this;
@@ -2578,7 +2645,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.db.DeleteTime delete_time = 1002;</code>
      */
     public Builder clearDeleteTime() {
-      bitField0_ = (bitField0_ & ~0x00008000);
+      bitField0_ = (bitField0_ & ~0x00010000);
       deleteTime_ = null;
       if (deleteTimeBuilder_ != null) {
         deleteTimeBuilder_.dispose();
@@ -2591,7 +2658,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.db.DeleteTime delete_time = 1002;</code>
      */
     public org.mojolang.mojo.db.DeleteTime.Builder getDeleteTimeBuilder() {
-      bitField0_ |= 0x00008000;
+      bitField0_ |= 0x00010000;
       onChanged();
       return getDeleteTimeFieldBuilder().getBuilder();
     }

@@ -23,15 +23,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Authing_CreateUser_FullMethodName     = "/armory.auth.v1.Authing/create_user"
-	Authing_UpdateUser_FullMethodName     = "/armory.auth.v1.Authing/update_user"
-	Authing_ActiveUser_FullMethodName     = "/armory.auth.v1.Authing/active_user"
-	Authing_GetUser_FullMethodName        = "/armory.auth.v1.Authing/get_user"
-	Authing_ListUser_FullMethodName       = "/armory.auth.v1.Authing/list_user"
-	Authing_DeleteUser_FullMethodName     = "/armory.auth.v1.Authing/delete_user"
-	Authing_UpdatePassword_FullMethodName = "/armory.auth.v1.Authing/update_password"
-	Authing_Login_FullMethodName          = "/armory.auth.v1.Authing/login"
-	Authing_Logout_FullMethodName         = "/armory.auth.v1.Authing/logout"
+	Authing_CreateUser_FullMethodName       = "/armory.auth.v1.Authing/create_user"
+	Authing_BatchCreateUsers_FullMethodName = "/armory.auth.v1.Authing/batch_create_users"
+	Authing_UpdateUser_FullMethodName       = "/armory.auth.v1.Authing/update_user"
+	Authing_ActiveUser_FullMethodName       = "/armory.auth.v1.Authing/active_user"
+	Authing_GetUser_FullMethodName          = "/armory.auth.v1.Authing/get_user"
+	Authing_ListUser_FullMethodName         = "/armory.auth.v1.Authing/list_user"
+	Authing_DeleteUser_FullMethodName       = "/armory.auth.v1.Authing/delete_user"
+	Authing_UpdatePassword_FullMethodName   = "/armory.auth.v1.Authing/update_password"
+	Authing_Login_FullMethodName            = "/armory.auth.v1.Authing/login"
+	Authing_Logout_FullMethodName           = "/armory.auth.v1.Authing/logout"
 )
 
 // AuthingClient is the client API for Authing service.
@@ -39,6 +40,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthingClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*auth.User, error)
+	BatchCreateUsers(ctx context.Context, in *BatchCreateUsersRequest, opts ...grpc.CallOption) (*BatchCreateUsersResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*core.Null, error)
 	ActiveUser(ctx context.Context, in *ActiveUserRequest, opts ...grpc.CallOption) (*auth.LogonUser, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*auth.User, error)
@@ -60,6 +62,15 @@ func NewAuthingClient(cc grpc.ClientConnInterface) AuthingClient {
 func (c *authingClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*auth.User, error) {
 	out := new(auth.User)
 	err := c.cc.Invoke(ctx, Authing_CreateUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authingClient) BatchCreateUsers(ctx context.Context, in *BatchCreateUsersRequest, opts ...grpc.CallOption) (*BatchCreateUsersResponse, error) {
+	out := new(BatchCreateUsersResponse)
+	err := c.cc.Invoke(ctx, Authing_BatchCreateUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +154,7 @@ func (c *authingClient) Logout(ctx context.Context, in *LogoutRequest, opts ...g
 // for forward compatibility
 type AuthingServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*auth.User, error)
+	BatchCreateUsers(context.Context, *BatchCreateUsersRequest) (*BatchCreateUsersResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*core.Null, error)
 	ActiveUser(context.Context, *ActiveUserRequest) (*auth.LogonUser, error)
 	GetUser(context.Context, *GetUserRequest) (*auth.User, error)
@@ -160,6 +172,9 @@ type UnimplementedAuthingServer struct {
 
 func (UnimplementedAuthingServer) CreateUser(context.Context, *CreateUserRequest) (*auth.User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedAuthingServer) BatchCreateUsers(context.Context, *BatchCreateUsersRequest) (*BatchCreateUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateUsers not implemented")
 }
 func (UnimplementedAuthingServer) UpdateUser(context.Context, *UpdateUserRequest) (*core.Null, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
@@ -212,6 +227,24 @@ func _Authing_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthingServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Authing_BatchCreateUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchCreateUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthingServer).BatchCreateUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Authing_BatchCreateUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthingServer).BatchCreateUsers(ctx, req.(*BatchCreateUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -370,6 +403,10 @@ var Authing_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "create_user",
 			Handler:    _Authing_CreateUser_Handler,
+		},
+		{
+			MethodName: "batch_create_users",
+			Handler:    _Authing_BatchCreateUsers_Handler,
 		},
 		{
 			MethodName: "update_user",

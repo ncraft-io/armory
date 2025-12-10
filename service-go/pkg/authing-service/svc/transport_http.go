@@ -104,6 +104,23 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "create_user", logger)))...,
 		))
 
+	router.Methods("POST").Path("/armory/auth/v1/users:batch").Handler(
+		httptransport.NewServer(
+			endpoints.BatchCreateUsersEndpoint,
+			DecodeHTTPBatchCreateUsersZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("batch_create_users")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "batch_create_users", logger)))...,
+		))
+	router.Methods("POST").Path("/armory/auth/v1/domains/{domain}/users:batch").Handler(
+		httptransport.NewServer(
+			endpoints.BatchCreateUsersEndpoint,
+			DecodeHTTPBatchCreateUsersOneRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("batch_create_users")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "batch_create_users", logger)))...,
+		))
+
 	router.Methods("PUT").Path("/armory/auth/v1/users/{id}").Handler(
 		httptransport.NewServer(
 			endpoints.UpdateUserEndpoint,
@@ -454,6 +471,142 @@ func DecodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request) (interfa
 		} else {
 			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the user  query parameter")
 		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPBatchCreateUsersZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded batch_create_users request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPBatchCreateUsersZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.BatchCreateUsersRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchCreateUsersRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.Users = []*auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req.Users); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Users, "users")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the users  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPBatchCreateUsersOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded batch_create_users request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPBatchCreateUsersOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.BatchCreateUsersRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchCreateUsersRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.Users = []*auth.User{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req.Users); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Domain, "domain")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the domain  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Users, "users")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the users  query parameter")
 	}
 
 	return &req, nil

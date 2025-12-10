@@ -31,6 +31,11 @@ public class AuthingHttpFallbackFactory implements FallbackFactory<AuthingHttp> 
             }
             
             @Override
+            public Result<BatchCreateUsersResponse> batchCreateUsers(String domain, List<User> users) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to batch_create_users."));
+            }
+            
+            @Override
             public Result<Null> updateUser(String domain, String id, User user) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to update_user."));
             }

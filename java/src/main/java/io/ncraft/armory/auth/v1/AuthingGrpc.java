@@ -46,6 +46,37 @@ public final class AuthingGrpc {
     return getCreateUserMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.BatchCreateUsersRequest,
+      io.ncraft.armory.auth.v1.BatchCreateUsersResponse> getBatchCreateUsersMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "batch_create_users",
+      requestType = io.ncraft.armory.auth.v1.BatchCreateUsersRequest.class,
+      responseType = io.ncraft.armory.auth.v1.BatchCreateUsersResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.BatchCreateUsersRequest,
+      io.ncraft.armory.auth.v1.BatchCreateUsersResponse> getBatchCreateUsersMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.BatchCreateUsersRequest, io.ncraft.armory.auth.v1.BatchCreateUsersResponse> getBatchCreateUsersMethod;
+    if ((getBatchCreateUsersMethod = AuthingGrpc.getBatchCreateUsersMethod) == null) {
+      synchronized (AuthingGrpc.class) {
+        if ((getBatchCreateUsersMethod = AuthingGrpc.getBatchCreateUsersMethod) == null) {
+          AuthingGrpc.getBatchCreateUsersMethod = getBatchCreateUsersMethod =
+              io.grpc.MethodDescriptor.<io.ncraft.armory.auth.v1.BatchCreateUsersRequest, io.ncraft.armory.auth.v1.BatchCreateUsersResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "batch_create_users"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.auth.v1.BatchCreateUsersRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.auth.v1.BatchCreateUsersResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new AuthingMethodDescriptorSupplier("batch_create_users"))
+              .build();
+        }
+      }
+    }
+    return getBatchCreateUsersMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.auth.v1.UpdateUserRequest,
       org.mojolang.mojo.core.Null> getUpdateUserMethod;
 
@@ -351,6 +382,13 @@ public final class AuthingGrpc {
 
     /**
      */
+    default void batchCreateUsers(io.ncraft.armory.auth.v1.BatchCreateUsersRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.auth.v1.BatchCreateUsersResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBatchCreateUsersMethod(), responseObserver);
+    }
+
+    /**
+     */
     default void updateUser(io.ncraft.armory.auth.v1.UpdateUserRequest request,
         io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getUpdateUserMethod(), responseObserver);
@@ -443,6 +481,14 @@ public final class AuthingGrpc {
 
     /**
      */
+    public void batchCreateUsers(io.ncraft.armory.auth.v1.BatchCreateUsersRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.auth.v1.BatchCreateUsersResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getBatchCreateUsersMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void updateUser(io.ncraft.armory.auth.v1.UpdateUserRequest request,
         io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
@@ -531,6 +577,13 @@ public final class AuthingGrpc {
 
     /**
      */
+    public io.ncraft.armory.auth.v1.BatchCreateUsersResponse batchCreateUsers(io.ncraft.armory.auth.v1.BatchCreateUsersRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getBatchCreateUsersMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public org.mojolang.mojo.core.Null updateUser(io.ncraft.armory.auth.v1.UpdateUserRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getUpdateUserMethod(), getCallOptions(), request);
@@ -612,6 +665,14 @@ public final class AuthingGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.auth.v1.BatchCreateUsersResponse> batchCreateUsers(
+        io.ncraft.armory.auth.v1.BatchCreateUsersRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getBatchCreateUsersMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<org.mojolang.mojo.core.Null> updateUser(
         io.ncraft.armory.auth.v1.UpdateUserRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -676,14 +737,15 @@ public final class AuthingGrpc {
   }
 
   private static final int METHODID_CREATE_USER = 0;
-  private static final int METHODID_UPDATE_USER = 1;
-  private static final int METHODID_ACTIVE_USER = 2;
-  private static final int METHODID_GET_USER = 3;
-  private static final int METHODID_LIST_USER = 4;
-  private static final int METHODID_DELETE_USER = 5;
-  private static final int METHODID_UPDATE_PASSWORD = 6;
-  private static final int METHODID_LOGIN = 7;
-  private static final int METHODID_LOGOUT = 8;
+  private static final int METHODID_BATCH_CREATE_USERS = 1;
+  private static final int METHODID_UPDATE_USER = 2;
+  private static final int METHODID_ACTIVE_USER = 3;
+  private static final int METHODID_GET_USER = 4;
+  private static final int METHODID_LIST_USER = 5;
+  private static final int METHODID_DELETE_USER = 6;
+  private static final int METHODID_UPDATE_PASSWORD = 7;
+  private static final int METHODID_LOGIN = 8;
+  private static final int METHODID_LOGOUT = 9;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -705,6 +767,10 @@ public final class AuthingGrpc {
         case METHODID_CREATE_USER:
           serviceImpl.createUser((io.ncraft.armory.auth.v1.CreateUserRequest) request,
               (io.grpc.stub.StreamObserver<io.ncraft.armory.auth.User>) responseObserver);
+          break;
+        case METHODID_BATCH_CREATE_USERS:
+          serviceImpl.batchCreateUsers((io.ncraft.armory.auth.v1.BatchCreateUsersRequest) request,
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.auth.v1.BatchCreateUsersResponse>) responseObserver);
           break;
         case METHODID_UPDATE_USER:
           serviceImpl.updateUser((io.ncraft.armory.auth.v1.UpdateUserRequest) request,
@@ -763,6 +829,13 @@ public final class AuthingGrpc {
               io.ncraft.armory.auth.v1.CreateUserRequest,
               io.ncraft.armory.auth.User>(
                 service, METHODID_CREATE_USER)))
+        .addMethod(
+          getBatchCreateUsersMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              io.ncraft.armory.auth.v1.BatchCreateUsersRequest,
+              io.ncraft.armory.auth.v1.BatchCreateUsersResponse>(
+                service, METHODID_BATCH_CREATE_USERS)))
         .addMethod(
           getUpdateUserMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -868,6 +941,7 @@ public final class AuthingGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new AuthingFileDescriptorSupplier())
               .addMethod(getCreateUserMethod())
+              .addMethod(getBatchCreateUsersMethod())
               .addMethod(getUpdateUserMethod())
               .addMethod(getActiveUserMethod())
               .addMethod(getGetUserMethod())

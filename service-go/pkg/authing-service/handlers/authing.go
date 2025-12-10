@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"github.com/ncraft-io/armory/service-go/pkg/authing"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"sync"
 )
 
@@ -22,8 +24,16 @@ func GetUserToken() *authing.UserToken {
 
 type Authing struct {
 	UserToken *authing.UserToken
+	Config    *Config
 }
 
 func NewAuthing() *Authing {
-	return &Authing{UserToken: authing.NewUserToken()}
+	conf := &Config{}
+	err := config.ScanFrom(conf, "authing")
+	logs.Warnw("failed to load authing config", "error", err)
+
+	return &Authing{
+		UserToken: authing.NewUserToken(),
+		Config:    conf,
+	}
 }

@@ -31,6 +31,16 @@ public final class AuthingProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_armory_auth_v1_CreateUserRequest_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_armory_auth_v1_BatchCreateUsersRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_armory_auth_v1_BatchCreateUsersRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_armory_auth_v1_BatchCreateUsersResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_armory_auth_v1_BatchCreateUsersResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_armory_auth_v1_UpdateUserRequest_descriptor;
   static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -90,45 +100,51 @@ public final class AuthingProto {
       "sk.proto\032\024mojo/core/null.proto\032\030mojo/cor" +
       "e/ordering.proto\"D\n\021CreateUserRequest\022\016\n" +
       "\006domain\030\001 \001(\t\022\037\n\004user\030\002 \001(\0132\021.armory.aut" +
-      "h.User\"P\n\021UpdateUserRequest\022\016\n\006domain\030\001 " +
-      "\001(\t\022\n\n\002id\030\002 \001(\t\022\037\n\004user\030\003 \001(\0132\021.armory.a" +
-      "uth.User\"Y\n\021ActiveUserRequest\022\016\n\006domain\030" +
-      "\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\026\n\016reset_password\030\003 \001(" +
-      "\t\022\020\n\010passcode\030\004 \001(\t\"\034\n\016GetUserRequest\022\n\n" +
-      "\002id\030\001 \001(\t\"\313\001\n\017ListUserRequest\022\016\n\006domain\030" +
-      "\001 \001(\t\022\022\n\tpage_size\030\320\017 \001(\005\022\023\n\npage_token\030" +
-      "\321\017 \001(\t\022\r\n\004skip\030\322\017 \001(\005\022\017\n\006filter\030\333\017 \001(\t\022#" +
-      "\n\005order\030\334\017 \001(\0132\023.mojo.core.Ordering\022)\n\nf" +
-      "ield_mask\030\335\017 \001(\0132\024.mojo.core.FieldMask\022\017" +
-      "\n\006unique\030\336\017 \001(\010\"d\n\020ListUserResponse\022 \n\005u" +
-      "sers\030\001 \003(\0132\021.armory.auth.User\022\024\n\013total_c" +
-      "ount\030\320\017 \001(\005\022\030\n\017next_page_token\030\321\017 \001(\t\"\037\n" +
-      "\021DeleteUserRequest\022\n\n\002id\030\001 \001(\t\"_\n\025Update" +
-      "PasswordRequest\022\016\n\006domain\030\001 \001(\t\022\n\n\002id\030\002 " +
-      "\001(\t\022\024\n\014old_password\030\003 \001(\t\022\024\n\014new_passwor" +
-      "d\030\004 \001(\t\"j\n\014LoginRequest\022\014\n\004user\030\001 \001(\t\022\017\n" +
-      "\007captcha\030\004 \001(\t\022\020\n\010password\030\005 \001(\t\022\013\n\003otp\030" +
-      "\006 \001(\t\022\014\n\004type\030\007 \001(\t\022\016\n\006domain\030\010 \001(\t\"\035\n\rL" +
-      "ogoutRequest\022\014\n\004user\030\001 \001(\t2\361\004\n\007Authing\022C" +
-      "\n\013create_user\022!.armory.auth.v1.CreateUse" +
-      "rRequest\032\021.armory.auth.User\022A\n\013update_us" +
-      "er\022!.armory.auth.v1.UpdateUserRequest\032\017." +
-      "mojo.core.Null\022H\n\013active_user\022!.armory.a" +
-      "uth.v1.ActiveUserRequest\032\026.armory.auth.L" +
-      "ogonUser\022=\n\010get_user\022\036.armory.auth.v1.Ge" +
-      "tUserRequest\032\021.armory.auth.User\022N\n\tlist_" +
-      "user\022\037.armory.auth.v1.ListUserRequest\032 ." +
-      "armory.auth.v1.ListUserResponse\022A\n\013delet" +
-      "e_user\022!.armory.auth.v1.DeleteUserReques" +
-      "t\032\017.mojo.core.Null\022I\n\017update_password\022%." +
-      "armory.auth.v1.UpdatePasswordRequest\032\017.m" +
-      "ojo.core.Null\022=\n\005login\022\034.armory.auth.v1." +
-      "LoginRequest\032\026.armory.auth.LogonUser\0228\n\006" +
-      "logout\022\035.armory.auth.v1.LogoutRequest\032\017." +
-      "mojo.core.NullBb\n\030io.ncraft.armory.auth." +
-      "v1B\014AuthingProtoP\001Z6github.com/ncraft-io" +
-      "/armory/go/pkg/armory/auth/v1;authb\006prot" +
-      "o3"
+      "h.User\"K\n\027BatchCreateUsersRequest\022\016\n\006dom" +
+      "ain\030\001 \001(\t\022 \n\005users\030\002 \003(\0132\021.armory.auth.U" +
+      "ser\"<\n\030BatchCreateUsersResponse\022 \n\005users" +
+      "\030\001 \003(\0132\021.armory.auth.User\"P\n\021UpdateUserR" +
+      "equest\022\016\n\006domain\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\037\n\004us" +
+      "er\030\003 \001(\0132\021.armory.auth.User\"Y\n\021ActiveUse" +
+      "rRequest\022\016\n\006domain\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\026\n\016" +
+      "reset_password\030\003 \001(\t\022\020\n\010passcode\030\004 \001(\t\"\034" +
+      "\n\016GetUserRequest\022\n\n\002id\030\001 \001(\t\"\313\001\n\017ListUse" +
+      "rRequest\022\016\n\006domain\030\001 \001(\t\022\022\n\tpage_size\030\320\017" +
+      " \001(\005\022\023\n\npage_token\030\321\017 \001(\t\022\r\n\004skip\030\322\017 \001(\005" +
+      "\022\017\n\006filter\030\333\017 \001(\t\022#\n\005order\030\334\017 \001(\0132\023.mojo" +
+      ".core.Ordering\022)\n\nfield_mask\030\335\017 \001(\0132\024.mo" +
+      "jo.core.FieldMask\022\017\n\006unique\030\336\017 \001(\010\"d\n\020Li" +
+      "stUserResponse\022 \n\005users\030\001 \003(\0132\021.armory.a" +
+      "uth.User\022\024\n\013total_count\030\320\017 \001(\005\022\030\n\017next_p" +
+      "age_token\030\321\017 \001(\t\"\037\n\021DeleteUserRequest\022\n\n" +
+      "\002id\030\001 \001(\t\"_\n\025UpdatePasswordRequest\022\016\n\006do" +
+      "main\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\024\n\014old_password\030\003" +
+      " \001(\t\022\024\n\014new_password\030\004 \001(\t\"j\n\014LoginReque" +
+      "st\022\014\n\004user\030\001 \001(\t\022\017\n\007captcha\030\004 \001(\t\022\020\n\010pas" +
+      "sword\030\005 \001(\t\022\013\n\003otp\030\006 \001(\t\022\014\n\004type\030\007 \001(\t\022\016" +
+      "\n\006domain\030\010 \001(\t\"\035\n\rLogoutRequest\022\014\n\004user\030" +
+      "\001 \001(\t2\332\005\n\007Authing\022C\n\013create_user\022!.armor" +
+      "y.auth.v1.CreateUserRequest\032\021.armory.aut" +
+      "h.User\022g\n\022batch_create_users\022\'.armory.au" +
+      "th.v1.BatchCreateUsersRequest\032(.armory.a" +
+      "uth.v1.BatchCreateUsersResponse\022A\n\013updat" +
+      "e_user\022!.armory.auth.v1.UpdateUserReques" +
+      "t\032\017.mojo.core.Null\022H\n\013active_user\022!.armo" +
+      "ry.auth.v1.ActiveUserRequest\032\026.armory.au" +
+      "th.LogonUser\022=\n\010get_user\022\036.armory.auth.v" +
+      "1.GetUserRequest\032\021.armory.auth.User\022N\n\tl" +
+      "ist_user\022\037.armory.auth.v1.ListUserReques" +
+      "t\032 .armory.auth.v1.ListUserResponse\022A\n\013d" +
+      "elete_user\022!.armory.auth.v1.DeleteUserRe" +
+      "quest\032\017.mojo.core.Null\022I\n\017update_passwor" +
+      "d\022%.armory.auth.v1.UpdatePasswordRequest" +
+      "\032\017.mojo.core.Null\022=\n\005login\022\034.armory.auth" +
+      ".v1.LoginRequest\032\026.armory.auth.LogonUser" +
+      "\0228\n\006logout\022\035.armory.auth.v1.LogoutReques" +
+      "t\032\017.mojo.core.NullBb\n\030io.ncraft.armory.a" +
+      "uth.v1B\014AuthingProtoP\001Z6github.com/ncraf" +
+      "t-io/armory/go/pkg/armory/auth/v1;authb\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -145,56 +161,68 @@ public final class AuthingProto {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_CreateUserRequest_descriptor,
         new java.lang.String[] { "Domain", "User", });
-    internal_static_armory_auth_v1_UpdateUserRequest_descriptor =
+    internal_static_armory_auth_v1_BatchCreateUsersRequest_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_armory_auth_v1_BatchCreateUsersRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_armory_auth_v1_BatchCreateUsersRequest_descriptor,
+        new java.lang.String[] { "Domain", "Users", });
+    internal_static_armory_auth_v1_BatchCreateUsersResponse_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_armory_auth_v1_BatchCreateUsersResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_armory_auth_v1_BatchCreateUsersResponse_descriptor,
+        new java.lang.String[] { "Users", });
+    internal_static_armory_auth_v1_UpdateUserRequest_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_armory_auth_v1_UpdateUserRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_UpdateUserRequest_descriptor,
         new java.lang.String[] { "Domain", "Id", "User", });
     internal_static_armory_auth_v1_ActiveUserRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_armory_auth_v1_ActiveUserRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_ActiveUserRequest_descriptor,
         new java.lang.String[] { "Domain", "Id", "ResetPassword", "Passcode", });
     internal_static_armory_auth_v1_GetUserRequest_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_armory_auth_v1_GetUserRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_GetUserRequest_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_armory_auth_v1_ListUserRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_armory_auth_v1_ListUserRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_ListUserRequest_descriptor,
         new java.lang.String[] { "Domain", "PageSize", "PageToken", "Skip", "Filter", "Order", "FieldMask", "Unique", });
     internal_static_armory_auth_v1_ListUserResponse_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_armory_auth_v1_ListUserResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_ListUserResponse_descriptor,
         new java.lang.String[] { "Users", "TotalCount", "NextPageToken", });
     internal_static_armory_auth_v1_DeleteUserRequest_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_armory_auth_v1_DeleteUserRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_DeleteUserRequest_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_armory_auth_v1_UpdatePasswordRequest_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_armory_auth_v1_UpdatePasswordRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_UpdatePasswordRequest_descriptor,
         new java.lang.String[] { "Domain", "Id", "OldPassword", "NewPassword", });
     internal_static_armory_auth_v1_LoginRequest_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_armory_auth_v1_LoginRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_LoginRequest_descriptor,
         new java.lang.String[] { "User", "Captcha", "Password", "Otp", "Type", "Domain", });
     internal_static_armory_auth_v1_LogoutRequest_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_armory_auth_v1_LogoutRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_auth_v1_LogoutRequest_descriptor,

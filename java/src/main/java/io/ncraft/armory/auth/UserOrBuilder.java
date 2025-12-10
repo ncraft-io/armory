@@ -148,6 +148,12 @@ public interface UserOrBuilder extends
       getOtpSecretBytes();
 
   /**
+   * <code>bool is_admin = 25;</code>
+   * @return The isAdmin.
+   */
+  boolean getIsAdmin();
+
+  /**
    * <code>.mojo.core.Timestamp login_time = 30;</code>
    * @return Whether the loginTime field is set.
    */

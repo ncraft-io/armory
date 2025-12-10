@@ -185,6 +185,10 @@ components:
         id:
           title: mojo.core.String
           type: string
+        isAdmin:
+          description: 是否是管理员
+          title: mojo.core.Bool
+          type: boolean
         loginTime:
           $ref: '#/components/schemas/mojo.core.Timestamp'
         name:
@@ -757,6 +761,35 @@ paths:
                 $ref: '#/components/schemas/armory.auth.LogonUser'
           description: OK
       summary: 激活用户
+  /armory/auth/v1/domains/{domain}/users:batch:
+    post:
+      description: ""
+      operationId: batch_create_users
+      parameters:
+      - in: path
+        name: domain
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/armory.auth.User'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.auth.User'
+                title: mojo.core.Array
+                type: array
+          description: OK
   /armory/auth/v1/domains/{domain}/users:login:
     post:
       description: ""
@@ -1026,6 +1059,35 @@ paths:
                 $ref: '#/components/schemas/armory.auth.LogonUser'
           description: OK
       summary: 激活用户
+  /armory/auth/v1/users:batch:
+    post:
+      description: ""
+      operationId: batch_create_users
+      parameters:
+      - in: path
+        name: domain
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/armory.auth.User'
+              title: mojo.core.Array
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.auth.User'
+                title: mojo.core.Array
+                type: array
+          description: OK
   /armory/auth/v1/users:login:
     post:
       description: ""

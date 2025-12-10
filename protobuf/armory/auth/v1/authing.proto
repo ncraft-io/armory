@@ -20,6 +20,15 @@ message CreateUserRequest {
     armory.auth.User user = 2;
 }
 
+message BatchCreateUsersRequest {
+    string domain = 1;
+    repeated armory.auth.User users = 2;
+}
+
+message BatchCreateUsersResponse {
+    repeated armory.auth.User users = 1;
+}
+
 message UpdateUserRequest {
     string domain = 1;
     string id = 2;
@@ -80,6 +89,7 @@ message LogoutRequest {
 
 service Authing {
     rpc create_user(CreateUserRequest) returns (armory.auth.User);
+    rpc batch_create_users(BatchCreateUsersRequest) returns (BatchCreateUsersResponse);
     rpc update_user(UpdateUserRequest) returns (mojo.core.Null);
     rpc active_user(ActiveUserRequest) returns (armory.auth.LogonUser);
     rpc get_user(GetUserRequest) returns (armory.auth.User);

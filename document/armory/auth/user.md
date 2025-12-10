@@ -7,6 +7,7 @@
 | `domain` | `string` |  | N |  |
 | `emailAddress` | `string` |  | N |  |
 | `id` | `string` |  | N |  |
+| `isAdmin` | `boolean` |  | N |  | 是否是管理员 |
 | `loginTime` | `string` | `Timestamp` | N |  | 用户最近的登录时间 |
 | `name` | `string` |  | N |  |
 | `nickName` | `string` |  | N |  |
