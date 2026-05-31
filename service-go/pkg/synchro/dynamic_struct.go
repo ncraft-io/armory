@@ -13,9 +13,12 @@ import (
 	"time"
 )
 
+const lowerCamel = "lowerCamel"
+
 type DynamicStruct struct {
-	Fields []reflect.StructField
-	Type   reflect.Type
+	Fields    []reflect.StructField
+	Type      reflect.Type
+	JsonStyle string
 }
 
 func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
@@ -46,7 +49,12 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 			}
 		}
 
-		field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, col.Name))
+		switch table.JsonStyle {
+		case lowerCamel:
+			field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, strcase.ToLowerCamel(col.Name)))
+		default:
+			field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, col.Name))
+		}
 
 		var gtags []string
 		gtags = append(gtags, fmt.Sprintf("column:%s", col.Name))
@@ -66,7 +74,8 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 	}
 
 	return &DynamicStruct{
-		Fields: fields,
+		Fields:    fields,
+		JsonStyle: table.JsonStyle,
 	}
 }
 
@@ -121,7 +130,15 @@ func (s *DynamicStruct) New() interface{} {
 func (s *DynamicStruct) NewOf(object *core.Object) (interface{}, error) {
 	instance := s.New()
 
-	json, err := jsoniter.Marshal(object.ToSnakeKeys())
+	var json []byte
+	var err error
+
+	if s.JsonStyle == lowerCamel {
+		json, err = jsoniter.Marshal(object.ToLowerCamelKeys())
+	} else {
+		json, err = jsoniter.Marshal(object.ToSnakeKeys())
+	}
+
 	if err != nil {
 		return nil, err
 	}
