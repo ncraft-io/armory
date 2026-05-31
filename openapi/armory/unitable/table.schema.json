@@ -34,6 +34,11 @@
             "description": "表单ID",
             "type": "string"
         },
+        "jsonStyle": {
+            "title": "mojo.core.String",
+            "description": "表格字段导出json的风格，默认与数据库一致为：snake，lower_camel",
+            "type": "string"
+        },
         "name": {
             "title": "mojo.core.String",
             "description": "表单名",

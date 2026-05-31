@@ -20,6 +20,7 @@ message Table {
     string export_name = 4;
     string tenant = 5 [(mojo.db_index)=""];
     string database = 10 [(mojo.db_index)=""];
+    string json_style = 11;
     repeated Column columns = 15 [(mojo.reference)=""];
     mojo.core.Timestamp create_time = 100;
     mojo.core.Timestamp update_time = 101;

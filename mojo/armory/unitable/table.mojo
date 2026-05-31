@@ -10,6 +10,7 @@ type Table {
     tenant: String @5 @db.index //< 租户名
 
     database: String @10 @db.index //< 表单所在的数据库名
+    json_style: String @11 //< 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel
 
     columns: [Column] @15 //< 表单包含的列的元信息
 

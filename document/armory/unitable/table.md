@@ -6,6 +6,7 @@
 | `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
 | `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
 | `id` | `string` |  | N |  | 表单ID |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
 | `name` | `string` |  | N |  | 表单名 |
 | `tenant` | `string` |  | N |  | 租户名 |
 | `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |

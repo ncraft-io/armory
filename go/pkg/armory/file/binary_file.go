@@ -22,6 +22,7 @@ func (x *BinaryFile) WriteHttpResponse(ctx context.Context, writer http.Response
 			//}
 			writer.Header().Set("Content-Description", "File Transfer")
 			writer.Header().Set("Content-Type", "application/octet-stream")
+			writer.Header().Set("Content-Length", strconv.Itoa(len(x.Content)))
 			writer.Header().Set("Content-Disposition", "attachment; filename=\""+x.Name+"\"")
 
 			//if len(x.Encoding) > 0 {

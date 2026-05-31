@@ -446,6 +446,10 @@ components:
           description: 表单ID
           title: mojo.core.String
           type: string
+        jsonStyle:
+          description: 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel
+          title: mojo.core.String
+          type: string
         name:
           description: 表单名
           title: mojo.core.String
