@@ -47,19 +47,19 @@ public final class DbQueryProto extends com.google.protobuf.GeneratedFile {
     java.lang.String[] descriptorData = {
       "\n\036armory/unitable/db_query.proto\022\017armory" +
       ".unitable\032\034armory/unitable/column.proto\032" +
-      "\024mojo/core/time.proto\032\017mojo/mojo.proto\"\327" +
+      "\024mojo/core/time.proto\032\017mojo/mojo.proto\"\353" +
       "\002\n\007DbQuery\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\013\n\003" +
       "sql\030\003 \001(\t\022<\n\nparameters\030\004 \003(\0132\".armory.u" +
       "nitable.DbQuery.ParameterB\004\350\325$\001\022\020\n\010datab" +
-      "ase\030\006 \001(\t\0222\n\007columns\030\017 \003(\0132\027.armory.unit" +
-      "able.ColumnB\010\332\317$\000\350\325$\001\022)\n\013create_time\030d \001" +
-      "(\0132\024.mojo.core.Timestamp\022)\n\013update_time\030" +
-      "e \001(\0132\024.mojo.core.Timestamp\032K\n\tParameter" +
-      "\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\020\n\010is_array" +
-      "\030\003 \001(\010\022\020\n\010pg_array\030\004 \001(\010Bh\n\031io.ncraft.ar" +
-      "mory.unitableB\014DbQueryProtoP\001Z;github.co" +
-      "m/ncraft-io/armory/go/pkg/armory/unitabl" +
-      "e;unitableb\006proto3"
+      "ase\030\006 \001(\t\022\022\n\njson_style\030\007 \001(\t\0222\n\007columns" +
+      "\030\017 \003(\0132\027.armory.unitable.ColumnB\010\332\317$\000\350\325$" +
+      "\001\022)\n\013create_time\030d \001(\0132\024.mojo.core.Times" +
+      "tamp\022)\n\013update_time\030e \001(\0132\024.mojo.core.Ti" +
+      "mestamp\032K\n\tParameter\022\014\n\004name\030\001 \001(\t\022\014\n\004ty" +
+      "pe\030\002 \001(\t\022\020\n\010is_array\030\003 \001(\010\022\020\n\010pg_array\030\004" +
+      " \001(\010Bh\n\031io.ncraft.armory.unitableB\014DbQue" +
+      "ryProtoP\001Z;github.com/ncraft-io/armory/g" +
+      "o/pkg/armory/unitable;unitableb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -73,7 +73,7 @@ public final class DbQueryProto extends com.google.protobuf.GeneratedFile {
     internal_static_armory_unitable_DbQuery_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_armory_unitable_DbQuery_descriptor,
-        new java.lang.String[] { "Id", "Name", "Sql", "Parameters", "Database", "Columns", "CreateTime", "UpdateTime", });
+        new java.lang.String[] { "Id", "Name", "Sql", "Parameters", "Database", "JsonStyle", "Columns", "CreateTime", "UpdateTime", });
     internal_static_armory_unitable_DbQuery_Parameter_descriptor =
       internal_static_armory_unitable_DbQuery_descriptor.getNestedType(0);
     internal_static_armory_unitable_DbQuery_Parameter_fieldAccessorTable = new

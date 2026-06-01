@@ -33,6 +33,7 @@ private static final long serialVersionUID = 0L;
     sql_ = "";
     parameters_ = java.util.Collections.emptyList();
     database_ = "";
+    jsonStyle_ = "";
     columns_ = java.util.Collections.emptyList();
   }
 
@@ -1051,6 +1052,45 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int JSON_STYLE_FIELD_NUMBER = 7;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object jsonStyle_ = "";
+  /**
+   * <code>string json_style = 7;</code>
+   * @return The jsonStyle.
+   */
+  @java.lang.Override
+  public java.lang.String getJsonStyle() {
+    java.lang.Object ref = jsonStyle_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      jsonStyle_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string json_style = 7;</code>
+   * @return The bytes for jsonStyle.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getJsonStyleBytes() {
+    java.lang.Object ref = jsonStyle_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      jsonStyle_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   public static final int COLUMNS_FIELD_NUMBER = 15;
   @SuppressWarnings("serial")
   private java.util.List<io.ncraft.armory.unitable.Column> columns_;
@@ -1173,6 +1213,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessage.isStringEmpty(database_)) {
       com.google.protobuf.GeneratedMessage.writeString(output, 6, database_);
     }
+    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jsonStyle_)) {
+      com.google.protobuf.GeneratedMessage.writeString(output, 7, jsonStyle_);
+    }
     for (int i = 0; i < columns_.size(); i++) {
       output.writeMessage(15, columns_.get(i));
     }
@@ -1206,6 +1249,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!com.google.protobuf.GeneratedMessage.isStringEmpty(database_)) {
       size += com.google.protobuf.GeneratedMessage.computeStringSize(6, database_);
+    }
+    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(jsonStyle_)) {
+      size += com.google.protobuf.GeneratedMessage.computeStringSize(7, jsonStyle_);
     }
     for (int i = 0; i < columns_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
@@ -1244,6 +1290,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getParametersList())) return false;
     if (!getDatabase()
         .equals(other.getDatabase())) return false;
+    if (!getJsonStyle()
+        .equals(other.getJsonStyle())) return false;
     if (!getColumnsList()
         .equals(other.getColumnsList())) return false;
     if (hasCreateTime() != other.hasCreateTime()) return false;
@@ -1279,6 +1327,8 @@ private static final long serialVersionUID = 0L;
     }
     hash = (37 * hash) + DATABASE_FIELD_NUMBER;
     hash = (53 * hash) + getDatabase().hashCode();
+    hash = (37 * hash) + JSON_STYLE_FIELD_NUMBER;
+    hash = (53 * hash) + getJsonStyle().hashCode();
     if (getColumnsCount() > 0) {
       hash = (37 * hash) + COLUMNS_FIELD_NUMBER;
       hash = (53 * hash) + getColumnsList().hashCode();
@@ -1442,13 +1492,14 @@ private static final long serialVersionUID = 0L;
       }
       bitField0_ = (bitField0_ & ~0x00000008);
       database_ = "";
+      jsonStyle_ = "";
       if (columnsBuilder_ == null) {
         columns_ = java.util.Collections.emptyList();
       } else {
         columns_ = null;
         columnsBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000020);
+      bitField0_ = (bitField0_ & ~0x00000040);
       createTime_ = null;
       if (createTimeBuilder_ != null) {
         createTimeBuilder_.dispose();
@@ -1502,9 +1553,9 @@ private static final long serialVersionUID = 0L;
         result.parameters_ = parametersBuilder_.build();
       }
       if (columnsBuilder_ == null) {
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000040) != 0)) {
           columns_ = java.util.Collections.unmodifiableList(columns_);
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
         }
         result.columns_ = columns_;
       } else {
@@ -1526,14 +1577,17 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000010) != 0)) {
         result.database_ = database_;
       }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.jsonStyle_ = jsonStyle_;
+      }
       int to_bitField0_ = 0;
-      if (((from_bitField0_ & 0x00000040) != 0)) {
+      if (((from_bitField0_ & 0x00000080) != 0)) {
         result.createTime_ = createTimeBuilder_ == null
             ? createTime_
             : createTimeBuilder_.build();
         to_bitField0_ |= 0x00000001;
       }
-      if (((from_bitField0_ & 0x00000080) != 0)) {
+      if (((from_bitField0_ & 0x00000100) != 0)) {
         result.updateTime_ = updateTimeBuilder_ == null
             ? updateTime_
             : updateTimeBuilder_.build();
@@ -1600,11 +1654,16 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000010;
         onChanged();
       }
+      if (!other.getJsonStyle().isEmpty()) {
+        jsonStyle_ = other.jsonStyle_;
+        bitField0_ |= 0x00000020;
+        onChanged();
+      }
       if (columnsBuilder_ == null) {
         if (!other.columns_.isEmpty()) {
           if (columns_.isEmpty()) {
             columns_ = other.columns_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
           } else {
             ensureColumnsIsMutable();
             columns_.addAll(other.columns_);
@@ -1617,7 +1676,7 @@ private static final long serialVersionUID = 0L;
             columnsBuilder_.dispose();
             columnsBuilder_ = null;
             columns_ = other.columns_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
             columnsBuilder_ = 
               com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                  internalGetColumnsFieldBuilder() : null;
@@ -1691,6 +1750,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000010;
               break;
             } // case 50
+            case 58: {
+              jsonStyle_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 58
             case 122: {
               io.ncraft.armory.unitable.Column m =
                   input.readMessage(
@@ -1708,14 +1772,14 @@ private static final long serialVersionUID = 0L;
               input.readMessage(
                   internalGetCreateTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000080;
               break;
             } // case 802
             case 810: {
               input.readMessage(
                   internalGetUpdateTimeFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000100;
               break;
             } // case 810
             default: {
@@ -2263,12 +2327,84 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private java.lang.Object jsonStyle_ = "";
+    /**
+     * <code>string json_style = 7;</code>
+     * @return The jsonStyle.
+     */
+    public java.lang.String getJsonStyle() {
+      java.lang.Object ref = jsonStyle_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        jsonStyle_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string json_style = 7;</code>
+     * @return The bytes for jsonStyle.
+     */
+    public com.google.protobuf.ByteString
+        getJsonStyleBytes() {
+      java.lang.Object ref = jsonStyle_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        jsonStyle_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string json_style = 7;</code>
+     * @param value The jsonStyle to set.
+     * @return This builder for chaining.
+     */
+    public Builder setJsonStyle(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      jsonStyle_ = value;
+      bitField0_ |= 0x00000020;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string json_style = 7;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearJsonStyle() {
+      jsonStyle_ = getDefaultInstance().getJsonStyle();
+      bitField0_ = (bitField0_ & ~0x00000020);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string json_style = 7;</code>
+     * @param value The bytes for jsonStyle to set.
+     * @return This builder for chaining.
+     */
+    public Builder setJsonStyleBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      jsonStyle_ = value;
+      bitField0_ |= 0x00000020;
+      onChanged();
+      return this;
+    }
+
     private java.util.List<io.ncraft.armory.unitable.Column> columns_ =
       java.util.Collections.emptyList();
     private void ensureColumnsIsMutable() {
-      if (!((bitField0_ & 0x00000020) != 0)) {
+      if (!((bitField0_ & 0x00000040) != 0)) {
         columns_ = new java.util.ArrayList<io.ncraft.armory.unitable.Column>(columns_);
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
        }
     }
 
@@ -2418,7 +2554,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearColumns() {
       if (columnsBuilder_ == null) {
         columns_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
       } else {
         columnsBuilder_.clear();
@@ -2495,7 +2631,7 @@ private static final long serialVersionUID = 0L;
         columnsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
             io.ncraft.armory.unitable.Column, io.ncraft.armory.unitable.Column.Builder, io.ncraft.armory.unitable.ColumnOrBuilder>(
                 columns_,
-                ((bitField0_ & 0x00000020) != 0),
+                ((bitField0_ & 0x00000040) != 0),
                 getParentForChildren(),
                 isClean());
         columns_ = null;
@@ -2511,7 +2647,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the createTime field is set.
      */
     public boolean hasCreateTime() {
-      return ((bitField0_ & 0x00000040) != 0);
+      return ((bitField0_ & 0x00000080) != 0);
     }
     /**
      * <code>.mojo.core.Timestamp create_time = 100;</code>
@@ -2536,7 +2672,7 @@ private static final long serialVersionUID = 0L;
       } else {
         createTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -2550,7 +2686,7 @@ private static final long serialVersionUID = 0L;
       } else {
         createTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -2559,7 +2695,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeCreateTime(org.mojolang.mojo.core.Timestamp value) {
       if (createTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00000040) != 0) &&
+        if (((bitField0_ & 0x00000080) != 0) &&
           createTime_ != null &&
           createTime_ != org.mojolang.mojo.core.Timestamp.getDefaultInstance()) {
           getCreateTimeBuilder().mergeFrom(value);
@@ -2570,7 +2706,7 @@ private static final long serialVersionUID = 0L;
         createTimeBuilder_.mergeFrom(value);
       }
       if (createTime_ != null) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         onChanged();
       }
       return this;
@@ -2579,7 +2715,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp create_time = 100;</code>
      */
     public Builder clearCreateTime() {
-      bitField0_ = (bitField0_ & ~0x00000040);
+      bitField0_ = (bitField0_ & ~0x00000080);
       createTime_ = null;
       if (createTimeBuilder_ != null) {
         createTimeBuilder_.dispose();
@@ -2592,7 +2728,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp create_time = 100;</code>
      */
     public org.mojolang.mojo.core.Timestamp.Builder getCreateTimeBuilder() {
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000080;
       onChanged();
       return internalGetCreateTimeFieldBuilder().getBuilder();
     }
@@ -2632,7 +2768,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the updateTime field is set.
      */
     public boolean hasUpdateTime() {
-      return ((bitField0_ & 0x00000080) != 0);
+      return ((bitField0_ & 0x00000100) != 0);
     }
     /**
      * <code>.mojo.core.Timestamp update_time = 101;</code>
@@ -2657,7 +2793,7 @@ private static final long serialVersionUID = 0L;
       } else {
         updateTimeBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000080;
+      bitField0_ |= 0x00000100;
       onChanged();
       return this;
     }
@@ -2671,7 +2807,7 @@ private static final long serialVersionUID = 0L;
       } else {
         updateTimeBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000080;
+      bitField0_ |= 0x00000100;
       onChanged();
       return this;
     }
@@ -2680,7 +2816,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeUpdateTime(org.mojolang.mojo.core.Timestamp value) {
       if (updateTimeBuilder_ == null) {
-        if (((bitField0_ & 0x00000080) != 0) &&
+        if (((bitField0_ & 0x00000100) != 0) &&
           updateTime_ != null &&
           updateTime_ != org.mojolang.mojo.core.Timestamp.getDefaultInstance()) {
           getUpdateTimeBuilder().mergeFrom(value);
@@ -2691,7 +2827,7 @@ private static final long serialVersionUID = 0L;
         updateTimeBuilder_.mergeFrom(value);
       }
       if (updateTime_ != null) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         onChanged();
       }
       return this;
@@ -2700,7 +2836,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp update_time = 101;</code>
      */
     public Builder clearUpdateTime() {
-      bitField0_ = (bitField0_ & ~0x00000080);
+      bitField0_ = (bitField0_ & ~0x00000100);
       updateTime_ = null;
       if (updateTimeBuilder_ != null) {
         updateTimeBuilder_.dispose();
@@ -2713,7 +2849,7 @@ private static final long serialVersionUID = 0L;
      * <code>.mojo.core.Timestamp update_time = 101;</code>
      */
     public org.mojolang.mojo.core.Timestamp.Builder getUpdateTimeBuilder() {
-      bitField0_ |= 0x00000080;
+      bitField0_ |= 0x00000100;
       onChanged();
       return internalGetUpdateTimeFieldBuilder().getBuilder();
     }

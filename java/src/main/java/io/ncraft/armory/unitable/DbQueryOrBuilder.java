@@ -83,6 +83,18 @@ public interface DbQueryOrBuilder extends
       getDatabaseBytes();
 
   /**
+   * <code>string json_style = 7;</code>
+   * @return The jsonStyle.
+   */
+  java.lang.String getJsonStyle();
+  /**
+   * <code>string json_style = 7;</code>
+   * @return The bytes for jsonStyle.
+   */
+  com.google.protobuf.ByteString
+      getJsonStyleBytes();
+
+  /**
    * <code>repeated .armory.unitable.Column columns = 15 [(.mojo.reference) = "", (.mojo.db_json) = true];</code>
    */
   java.util.List<io.ncraft.armory.unitable.Column> 

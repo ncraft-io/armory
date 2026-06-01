@@ -16,6 +16,7 @@ type DbQuery {
     parameters: [Parameter] @4 @db.json
     // table: String @5
     database: String @6
+    json_style: String @7 //< 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel
 
     columns: [Column] @15 @db.json //< the meta info of the column in the query
 
