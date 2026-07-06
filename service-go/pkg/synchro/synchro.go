@@ -68,6 +68,8 @@ func (s *Synchro) GetMetaTable(tableId string, table *unitable.Table) *MetaTable
 		meta.FieldsInfo[col.Name] = col.ToFieldInfo()
 	}
 
+	logs.Infow("get the meta table ok", "database", tb.Database, "table", tb.Name, "columns", len(tb.Columns))
+
 	if table == nil {
 		s.Tables.Store(tableId, meta)
 	}
@@ -149,9 +151,10 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 
 func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string, query *unitable.DbQuery, arguments []interface{}) ([]*core.Object, error) {
 	table := &unitable.Table{
-		Database: database,
-		Name:     tableName,
-		Columns:  query.Columns,
+		Database:  database,
+		Name:      tableName,
+		JsonStyle: query.JsonStyle,
+		Columns:   query.Columns,
 	}
 	meta := &MetaTable{
 		Table:  table,
@@ -184,7 +187,8 @@ func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string
 
 func (s *Synchro) QueryRows(ctx context.Context, table string, query *query.Query) ([]*core.Object, int, error) {
 	meta := s.GetMetaTable(table, nil)
-	if meta == nil {
+	if meta == nil || meta.Table == nil {
+		logs.Warnw("the table is not exist", "table", table)
 		return nil, 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
 

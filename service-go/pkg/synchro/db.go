@@ -9,7 +9,7 @@ import (
 )
 
 var defaultDB string
-var ds map[string]*db.DB
+var ds = make(map[string]*db.DB)
 var dOnce sync.Once
 
 type DataDBCfg struct {
@@ -53,6 +53,8 @@ func GetDataDB(name string) *db.DB {
 				}
 			}
 			ds[k] = d
+
+			logs.Infow("init the database ok", "driver", cfg.Driver, "dsn", cfg.Dsn)
 		}
 	})
 

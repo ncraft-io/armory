@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const lowerCamel = "lowerCamel"
+const LowerCamel = "lowerCamel"
 
 type DynamicStruct struct {
 	Fields    []reflect.StructField
@@ -49,8 +49,8 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 			}
 		}
 
-		switch table.JsonStyle {
-		case lowerCamel:
+		switch strings.ToLower(table.JsonStyle) {
+		case LowerCamel, strings.ToLower(LowerCamel):
 			field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, strcase.ToLowerCamel(col.Name)))
 		default:
 			field.Tag = reflect.StructTag(fmt.Sprintf(`json:"%s"`, col.Name))
@@ -133,7 +133,7 @@ func (s *DynamicStruct) NewOf(object *core.Object) (interface{}, error) {
 	var json []byte
 	var err error
 
-	if s.JsonStyle == lowerCamel {
+	if s.JsonStyle == LowerCamel {
 		json, err = jsoniter.Marshal(object.ToLowerCamelKeys())
 	} else {
 		json, err = jsoniter.Marshal(object.ToSnakeKeys())

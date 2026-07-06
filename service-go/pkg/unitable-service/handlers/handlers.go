@@ -581,6 +581,10 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 			Sql:        q.Sql,
 			Parameters: q.Parameters,
 			Columns:    q.Columns,
+			JsonStyle:  q.JsonStyle,
+		}
+		if len(query.JsonStyle) == 0 {
+			query.JsonStyle = synchro.LowerCamel
 		}
 
 		if vals, ok := ctx.Value("http-request-query").(url.Values); ok {
