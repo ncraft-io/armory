@@ -8,6 +8,7 @@ import (
 	"encoding/base32"
 	"encoding/base64"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
+	"github.com/ncraft-io/armory/service-go/pkg/authing"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/auth/jwt"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"github.com/pquerna/otp/totp"
@@ -125,7 +126,7 @@ func (s authingServer) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest)
 	if len(in.ResetPassword) == 0 {
 		return nil, core.NewInvalidArgumentError("active user should reset new password")
 	}
-	disableOTP := GetAuthing().Config.DisableOTP
+	disableOTP := authing.GetAuthing().Config.DisableOTP
 	if !disableOTP {
 		if len(in.Passcode) == 0 {
 			return nil, core.NewInvalidArgumentError("active user should set the totp passcode")
@@ -146,7 +147,7 @@ func (s authingServer) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest)
 				Secret:      secret,
 			})
 			if valid := totp.Validate(in.Passcode, key.Secret()); !valid {
-				GetUserToken().DeleteSession(user)
+				authing.GetUserToken().DeleteSession(user)
 				return nil, core.NewInvalidArgumentError("the passcode is not valid")
 			}
 		}
@@ -160,17 +161,17 @@ func (s authingServer) ActiveUser(ctx context.Context, in *pb.ActiveUserRequest)
 			UpdateTime: core.Now(),
 		}
 		if _, err = model.GetUserModel().Update(ctx, updated); err != nil {
-			GetUserToken().DeleteSession(user)
+			authing.GetUserToken().DeleteSession(user)
 			return nil, core.NewInternalError("can't update the user")
 		}
 
-		GetUserToken().SetSession(user)
+		authing.GetUserToken().SetSession(user)
 		user.Active = true
 		return &auth.LogonUser{
 			User: &auth.User{
 				Id: user.Id,
 			},
-			Token:     GetUserToken().CreateToken(user),
+			Token:     authing.GetUserToken().CreateToken(user),
 			LoginTime: user.LoginTime,
 		}, nil
 	}
@@ -253,14 +254,14 @@ func (s authingServer) Login(ctx context.Context, in *pb.LoginRequest) (*auth.Lo
 				NickName:    user.NickName,
 				LoginTime:   user.LoginTime,
 			},
-			Token:     GetUserToken().CreateToken(user),
+			Token:     authing.GetUserToken().CreateToken(user),
 			Totp:      nil,
 			LoginTime: user.LoginTime,
 		}
 
-		if GetAuthing().Config.DisableOTP {
+		if authing.GetAuthing().Config.DisableOTP {
 			if user.Active {
-				GetUserToken().SetSession(user)
+				authing.GetUserToken().SetSession(user)
 			} else {
 				logon.Totp = &auth.TOTP{
 					// Secret: key.Secret(),
@@ -284,7 +285,7 @@ func (s authingServer) Login(ctx context.Context, in *pb.LoginRequest) (*auth.Lo
 					return nil, core.NewUnauthenticatedError("user or password is not valid")
 				}
 
-				GetUserToken().SetSession(user)
+				authing.GetUserToken().SetSession(user)
 			} else {
 				key, _ := totp.Generate(totp.GenerateOpts{
 					Issuer:      "xd", // user.Domain ?? "ARMORY"
@@ -329,12 +330,12 @@ func (s authingServer) Logout(ctx context.Context, in *pb.LogoutRequest) (*core.
 		return nil, core.NewInvalidArgumentError("invalid user id")
 	}
 
-	_, session := GetUserToken().GetSession(ctx)
+	_, session := authing.GetUserToken().GetSession(ctx)
 	if session == nil {
 		return nil, core.NewUnauthenticatedError("invalid authenticated.")
 	}
 
-	GetUserToken().DeleteSession(session)
+	authing.GetUserToken().DeleteSession(session)
 	return &core.Null{}, nil
 }
 
