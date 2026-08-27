@@ -3,7 +3,6 @@ package synchro
 import (
 	"context"
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
@@ -149,6 +148,29 @@ func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Ob
 	return obj, nil
 }
 
+func (s *Synchro) BatchGetRow(ctx context.Context, table string, ids ...string) ([]*core.Object, error) {
+	meta := s.GetMetaTable(table, nil)
+	if meta == nil {
+		return nil, core.NewNotFoundError("the table %s is not exist", table)
+	}
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	rows := meta.Struct.NewSliceOf()
+	resul := GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name).Where(ids).Find(rows)
+	if resul.Error != nil {
+		return nil, core.NewNotFoundError("%s is not exist in %s, %s", ids, table, resul.Error.Error())
+	}
+
+	objs, err := ParseObjects(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return objs, nil
+}
+
 func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string, query *unitable.DbQuery, arguments []interface{}) ([]*core.Object, error) {
 	table := &unitable.Table{
 		Database:  database,
@@ -260,25 +282,30 @@ func (s *Synchro) InsertRow(ctx context.Context, table string, row *core.Object)
 	return result.RowsAffected, result.Error
 }
 
-func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, error) {
+func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, []int, error) {
 	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
-		return 0, core.NewNotFoundError("the table %s is not exist", table)
+		return 0, nil, core.NewNotFoundError("the table %s is not exist", table)
 	}
+
+	irs := make([]int, len(rows))
 
 	// Continuous session mode
 	tx := GetDataDB(meta.Table.Database).WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
 	err := tx.Transaction(func(tx *gorm.DB) error {
-		for _, row := range rows {
+		for i, row := range rows {
 			data, err := meta.Struct.NewOf(row)
 			if err != nil {
 				return err
 			}
-			if err := tx.Table(meta.Table.Name).Clauses(clause.OnConflict{UpdateAll: true}).Create(data).Error; err != nil {
+			result := tx.Table(meta.Table.Name).Clauses(clause.OnConflict{UpdateAll: true}).Create(data)
+			if result.Error != nil {
 				// return any error will roll back
-				js, _ := jsoniter.MarshalToString(data)
-				logs.Warnf("the row is ", row, "the data is ", data, "the json is ", js)
+				logs.Warnw("failed to create the row, will rollback", "row", row, "error", err)
 				return err
+			}
+			if result.RowsAffected > 0 {
+				irs[i] = 1
 			}
 		}
 
@@ -287,12 +314,9 @@ func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Ob
 	})
 
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
-	return int64(len(rows)), nil
-
-	//result := GetDataDB().WithContext(ctx).Table(table).CreateInBatches(data, len(data))
-	//return result.RowsAffected, result.Error
+	return int64(len(rows)), irs, nil
 }
 
 func (s *Synchro) UpdateRow(ctx context.Context, table string, row *core.Object) (int64, error) {
@@ -344,46 +368,62 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 	return int64(len(datas)), err
 }
 
-func (s *Synchro) UpdateInsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, error) {
+func (s *Synchro) UpdateInsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, []int, error) {
 	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
-		return 0, core.NewNotFoundError("the table %s is not exist", table)
+		return 0, nil, core.NewNotFoundError("the table %s is not exist", table)
 	}
 
 	var data []interface{}
+	var dataIndex []int
 	var insertData []interface{}
-	for _, row := range rows {
+	var insertDataIndex []int
+	for i, row := range rows {
 		id := row.GetString("id")
 		if len(id) == 0 {
 			row.SetString("id", ksuid.New().String())
 			r, err := meta.Struct.NewOf(row)
 			if err != nil {
-				return 0, err
+				return 0, nil, err
 			}
 			insertData = append(insertData, r)
+			insertDataIndex = append(insertDataIndex, i)
 		} else {
 			r, err := meta.Struct.NewOf(row)
 			if err != nil {
-				return 0, err
+				return 0, nil, err
 			}
 			data = append(data, r)
+			dataIndex = append(dataIndex, i)
 		}
 	}
 
+	irs := make([]int, len(rows))
+
 	// Continuous session mode
 	tx := GetDataDB(meta.Table.Database).WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
-
 	err := tx.Transaction(func(tx *gorm.DB) error {
-		for _, d := range insertData {
-			if err := tx.Table(meta.Table.Name).Create(d).Error; err != nil {
-				return err
+		for i, d := range insertData {
+			result := tx.Table(meta.Table.Name).Create(d)
+			if result.Error != nil {
+				logs.ErrLogw("failed to create the row, will rollback", "index", insertDataIndex[i], "error", result.Error)
+				return result.Error
+			}
+
+			if result.RowsAffected > 0 {
+				irs[insertDataIndex[i]] = 1
 			}
 		}
 
-		for _, d := range data {
-			if err := tx.Table(meta.Table.Name).Updates(d).Error; err != nil {
-				// return any error will roll back
-				return err
+		for i, d := range data {
+			result := tx.Table(meta.Table.Name).Updates(d)
+			if result.Error != nil {
+				logs.ErrLogw("failed to update the row, will rollback", "index", dataIndex[i], "error", result.Error)
+				return result.Error
+			}
+
+			if result.RowsAffected > 0 {
+				irs[dataIndex[i]] = 1
 			}
 		}
 
@@ -391,7 +431,7 @@ func (s *Synchro) UpdateInsertRows(ctx context.Context, table string, rows ...*c
 		return nil
 	})
 
-	return int64(len(data) + len(insertData)), err
+	return int64(len(data) + len(insertData)), irs, err
 }
 
 func (s *Synchro) DeleteRows(ctx context.Context, table string, ids ...string) (int64, error) {

@@ -64,6 +64,7 @@ type Endpoints struct {
 	CreateRowEndpoint          endpoint.Endpoint
 	UpdateRowEndpoint          endpoint.Endpoint
 	GetRowEndpoint             endpoint.Endpoint
+	BatchGetRowEndpoint        endpoint.Endpoint
 	DeleteRowEndpoint          endpoint.Endpoint
 	ListRowEndpoint            endpoint.Endpoint
 	GetRowStatEndpoint         endpoint.Endpoint
@@ -219,6 +220,14 @@ func (e Endpoints) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core.Obje
 	return response.(*core.Object), nil
 }
 
+func (e Endpoints) BatchGetRow(ctx context.Context, in *pb.BatchGetRowRequest) (*pb.BatchGetRowResponse, error) {
+	response, err := e.BatchGetRowEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.BatchGetRowResponse), nil
+}
+
 func (e Endpoints) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) (*core.Null, error) {
 	response, err := e.DeleteRowEndpoint(ctx, in)
 	if err != nil {
@@ -251,20 +260,20 @@ func (e Endpoints) ExportRow(ctx context.Context, in *pb.ExportRowRequest) (*pb.
 	return response.(*pb.ExportRowResponse), nil
 }
 
-func (e Endpoints) BatchCreateRows(ctx context.Context, in *pb.BatchCreateRowsRequest) (*core.Null, error) {
+func (e Endpoints) BatchCreateRows(ctx context.Context, in *pb.BatchCreateRowsRequest) (*pb.BatchCreateRowsResponse, error) {
 	response, err := e.BatchCreateRowsEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*core.Null), nil
+	return response.(*pb.BatchCreateRowsResponse), nil
 }
 
-func (e Endpoints) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateRowsRequest) (*core.Null, error) {
+func (e Endpoints) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateRowsRequest) (*pb.BatchUpdateRowsResponse, error) {
 	response, err := e.BatchUpdateRowsEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*core.Null), nil
+	return response.(*pb.BatchUpdateRowsResponse), nil
 }
 
 func (e Endpoints) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteRowsRequest) (*core.Null, error) {
@@ -475,6 +484,17 @@ func MakeGetRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	}
 }
 
+func MakeBatchGetRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.BatchGetRowRequest)
+		v, err := s.BatchGetRow(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 func MakeDeleteRowEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.DeleteRowRequest)
@@ -577,6 +597,7 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"create_row":           struct{}{},
 		"update_row":           struct{}{},
 		"get_row":              struct{}{},
+		"batch_get_row":        struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
 		"get_row_stat":         struct{}{},
@@ -648,6 +669,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "get_row" {
 			e.GetRowEndpoint = middleware(e.GetRowEndpoint)
 		}
+		if inc == "batch_get_row" {
+			e.BatchGetRowEndpoint = middleware(e.BatchGetRowEndpoint)
+		}
 		if inc == "delete_row" {
 			e.DeleteRowEndpoint = middleware(e.DeleteRowEndpoint)
 		}
@@ -701,6 +725,7 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"create_row":           struct{}{},
 		"update_row":           struct{}{},
 		"get_row":              struct{}{},
+		"batch_get_row":        struct{}{},
 		"delete_row":           struct{}{},
 		"list_row":             struct{}{},
 		"get_row_stat":         struct{}{},
@@ -771,6 +796,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "get_row" {
 			e.GetRowEndpoint = middleware("get_row", e.GetRowEndpoint)
+		}
+		if inc == "batch_get_row" {
+			e.BatchGetRowEndpoint = middleware("batch_get_row", e.BatchGetRowEndpoint)
 		}
 		if inc == "delete_row" {
 			e.DeleteRowEndpoint = middleware("delete_row", e.DeleteRowEndpoint)

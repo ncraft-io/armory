@@ -77,6 +77,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		createRowEndpoint          = svc.MakeCreateRowEndpoint(service)
 		updateRowEndpoint          = svc.MakeUpdateRowEndpoint(service)
 		getRowEndpoint             = svc.MakeGetRowEndpoint(service)
+		batchGetRowEndpoint        = svc.MakeBatchGetRowEndpoint(service)
 		deleteRowEndpoint          = svc.MakeDeleteRowEndpoint(service)
 		listRowEndpoint            = svc.MakeListRowEndpoint(service)
 		getRowStatEndpoint         = svc.MakeGetRowStatEndpoint(service)
@@ -105,6 +106,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		CreateRowEndpoint:          createRowEndpoint,
 		UpdateRowEndpoint:          updateRowEndpoint,
 		GetRowEndpoint:             getRowEndpoint,
+		BatchGetRowEndpoint:        batchGetRowEndpoint,
 		DeleteRowEndpoint:          deleteRowEndpoint,
 		ListRowEndpoint:            listRowEndpoint,
 		GetRowStatEndpoint:         getRowStatEndpoint,

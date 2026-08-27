@@ -19,10 +19,10 @@ import (
 //go:generate go run github.com/ncraft-io/go-evaluate/cmd/evaluate
 
 //go:evaluate date "+%Y-%m-%d %H:%M:%S %Z"
-const BuildTime = "2026-06-05 14:04:09 CST"
+const BuildTime = "2026-08-26 17:54:07 CST"
 
 //go:evaluate git rev-list -1 HEAD
-const GitHash = "34f7443c6e9151c5618e3bf1362aac72bb5e557a"
+const GitHash = "108f548919bf7f4094a234d390f9ec38cb710238"
 
 //go:evaluate git branch --show-current
 const GitBranch = "main"

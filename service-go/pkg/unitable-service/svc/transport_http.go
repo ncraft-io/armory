@@ -250,6 +250,15 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_row", logger)))...,
 		))
 
+	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch").Handler(
+		httptransport.NewServer(
+			endpoints.BatchGetRowEndpoint,
+			DecodeHTTPBatchGetRowZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("batch_get_row")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "batch_get_row", logger)))...,
+		))
+
 	router.Methods("DELETE").Path("/armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}").Handler(
 		httptransport.NewServer(
 			endpoints.DeleteRowEndpoint,
@@ -1899,6 +1908,78 @@ func DecodeHTTPGetRowZeroRequest(_ context.Context, r *http.Request) (interface{
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPBatchGetRowZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded batch_get_row request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPBatchGetRowZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.BatchGetRowRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to BatchGetRowRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Ids, "ids")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the ids  query parameter")
 	}
 
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")

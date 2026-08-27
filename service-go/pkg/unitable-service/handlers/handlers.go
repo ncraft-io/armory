@@ -13,14 +13,12 @@ import (
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
+	"github.com/segmentio/ksuid"
 	"github.com/xuri/excelize/v2"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
-
-	"github.com/segmentio/ksuid"
 
 	_ "github.com/ncraft-io/armory/service-go/pkg/hook"
 
@@ -34,14 +32,6 @@ var (
 	_ = unitable.Column{}
 	_ = core.Object{}
 )
-
-var unitableOnce sync.Once
-var ut *Instance
-
-type Instance struct {
-	Synchro *synchro.Synchro
-	Queries map[string]*unitable.DbQuery
-}
 
 type unitableServer struct {
 	pb.UnimplementedUnitableServer
@@ -65,16 +55,6 @@ func NewService() pb.UnitableServer {
 	return unitableServer{
 		instance: ut,
 	}
-}
-
-var nameRegex = regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
-
-func (s unitableServer) Synchro() *synchro.Synchro {
-	return s.instance.Synchro
-}
-
-func (s unitableServer) Queries() map[string]*unitable.DbQuery {
-	return s.instance.Queries
 }
 
 // CreateTable implements Interface.
@@ -528,6 +508,37 @@ func (s unitableServer) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core
 	}
 }
 
+// BatchGetRow implements Interface.
+func (s unitableServer) BatchGetRow(ctx context.Context, in *pb.BatchGetRowRequest) (*pb.BatchGetRowResponse, error) {
+	if len(in.Database) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the database")
+	}
+	if len(in.Table) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the table name")
+	}
+	if len(in.Ids) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the row id")
+	}
+	var ids []string
+	for _, id := range in.Ids {
+		if len(id) > 0 {
+			ids = append(ids, id)
+		}
+	}
+	if len(ids) == 0 {
+		return nil, core.NewInvalidArgumentError("not set the row id")
+	}
+
+	tableId := in.Database + "." + in.Table
+	if rows, err := s.Synchro().BatchGetRow(ctx, tableId, ids...); err != nil {
+		return nil, core.NewInternalError("failed to get the row %s in %s, err: %s", ids, in.Table, err.Error())
+	} else {
+		return &pb.BatchGetRowResponse{
+			Objects: rows,
+		}, nil
+	}
+}
+
 // DeleteRow implements Interface.
 func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) (*core.Null, error) {
 	if len(in.Database) == 0 {
@@ -747,7 +758,7 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 }
 
 // BatchCreateRows implements Interface.
-func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateRowsRequest) (*core.Null, error) {
+func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateRowsRequest) (*pb.BatchCreateRowsResponse, error) {
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
@@ -771,16 +782,27 @@ func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateR
 		}
 	}
 
+	resp := &pb.BatchCreateRowsResponse{}
 	tableId := in.Database + "." + in.Table
-	if _, err := s.Synchro().InsertRows(ctx, tableId, in.Rows...); err != nil {
+	if _, irs, err := s.Synchro().InsertRows(ctx, tableId, in.Rows...); err != nil {
+		logs.ErrLogw("failed to batch create the rows", "table", tableId, "error", err)
 		return nil, core.NewInternalError("failed to batch create the rows in %s, err: %s", tableId, err.Error())
+	} else {
+		for i, ir := range irs {
+			if ir > 0 {
+				id := in.Rows[i].GetString("id")
+				resp.Objects = append(resp.Objects, core.NewObject().SetString("id", id))
+			} else {
+				resp.Objects = append(resp.Objects, nil)
+			}
+		}
 	}
 
-	return &core.Null{}, nil
+	return resp, nil
 }
 
 // BatchUpdateRows implements Interface.
-func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateRowsRequest) (*core.Null, error) {
+func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateRowsRequest) (*pb.BatchUpdateRowsResponse, error) {
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
@@ -798,12 +820,23 @@ func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateR
 		}
 	}
 
+	resp := &pb.BatchUpdateRowsResponse{}
 	tableId := in.Database + "." + in.Table
-	if _, err := s.Synchro().UpdateInsertRows(ctx, tableId, in.Rows...); err != nil {
+	if _, irs, err := s.Synchro().UpdateInsertRows(ctx, tableId, in.Rows...); err != nil {
+		logs.ErrLogw("failed to batch update the rows ", "table", tableId)
 		return nil, core.NewInternalError("failed to batch update the rows in %s, err: %s", tableId, err.Error())
+	} else {
+		for _, ir := range irs {
+			if ir > 0 {
+				id := in.Rows[ir].GetString("id")
+				resp.Objects = append(resp.Objects, core.NewObject().SetString("id", id))
+			} else {
+				resp.Objects = append(resp.Objects, nil)
+			}
+		}
 	}
 
-	return &core.Null{}, nil
+	return resp, nil
 }
 
 // BatchDeleteRows implements Interface.
@@ -890,7 +923,7 @@ func (s unitableServer) GetRowStat(ctx context.Context, in *pb.GetRowStatRequest
 	tableId := in.Database + "." + in.Table
 	rows, err := s.Synchro().CalcStats(ctx, tableId, qry)
 	if err != nil {
-		return nil, core.NewInternalError("faild to get data from db, error: %s", err.Error())
+		return nil, core.NewInternalError("failed to get data from db, error: %s", err.Error())
 	}
 
 	if len(rows) == 0 {

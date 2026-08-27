@@ -99,16 +99,6 @@ GET /armory/unitable/v1/databases
 #### `armory.unitable.Table`
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
-| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
-| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
-| `database` | `string` |  | N |  | 表单所在的数据库名 |
-| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
-| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
-| `id` | `string` |  | N |  | 表单ID |
-| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
-| `name` | `string` |  | N |  | 表单名 |
-| `tenant` | `string` |  | N |  | 租户名 |
-| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `mojo.core.Value`
@@ -407,6 +397,16 @@ PUT /armory/unitable/v1/databases/{database}/tables/{id}
 #### Body 请求对象
 | field | type | format | required | default | description |
 |---|---|---|---|---|---|
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | 表单包含的列的元信息 |
+| `createTime` | `string` | `Timestamp` | N |  | 表单创建时间 |
+| `database` | `string` |  | N |  | 表单所在的数据库名 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时，作为sheet名称 |
+| `id` | `string` |  | N |  | 表单ID |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `name` | `string` |  | N |  | 表单名 |
+| `tenant` | `string` |  | N |  | 租户名 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单更新时间 |
 
 
 #### `armory.unitable.Column`
@@ -1172,6 +1172,37 @@ DELETE /armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}
 #### 返回对象
 对象为空
 
+## 在指定的表内获取某一行数据
+
+### 请求路径
+```http
+GET /armory/unitable/v1/databases/{database}/tables/{table}/rows:batch
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+| `table` | `string` |  |  |
+
+
+#### Query 参数
+| 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
+|---|---|---|---|---|---|
+| `ids` | `Array<string>` |  | 否 |  |  |
+
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<mojo.core.Object>` |  |
+
+
 ## 批量更新行数据
 
 ### 请求路径
@@ -1198,7 +1229,10 @@ PUT /armory/unitable/v1/databases/{database}/tables/{table}/rows:batch
 ### 返回值
 
 #### 返回对象
-对象为空
+| type | description |
+|---|---|
+| `Array<mojo.core.Object>` |  |
+
 
 ## 批量创建行数据
 
@@ -1226,7 +1260,10 @@ POST /armory/unitable/v1/databases/{database}/tables/{table}/rows:batch
 ### 返回值
 
 #### 返回对象
-对象为空
+| type | description |
+|---|---|
+| `Array<mojo.core.Object>` |  |
+
 
 ## 批量删除行
 

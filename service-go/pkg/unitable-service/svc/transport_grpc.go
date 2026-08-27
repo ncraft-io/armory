@@ -178,6 +178,13 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 			addTracerOption("get_row")...,
 		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "get_row", logger)))...,
 		),
+		batchGetRow: grpctransport.NewServer(
+			endpoints.BatchGetRowEndpoint,
+			DecodeGRPCBatchGetRowRequest,
+			EncodeGRPCBatchGetRowResponse,
+			addTracerOption("batch_get_row")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "batch_get_row", logger)))...,
+		),
 		deleteRow: grpctransport.NewServer(
 			endpoints.DeleteRowEndpoint,
 			DecodeGRPCDeleteRowRequest,
@@ -252,6 +259,7 @@ type grpcServer struct {
 	createRow          grpctransport.Handler
 	updateRow          grpctransport.Handler
 	getRow             grpctransport.Handler
+	batchGetRow        grpctransport.Handler
 	deleteRow          grpctransport.Handler
 	listRow            grpctransport.Handler
 	getRowStat         grpctransport.Handler
@@ -407,6 +415,14 @@ func (s *grpcServer) GetRow(ctx context.Context, req *pb.GetRowRequest) (*core.O
 	return rep.(*core.Object), nil
 }
 
+func (s *grpcServer) BatchGetRow(ctx context.Context, req *pb.BatchGetRowRequest) (*pb.BatchGetRowResponse, error) {
+	_, rep, err := s.batchGetRow.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.BatchGetRowResponse), nil
+}
+
 func (s *grpcServer) DeleteRow(ctx context.Context, req *pb.DeleteRowRequest) (*core.Null, error) {
 	_, rep, err := s.deleteRow.ServeGRPC(ctx, req)
 	if err != nil {
@@ -439,20 +455,20 @@ func (s *grpcServer) ExportRow(ctx context.Context, req *pb.ExportRowRequest) (*
 	return rep.(*pb.ExportRowResponse), nil
 }
 
-func (s *grpcServer) BatchCreateRows(ctx context.Context, req *pb.BatchCreateRowsRequest) (*core.Null, error) {
+func (s *grpcServer) BatchCreateRows(ctx context.Context, req *pb.BatchCreateRowsRequest) (*pb.BatchCreateRowsResponse, error) {
 	_, rep, err := s.batchCreateRows.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*core.Null), nil
+	return rep.(*pb.BatchCreateRowsResponse), nil
 }
 
-func (s *grpcServer) BatchUpdateRows(ctx context.Context, req *pb.BatchUpdateRowsRequest) (*core.Null, error) {
+func (s *grpcServer) BatchUpdateRows(ctx context.Context, req *pb.BatchUpdateRowsRequest) (*pb.BatchUpdateRowsResponse, error) {
 	_, rep, err := s.batchUpdateRows.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*core.Null), nil
+	return rep.(*pb.BatchUpdateRowsResponse), nil
 }
 
 func (s *grpcServer) BatchDeleteRows(ctx context.Context, req *pb.BatchDeleteRowsRequest) (*core.Null, error) {
@@ -588,6 +604,13 @@ func DecodeGRPCUpdateRowRequest(_ context.Context, grpcReq interface{}) (interfa
 // gRPC GetRow request to a user-domain GetRow request. Primarily useful in a server.
 func DecodeGRPCGetRowRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.GetRowRequest)
+	return req, nil
+}
+
+// DecodeGRPCBatchGetRowRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC BatchGetRow request to a user-domain BatchGetRow request. Primarily useful in a server.
+func DecodeGRPCBatchGetRowRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.BatchGetRowRequest)
 	return req, nil
 }
 
@@ -768,6 +791,13 @@ func EncodeGRPCGetRowResponse(_ context.Context, response interface{}) (interfac
 	return resp, nil
 }
 
+// EncodeGRPCBatchGetRowResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain BatchGetRow response to a gRPC BatchGetRow reply. Primarily useful in a server.
+func EncodeGRPCBatchGetRowResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.BatchGetRowResponse)
+	return resp, nil
+}
+
 // EncodeGRPCDeleteRowResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain DeleteRow response to a gRPC DeleteRow reply. Primarily useful in a server.
 func EncodeGRPCDeleteRowResponse(_ context.Context, response interface{}) (interface{}, error) {
@@ -799,14 +829,14 @@ func EncodeGRPCExportRowResponse(_ context.Context, response interface{}) (inter
 // EncodeGRPCBatchCreateRowsResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain BatchCreateRows response to a gRPC BatchCreateRows reply. Primarily useful in a server.
 func EncodeGRPCBatchCreateRowsResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*core.Null)
+	resp := response.(*pb.BatchCreateRowsResponse)
 	return resp, nil
 }
 
 // EncodeGRPCBatchUpdateRowsResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain BatchUpdateRows response to a gRPC BatchUpdateRows reply. Primarily useful in a server.
 func EncodeGRPCBatchUpdateRowsResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*core.Null)
+	resp := response.(*pb.BatchUpdateRowsResponse)
 	return resp, nil
 }
 

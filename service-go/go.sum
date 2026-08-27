@@ -360,8 +360,6 @@ github.com/nacos-group/nacos-sdk-go/v2 v2.2.7 h1:wCC1f3/VzIR1WD30YKeJGZAOchYCK/3
 github.com/nacos-group/nacos-sdk-go/v2 v2.2.7/go.mod h1:VYlyDPlQchPC31PmfBustu81vsOkdpCuO5k0dRdQcFc=
 github.com/ncraft-io/go-evaluate v0.0.0-20221204034007-df47db0019f2 h1:v3kTXaIDGHJ7ltBWc+c7IwzDrEy5tXZZ+tszyPJ053o=
 github.com/ncraft-io/go-evaluate v0.0.0-20221204034007-df47db0019f2/go.mod h1:oD7eDDcQlBwmW19yvwNfesQImbaOTPaa8ejnokib89E=
-github.com/ncraft-io/ncraft/go v0.0.0-20251109084049-258bda1d543d h1:6TppjQqriccn9kvUxAi31qkhL/Gl6NyzoaHi2zyX0aI=
-github.com/ncraft-io/ncraft/go v0.0.0-20251109084049-258bda1d543d/go.mod h1:rzMzIRd+Que+B5+ZKaox8Z2cUt/UsIkRtSanfFXoLZ4=
 github.com/nwaples/rardecode/v2 v2.2.0 h1:4ufPGHiNe1rYJxYfehALLjup4Ls3ck42CWwjKiOqu0A=
 github.com/nwaples/rardecode/v2 v2.2.0/go.mod h1:7uz379lSxPe6j9nvzxUZ+n7mnJNgjsRNb6IbvGVHRmw=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=

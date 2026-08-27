@@ -145,6 +145,12 @@ public interface UnitableHttp {
 				@PathVariable("table") String table, 
 				@PathVariable("id") String id);
     
+    @ResponseBody
+    @GetMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
+    Result<BatchGetRowResponse> batchGetRow(@PathVariable("database") String database, 
+				@PathVariable("table") String table, 
+				@RequestParam(name = "ids", required = false) List<String> ids);
+    
     
     @DeleteMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}")
     Result<Null> deleteRow(@PathVariable("database") String database, 
@@ -184,15 +190,15 @@ public interface UnitableHttp {
 				@RequestParam(name = "field_mask", required = false) String fieldMask, 
 				@RequestParam(name = "unique", required = false) boolean unique);
     
-    
+    @ResponseBody
     @PostMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
-    Result<Null> batchCreateRows(@PathVariable("database") String database, 
+    Result<BatchCreateRowsResponse> batchCreateRows(@PathVariable("database") String database, 
 				@PathVariable("table") String table, 
 				@RequestBody List<org.mojolang.mojo.core.Object> rows);
     
-    
+    @ResponseBody
     @PutMapping("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
-    Result<Null> batchUpdateRows(@PathVariable("database") String database, 
+    Result<BatchUpdateRowsResponse> batchUpdateRows(@PathVariable("database") String database, 
 				@PathVariable("table") String table, 
 				@RequestBody List<org.mojolang.mojo.core.Object> rows);
     

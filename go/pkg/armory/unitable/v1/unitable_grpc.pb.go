@@ -41,6 +41,7 @@ const (
 	Unitable_CreateRow_FullMethodName          = "/armory.unitable.v1.Unitable/create_row"
 	Unitable_UpdateRow_FullMethodName          = "/armory.unitable.v1.Unitable/update_row"
 	Unitable_GetRow_FullMethodName             = "/armory.unitable.v1.Unitable/get_row"
+	Unitable_BatchGetRow_FullMethodName        = "/armory.unitable.v1.Unitable/batch_get_row"
 	Unitable_DeleteRow_FullMethodName          = "/armory.unitable.v1.Unitable/delete_row"
 	Unitable_ListRow_FullMethodName            = "/armory.unitable.v1.Unitable/list_row"
 	Unitable_GetRowStat_FullMethodName         = "/armory.unitable.v1.Unitable/get_row_stat"
@@ -72,12 +73,13 @@ type UnitableClient interface {
 	CreateRow(ctx context.Context, in *CreateRowRequest, opts ...grpc.CallOption) (*core.Object, error)
 	UpdateRow(ctx context.Context, in *UpdateRowRequest, opts ...grpc.CallOption) (*core.Null, error)
 	GetRow(ctx context.Context, in *GetRowRequest, opts ...grpc.CallOption) (*core.Object, error)
+	BatchGetRow(ctx context.Context, in *BatchGetRowRequest, opts ...grpc.CallOption) (*BatchGetRowResponse, error)
 	DeleteRow(ctx context.Context, in *DeleteRowRequest, opts ...grpc.CallOption) (*core.Null, error)
 	ListRow(ctx context.Context, in *ListRowRequest, opts ...grpc.CallOption) (*ListRowResponse, error)
 	GetRowStat(ctx context.Context, in *GetRowStatRequest, opts ...grpc.CallOption) (*core.Object, error)
 	ExportRow(ctx context.Context, in *ExportRowRequest, opts ...grpc.CallOption) (*ExportRowResponse, error)
-	BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
-	BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
+	BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*BatchCreateRowsResponse, error)
+	BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*BatchUpdateRowsResponse, error)
 	BatchDeleteRows(ctx context.Context, in *BatchDeleteRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
 }
 
@@ -251,6 +253,15 @@ func (c *unitableClient) GetRow(ctx context.Context, in *GetRowRequest, opts ...
 	return out, nil
 }
 
+func (c *unitableClient) BatchGetRow(ctx context.Context, in *BatchGetRowRequest, opts ...grpc.CallOption) (*BatchGetRowResponse, error) {
+	out := new(BatchGetRowResponse)
+	err := c.cc.Invoke(ctx, Unitable_BatchGetRow_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *unitableClient) DeleteRow(ctx context.Context, in *DeleteRowRequest, opts ...grpc.CallOption) (*core.Null, error) {
 	out := new(core.Null)
 	err := c.cc.Invoke(ctx, Unitable_DeleteRow_FullMethodName, in, out, opts...)
@@ -287,8 +298,8 @@ func (c *unitableClient) ExportRow(ctx context.Context, in *ExportRowRequest, op
 	return out, nil
 }
 
-func (c *unitableClient) BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*core.Null, error) {
-	out := new(core.Null)
+func (c *unitableClient) BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*BatchCreateRowsResponse, error) {
+	out := new(BatchCreateRowsResponse)
 	err := c.cc.Invoke(ctx, Unitable_BatchCreateRows_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -296,8 +307,8 @@ func (c *unitableClient) BatchCreateRows(ctx context.Context, in *BatchCreateRow
 	return out, nil
 }
 
-func (c *unitableClient) BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*core.Null, error) {
-	out := new(core.Null)
+func (c *unitableClient) BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*BatchUpdateRowsResponse, error) {
+	out := new(BatchUpdateRowsResponse)
 	err := c.cc.Invoke(ctx, Unitable_BatchUpdateRows_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -336,12 +347,13 @@ type UnitableServer interface {
 	CreateRow(context.Context, *CreateRowRequest) (*core.Object, error)
 	UpdateRow(context.Context, *UpdateRowRequest) (*core.Null, error)
 	GetRow(context.Context, *GetRowRequest) (*core.Object, error)
+	BatchGetRow(context.Context, *BatchGetRowRequest) (*BatchGetRowResponse, error)
 	DeleteRow(context.Context, *DeleteRowRequest) (*core.Null, error)
 	ListRow(context.Context, *ListRowRequest) (*ListRowResponse, error)
 	GetRowStat(context.Context, *GetRowStatRequest) (*core.Object, error)
 	ExportRow(context.Context, *ExportRowRequest) (*ExportRowResponse, error)
-	BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*core.Null, error)
-	BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*core.Null, error)
+	BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*BatchCreateRowsResponse, error)
+	BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*BatchUpdateRowsResponse, error)
 	BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*core.Null, error)
 	mustEmbedUnimplementedUnitableServer()
 }
@@ -404,6 +416,9 @@ func (UnimplementedUnitableServer) UpdateRow(context.Context, *UpdateRowRequest)
 func (UnimplementedUnitableServer) GetRow(context.Context, *GetRowRequest) (*core.Object, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRow not implemented")
 }
+func (UnimplementedUnitableServer) BatchGetRow(context.Context, *BatchGetRowRequest) (*BatchGetRowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchGetRow not implemented")
+}
 func (UnimplementedUnitableServer) DeleteRow(context.Context, *DeleteRowRequest) (*core.Null, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRow not implemented")
 }
@@ -416,10 +431,10 @@ func (UnimplementedUnitableServer) GetRowStat(context.Context, *GetRowStatReques
 func (UnimplementedUnitableServer) ExportRow(context.Context, *ExportRowRequest) (*ExportRowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportRow not implemented")
 }
-func (UnimplementedUnitableServer) BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*core.Null, error) {
+func (UnimplementedUnitableServer) BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*BatchCreateRowsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateRows not implemented")
 }
-func (UnimplementedUnitableServer) BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*core.Null, error) {
+func (UnimplementedUnitableServer) BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*BatchUpdateRowsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateRows not implemented")
 }
 func (UnimplementedUnitableServer) BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*core.Null, error) {
@@ -762,6 +777,24 @@ func _Unitable_GetRow_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Unitable_BatchGetRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetRowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).BatchGetRow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_BatchGetRow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).BatchGetRow(ctx, req.(*BatchGetRowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Unitable_DeleteRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRowRequest)
 	if err := dec(in); err != nil {
@@ -966,6 +999,10 @@ var Unitable_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "get_row",
 			Handler:    _Unitable_GetRow_Handler,
+		},
+		{
+			MethodName: "batch_get_row",
+			Handler:    _Unitable_BatchGetRow_Handler,
 		},
 		{
 			MethodName: "delete_row",

@@ -1278,6 +1278,39 @@ paths:
         "200":
           description: OK
       summary: 批量删除行
+    get:
+      description: ""
+      operationId: batch_get_row
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: table
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: query
+        name: ids
+        schema:
+          items:
+            title: mojo.core.String
+            type: string
+          title: mojo.core.Array
+          type: array
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 在指定的表内获取某一行数据
     post:
       description: ""
       operationId: batch_create_rows
@@ -1303,6 +1336,13 @@ paths:
         required: true
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
           description: OK
       summary: 批量创建行数据
     put:
@@ -1330,6 +1370,13 @@ paths:
         required: true
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
           description: OK
       summary: 批量更新行数据
   /armory/unitable/v1/databases/{database}/tables/{table}/rows:export:

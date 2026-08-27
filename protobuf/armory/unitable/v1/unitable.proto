@@ -159,6 +159,16 @@ message GetRowRequest {
     string id = 3;
 }
 
+message BatchGetRowRequest {
+    string database = 1;
+    string table = 2;
+    repeated string ids = 3;
+}
+
+message BatchGetRowResponse {
+    repeated mojo.core.Object objects = 1;
+}
+
 message DeleteRowRequest {
     string database = 1;
     string table = 2;
@@ -216,10 +226,18 @@ message BatchCreateRowsRequest {
     repeated mojo.core.Object rows = 3;
 }
 
+message BatchCreateRowsResponse {
+    repeated mojo.core.Object objects = 1;
+}
+
 message BatchUpdateRowsRequest {
     string database = 1;
     string table = 2;
     repeated mojo.core.Object rows = 4;
+}
+
+message BatchUpdateRowsResponse {
+    repeated mojo.core.Object objects = 1;
 }
 
 message BatchDeleteRowsRequest {
@@ -247,11 +265,12 @@ service Unitable {
     rpc create_row(CreateRowRequest) returns (mojo.core.Object);
     rpc update_row(UpdateRowRequest) returns (mojo.core.Null);
     rpc get_row(GetRowRequest) returns (mojo.core.Object);
+    rpc batch_get_row(BatchGetRowRequest) returns (BatchGetRowResponse);
     rpc delete_row(DeleteRowRequest) returns (mojo.core.Null);
     rpc list_row(ListRowRequest) returns (ListRowResponse);
     rpc get_row_stat(GetRowStatRequest) returns (mojo.core.Object);
     rpc export_row(ExportRowRequest) returns (ExportRowResponse);
-    rpc batch_create_rows(BatchCreateRowsRequest) returns (mojo.core.Null);
-    rpc batch_update_rows(BatchUpdateRowsRequest) returns (mojo.core.Null);
+    rpc batch_create_rows(BatchCreateRowsRequest) returns (BatchCreateRowsResponse);
+    rpc batch_update_rows(BatchUpdateRowsRequest) returns (BatchUpdateRowsResponse);
     rpc batch_delete_rows(BatchDeleteRowsRequest) returns (mojo.core.Null);
 }

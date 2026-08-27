@@ -116,6 +116,11 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
             }
             
             @Override
+            public Result<BatchGetRowResponse> batchGetRow(String database, String table, List<String> ids) {
+                 return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to batch_get_row."));
+            }
+            
+            @Override
             public Result<Null> deleteRow(String database, String table, String id) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to delete_row."));
             }
@@ -136,12 +141,12 @@ public class UnitableHttpFallbackFactory implements FallbackFactory<UnitableHttp
             }
             
             @Override
-            public Result<Null> batchCreateRows(String database, String table, List<org.mojolang.mojo.core.Object> rows) {
+            public Result<BatchCreateRowsResponse> batchCreateRows(String database, String table, List<org.mojolang.mojo.core.Object> rows) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to batch_create_rows."));
             }
             
             @Override
-            public Result<Null> batchUpdateRows(String database, String table, List<org.mojolang.mojo.core.Object> rows) {
+            public Result<BatchUpdateRowsResponse> batchUpdateRows(String database, String table, List<org.mojolang.mojo.core.Object> rows) {
                  return Result.fail(new ErrorException(ErrorCodes.INTERNAL_ERROR, "failed to batch_update_rows."));
             }
             

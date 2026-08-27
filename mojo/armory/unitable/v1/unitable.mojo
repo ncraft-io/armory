@@ -87,6 +87,10 @@ interface Unitable {
     @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}")
     get_row(database: String @1, table: String @2, id: String @3) -> Object
 
+    /// 在指定的表内获取某一行数据
+    @http.get("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
+    batch_get_row(database: String @1, table: String @2, ids: [String] @3) -> [Object]
+
     /// 删除指定某一行
     @http.delete("/armory/unitable/v1/databases/{database}/tables/{table}/rows/{id}")
     delete_row(database: String @1, table: String @2, id: String @3)
@@ -126,11 +130,11 @@ interface Unitable {
 
     /// 批量创建行数据
     @http.post("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
-    batch_create_rows(database: String @1,table: String @2, rows: [Object] @3 @http.body)
+    batch_create_rows(database: String @1,table: String @2, rows: [Object] @3 @http.body) -> [Object]
 
     /// 批量更新行数据
     @http.put("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
-    batch_update_rows(database: String @1,table: String @2, rows: [Object] @4 @http.body)
+    batch_update_rows(database: String @1,table: String @2, rows: [Object] @4 @http.body) -> [Object]
 
     /// 批量删除行
     @http.delete("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")

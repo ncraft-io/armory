@@ -4,7 +4,10 @@ go 1.24.7
 
 replace github.com/ncraft-io/armory/go => ../go
 
-replace github.com/mojo-lang/mojo/go => ../../../Mojo/mojo/go
+replace (
+	github.com/mojo-lang/mojo/go => ../../../Mojo/mojo/go
+	github.com/ncraft-io/ncraft/go => ../../ncraft/go
+)
 
 require (
 	github.com/etherlabsio/healthcheck/v2 v2.0.0

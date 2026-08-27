@@ -573,6 +573,37 @@ public final class UnitableGrpc {
     return getGetRowMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchGetRowRequest,
+      io.ncraft.armory.unitable.v1.BatchGetRowResponse> getBatchGetRowMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "batch_get_row",
+      requestType = io.ncraft.armory.unitable.v1.BatchGetRowRequest.class,
+      responseType = io.ncraft.armory.unitable.v1.BatchGetRowResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchGetRowRequest,
+      io.ncraft.armory.unitable.v1.BatchGetRowResponse> getBatchGetRowMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchGetRowRequest, io.ncraft.armory.unitable.v1.BatchGetRowResponse> getBatchGetRowMethod;
+    if ((getBatchGetRowMethod = UnitableGrpc.getBatchGetRowMethod) == null) {
+      synchronized (UnitableGrpc.class) {
+        if ((getBatchGetRowMethod = UnitableGrpc.getBatchGetRowMethod) == null) {
+          UnitableGrpc.getBatchGetRowMethod = getBatchGetRowMethod =
+              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.BatchGetRowRequest, io.ncraft.armory.unitable.v1.BatchGetRowResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "batch_get_row"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.unitable.v1.BatchGetRowRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.ncraft.armory.unitable.v1.BatchGetRowResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new UnitableMethodDescriptorSupplier("batch_get_row"))
+              .build();
+        }
+      }
+    }
+    return getBatchGetRowMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.DeleteRowRequest,
       org.mojolang.mojo.core.Null> getDeleteRowMethod;
 
@@ -698,28 +729,28 @@ public final class UnitableGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest,
-      org.mojolang.mojo.core.Null> getBatchCreateRowsMethod;
+      io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> getBatchCreateRowsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "batch_create_rows",
       requestType = io.ncraft.armory.unitable.v1.BatchCreateRowsRequest.class,
-      responseType = org.mojolang.mojo.core.Null.class,
+      responseType = io.ncraft.armory.unitable.v1.BatchCreateRowsResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest,
-      org.mojolang.mojo.core.Null> getBatchCreateRowsMethod() {
-    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest, org.mojolang.mojo.core.Null> getBatchCreateRowsMethod;
+      io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> getBatchCreateRowsMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest, io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> getBatchCreateRowsMethod;
     if ((getBatchCreateRowsMethod = UnitableGrpc.getBatchCreateRowsMethod) == null) {
       synchronized (UnitableGrpc.class) {
         if ((getBatchCreateRowsMethod = UnitableGrpc.getBatchCreateRowsMethod) == null) {
           UnitableGrpc.getBatchCreateRowsMethod = getBatchCreateRowsMethod =
-              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest, org.mojolang.mojo.core.Null>newBuilder()
+              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.BatchCreateRowsRequest, io.ncraft.armory.unitable.v1.BatchCreateRowsResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "batch_create_rows"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.ncraft.armory.unitable.v1.BatchCreateRowsRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.mojolang.mojo.core.Null.getDefaultInstance()))
+                  io.ncraft.armory.unitable.v1.BatchCreateRowsResponse.getDefaultInstance()))
               .setSchemaDescriptor(new UnitableMethodDescriptorSupplier("batch_create_rows"))
               .build();
         }
@@ -729,28 +760,28 @@ public final class UnitableGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest,
-      org.mojolang.mojo.core.Null> getBatchUpdateRowsMethod;
+      io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> getBatchUpdateRowsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "batch_update_rows",
       requestType = io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest.class,
-      responseType = org.mojolang.mojo.core.Null.class,
+      responseType = io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest,
-      org.mojolang.mojo.core.Null> getBatchUpdateRowsMethod() {
-    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest, org.mojolang.mojo.core.Null> getBatchUpdateRowsMethod;
+      io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> getBatchUpdateRowsMethod() {
+    io.grpc.MethodDescriptor<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest, io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> getBatchUpdateRowsMethod;
     if ((getBatchUpdateRowsMethod = UnitableGrpc.getBatchUpdateRowsMethod) == null) {
       synchronized (UnitableGrpc.class) {
         if ((getBatchUpdateRowsMethod = UnitableGrpc.getBatchUpdateRowsMethod) == null) {
           UnitableGrpc.getBatchUpdateRowsMethod = getBatchUpdateRowsMethod =
-              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest, org.mojolang.mojo.core.Null>newBuilder()
+              io.grpc.MethodDescriptor.<io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest, io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "batch_update_rows"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.mojolang.mojo.core.Null.getDefaultInstance()))
+                  io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse.getDefaultInstance()))
               .setSchemaDescriptor(new UnitableMethodDescriptorSupplier("batch_update_rows"))
               .build();
         }
@@ -966,6 +997,13 @@ public final class UnitableGrpc {
 
     /**
      */
+    default void batchGetRow(io.ncraft.armory.unitable.v1.BatchGetRowRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchGetRowResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBatchGetRowMethod(), responseObserver);
+    }
+
+    /**
+     */
     default void deleteRow(io.ncraft.armory.unitable.v1.DeleteRowRequest request,
         io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDeleteRowMethod(), responseObserver);
@@ -995,14 +1033,14 @@ public final class UnitableGrpc {
     /**
      */
     default void batchCreateRows(io.ncraft.armory.unitable.v1.BatchCreateRowsRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBatchCreateRowsMethod(), responseObserver);
     }
 
     /**
      */
     default void batchUpdateRows(io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBatchUpdateRowsMethod(), responseObserver);
     }
 
@@ -1187,6 +1225,14 @@ public final class UnitableGrpc {
 
     /**
      */
+    public void batchGetRow(io.ncraft.armory.unitable.v1.BatchGetRowRequest request,
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchGetRowResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getBatchGetRowMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void deleteRow(io.ncraft.armory.unitable.v1.DeleteRowRequest request,
         io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
@@ -1220,7 +1266,7 @@ public final class UnitableGrpc {
     /**
      */
     public void batchCreateRows(io.ncraft.armory.unitable.v1.BatchCreateRowsRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getBatchCreateRowsMethod(), getCallOptions()), request, responseObserver);
     }
@@ -1228,7 +1274,7 @@ public final class UnitableGrpc {
     /**
      */
     public void batchUpdateRows(io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest request,
-        io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null> responseObserver) {
+        io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getBatchUpdateRowsMethod(), getCallOptions()), request, responseObserver);
     }
@@ -1386,6 +1432,13 @@ public final class UnitableGrpc {
 
     /**
      */
+    public io.ncraft.armory.unitable.v1.BatchGetRowResponse batchGetRow(io.ncraft.armory.unitable.v1.BatchGetRowRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getBatchGetRowMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public org.mojolang.mojo.core.Null deleteRow(io.ncraft.armory.unitable.v1.DeleteRowRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDeleteRowMethod(), getCallOptions(), request);
@@ -1414,14 +1467,14 @@ public final class UnitableGrpc {
 
     /**
      */
-    public org.mojolang.mojo.core.Null batchCreateRows(io.ncraft.armory.unitable.v1.BatchCreateRowsRequest request) {
+    public io.ncraft.armory.unitable.v1.BatchCreateRowsResponse batchCreateRows(io.ncraft.armory.unitable.v1.BatchCreateRowsRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getBatchCreateRowsMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public org.mojolang.mojo.core.Null batchUpdateRows(io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest request) {
+    public io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse batchUpdateRows(io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getBatchUpdateRowsMethod(), getCallOptions(), request);
     }
@@ -1596,6 +1649,14 @@ public final class UnitableGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.unitable.v1.BatchGetRowResponse> batchGetRow(
+        io.ncraft.armory.unitable.v1.BatchGetRowRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getBatchGetRowMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<org.mojolang.mojo.core.Null> deleteRow(
         io.ncraft.armory.unitable.v1.DeleteRowRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1628,7 +1689,7 @@ public final class UnitableGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.mojolang.mojo.core.Null> batchCreateRows(
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.unitable.v1.BatchCreateRowsResponse> batchCreateRows(
         io.ncraft.armory.unitable.v1.BatchCreateRowsRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getBatchCreateRowsMethod(), getCallOptions()), request);
@@ -1636,7 +1697,7 @@ public final class UnitableGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.mojolang.mojo.core.Null> batchUpdateRows(
+    public com.google.common.util.concurrent.ListenableFuture<io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse> batchUpdateRows(
         io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getBatchUpdateRowsMethod(), getCallOptions()), request);
@@ -1669,13 +1730,14 @@ public final class UnitableGrpc {
   private static final int METHODID_CREATE_ROW = 15;
   private static final int METHODID_UPDATE_ROW = 16;
   private static final int METHODID_GET_ROW = 17;
-  private static final int METHODID_DELETE_ROW = 18;
-  private static final int METHODID_LIST_ROW = 19;
-  private static final int METHODID_GET_ROW_STAT = 20;
-  private static final int METHODID_EXPORT_ROW = 21;
-  private static final int METHODID_BATCH_CREATE_ROWS = 22;
-  private static final int METHODID_BATCH_UPDATE_ROWS = 23;
-  private static final int METHODID_BATCH_DELETE_ROWS = 24;
+  private static final int METHODID_BATCH_GET_ROW = 18;
+  private static final int METHODID_DELETE_ROW = 19;
+  private static final int METHODID_LIST_ROW = 20;
+  private static final int METHODID_GET_ROW_STAT = 21;
+  private static final int METHODID_EXPORT_ROW = 22;
+  private static final int METHODID_BATCH_CREATE_ROWS = 23;
+  private static final int METHODID_BATCH_UPDATE_ROWS = 24;
+  private static final int METHODID_BATCH_DELETE_ROWS = 25;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1766,6 +1828,10 @@ public final class UnitableGrpc {
           serviceImpl.getRow((io.ncraft.armory.unitable.v1.GetRowRequest) request,
               (io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Object>) responseObserver);
           break;
+        case METHODID_BATCH_GET_ROW:
+          serviceImpl.batchGetRow((io.ncraft.armory.unitable.v1.BatchGetRowRequest) request,
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchGetRowResponse>) responseObserver);
+          break;
         case METHODID_DELETE_ROW:
           serviceImpl.deleteRow((io.ncraft.armory.unitable.v1.DeleteRowRequest) request,
               (io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null>) responseObserver);
@@ -1784,11 +1850,11 @@ public final class UnitableGrpc {
           break;
         case METHODID_BATCH_CREATE_ROWS:
           serviceImpl.batchCreateRows((io.ncraft.armory.unitable.v1.BatchCreateRowsRequest) request,
-              (io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null>) responseObserver);
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchCreateRowsResponse>) responseObserver);
           break;
         case METHODID_BATCH_UPDATE_ROWS:
           serviceImpl.batchUpdateRows((io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest) request,
-              (io.grpc.stub.StreamObserver<org.mojolang.mojo.core.Null>) responseObserver);
+              (io.grpc.stub.StreamObserver<io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse>) responseObserver);
           break;
         case METHODID_BATCH_DELETE_ROWS:
           serviceImpl.batchDeleteRows((io.ncraft.armory.unitable.v1.BatchDeleteRowsRequest) request,
@@ -1939,6 +2005,13 @@ public final class UnitableGrpc {
               org.mojolang.mojo.core.Object>(
                 service, METHODID_GET_ROW)))
         .addMethod(
+          getBatchGetRowMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              io.ncraft.armory.unitable.v1.BatchGetRowRequest,
+              io.ncraft.armory.unitable.v1.BatchGetRowResponse>(
+                service, METHODID_BATCH_GET_ROW)))
+        .addMethod(
           getDeleteRowMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
@@ -1971,14 +2044,14 @@ public final class UnitableGrpc {
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
               io.ncraft.armory.unitable.v1.BatchCreateRowsRequest,
-              org.mojolang.mojo.core.Null>(
+              io.ncraft.armory.unitable.v1.BatchCreateRowsResponse>(
                 service, METHODID_BATCH_CREATE_ROWS)))
         .addMethod(
           getBatchUpdateRowsMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
               io.ncraft.armory.unitable.v1.BatchUpdateRowsRequest,
-              org.mojolang.mojo.core.Null>(
+              io.ncraft.armory.unitable.v1.BatchUpdateRowsResponse>(
                 service, METHODID_BATCH_UPDATE_ROWS)))
         .addMethod(
           getBatchDeleteRowsMethod(),
@@ -2053,6 +2126,7 @@ public final class UnitableGrpc {
               .addMethod(getCreateRowMethod())
               .addMethod(getUpdateRowMethod())
               .addMethod(getGetRowMethod())
+              .addMethod(getBatchGetRowMethod())
               .addMethod(getDeleteRowMethod())
               .addMethod(getListRowMethod())
               .addMethod(getGetRowStatMethod())
