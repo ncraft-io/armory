@@ -65,6 +65,7 @@ func WrapEndpoints(in svc.Endpoints, options map[string]interface{}) svc.Endpoin
 		if count != nil && latency != nil {
 			in.GetFileEndpoint = middleware.Instrumenting(latency.With("method", "get_file"), count.With("method", "get_file"))(in.GetFileEndpoint)
 		}
+		in.GetFileEndpoint = middleware.NewJWT()(in.GetFileEndpoint)
 		//if validator != nil {
 		//	in.GetFileEndpoint = validator.Validate()(in.GetFileEndpoint)
 		//}
@@ -76,6 +77,7 @@ func WrapEndpoints(in svc.Endpoints, options map[string]interface{}) svc.Endpoin
 		if count != nil && latency != nil {
 			in.CreateFileEndpoint = middleware.Instrumenting(latency.With("method", "create_file"), count.With("method", "create_file"))(in.CreateFileEndpoint)
 		}
+		in.CreateFileEndpoint = middleware.NewJWT()(in.CreateFileEndpoint)
 		//if validator != nil {
 		//	in.CreateFileEndpoint = validator.Validate()(in.CreateFileEndpoint)
 		//}
@@ -87,6 +89,7 @@ func WrapEndpoints(in svc.Endpoints, options map[string]interface{}) svc.Endpoin
 		if count != nil && latency != nil {
 			in.BatchCreateFileEndpoint = middleware.Instrumenting(latency.With("method", "batch_create_file"), count.With("method", "batch_create_file"))(in.BatchCreateFileEndpoint)
 		}
+		in.BatchCreateFileEndpoint = middleware.NewJWT()(in.BatchCreateFileEndpoint)
 		//if validator != nil {
 		//	in.BatchCreateFileEndpoint = validator.Validate()(in.BatchCreateFileEndpoint)
 		//}
