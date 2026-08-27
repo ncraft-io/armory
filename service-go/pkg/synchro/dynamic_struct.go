@@ -127,6 +127,11 @@ func (s *DynamicStruct) New() interface{} {
 	return reflect.New(s.GetType()).Interface()
 }
 
+func (s *DynamicStruct) NewSliceOf() interface{} {
+	ptr := reflect.PointerTo(s.GetType())
+	return reflect.New(reflect.SliceOf(ptr)).Interface()
+}
+
 func (s *DynamicStruct) NewOf(object *core.Object) (interface{}, error) {
 	instance := s.New()
 
@@ -164,4 +169,19 @@ func ParseObject(value interface{}) (*core.Object, error) {
 	}
 
 	return obj, nil
+}
+
+func ParseObjects(value interface{}) ([]*core.Object, error) {
+	json, err := jsoniter.Marshal(value)
+	if err != nil {
+		return nil, err
+	}
+
+	var objs []*core.Object
+	err = jsoniter.Unmarshal(json, &objs)
+	if err != nil {
+		return nil, err
+	}
+
+	return objs, nil
 }
