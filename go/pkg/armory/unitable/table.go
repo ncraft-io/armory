@@ -10,3 +10,14 @@ func (x *Table) ColumnIndex() map[string]*Column {
 	}
 	return nil
 }
+
+func (x *Table) GetGeometryColumn() *Column {
+	if x != nil {
+		for _, column := range x.Columns {
+			if column.Format == "geometry" && column.Type == "string" {
+				return column
+			}
+		}
+	}
+	return nil
+}

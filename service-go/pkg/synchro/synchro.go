@@ -111,7 +111,22 @@ func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renam
 		return core.NewNotFoundError("the table %s is not exist", table.Name)
 	}
 
-	return GetDataDB(table.Database).WithContext(ctx).Table(table.Name).AutoMigrate(meta.Struct.New())
+	d := GetDataDB(table.Database)
+	err := d.WithContext(ctx).Table(table.Name).AutoMigrate(meta.Struct.New())
+	if err != nil {
+		return err
+	}
+
+	if d.Config.Driver == db.PostgresDriverName {
+		if geom := table.GetGeometryColumn(); geom != nil {
+			session := d.WithContext(ctx).Exec(fmt.Sprintf("CREATE INDEX IF NOT EXISTS idx_%s_geometry ON %s USING GIST (%s);", table.Name, table.Name, geom.Name))
+			if session != nil && session.Error != nil {
+				logs.Warnw("failed to create gist index", "table", table.Name, "column", geom.Name, "error", session.Error)
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *Synchro) DropTable(ctx context.Context, table *unitable.Table) error {
