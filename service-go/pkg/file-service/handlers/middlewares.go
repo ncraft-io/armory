@@ -65,7 +65,7 @@ func WrapEndpoints(in svc.Endpoints, options map[string]interface{}) svc.Endpoin
 		if count != nil && latency != nil {
 			in.GetFileEndpoint = middleware.Instrumenting(latency.With("method", "get_file"), count.With("method", "get_file"))(in.GetFileEndpoint)
 		}
-		in.GetFileEndpoint = middleware.NewJWT()(in.GetFileEndpoint)
+		//in.GetFileEndpoint = middleware.NewJWT()(in.GetFileEndpoint)
 		//if validator != nil {
 		//	in.GetFileEndpoint = validator.Validate()(in.GetFileEndpoint)
 		//}
