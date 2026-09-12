@@ -250,7 +250,7 @@ func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableReque
 
 	columns := in.Table.Columns
 	in.Table.Columns = nil
-	if _, err := model.GetColumnModel().Create(ctx, columns...); err != nil {
+	if _, err := model.GetColumnModel().BatchCreate(ctx, columns...); err != nil {
 		return nil, err
 	}
 
@@ -292,7 +292,7 @@ func (s unitableServer) ListTables(ctx context.Context, in *pb.ListTablesRequest
 		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
 	}
 
-	tables, err := model.GetTableModel().Query(ctx, qry)
+	tables, err := model.GetTableModel().List(ctx, qry)
 	if err != nil {
 		return nil, err
 	}

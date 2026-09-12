@@ -4,20 +4,15 @@ go 1.24.7
 
 replace github.com/ncraft-io/armory/go => ../go
 
-replace (
-	github.com/mojo-lang/mojo/go => ../../../Mojo/mojo/go
-	github.com/ncraft-io/ncraft/go => ../../ncraft/go
-)
-
 require (
 	github.com/etherlabsio/healthcheck/v2 v2.0.0
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/json-iterator/go v1.1.12
-	github.com/mojo-lang/mojo/go v0.0.0-20251109082603-589338c8d9d8
+	github.com/mojo-lang/mojo/go v0.0.0-20260910061414-ea791cd6c9f0
 	github.com/ncraft-io/armory/go v0.0.0
-	github.com/ncraft-io/ncraft/go v0.0.0-20251109084049-258bda1d543d
+	github.com/ncraft-io/ncraft/go v0.0.0-20260912020610-54aba377d3c6
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pquerna/otp v1.5.0
@@ -102,7 +97,6 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.7 // indirect
-	github.com/ncraft-io/go-evaluate v0.0.0-20221204034007-df47db0019f2 // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/onsi/gomega v1.19.0 // indirect
