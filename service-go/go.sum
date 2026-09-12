@@ -352,7 +352,6 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 h1:RWengNIwukTxcDr9M+97sNutRR1RKhG96O6jWumTTnw=
 github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826/go.mod h1:TaXosZuwdSHYgviHp1DAtfrULt5eUgsSMsZf+YrPgl8=
-github.com/mojo-lang/mojo/go v0.0.0-20251109082603-589338c8d9d8/go.mod h1:deZEqB2cfSQ4KuZQX3liaA/7nzsPbuvkzXs4GzinqJ0=
 github.com/mojo-lang/mojo/go v0.0.0-20260910061414-ea791cd6c9f0 h1:l3BTIDUVl8FwO5UBZajOHwlt7CEQxumfheWiAPazINo=
 github.com/mojo-lang/mojo/go v0.0.0-20260910061414-ea791cd6c9f0/go.mod h1:t1S4q8/Kyty0u8CsWHgfl63hRSE4dfSDqVcO9/oHcLY=
 github.com/mr-tron/base58 v1.2.0 h1:T/HDJBh4ZCPbU39/+c3rRvE0uKBQlU27+QI8LJ4t64o=
@@ -361,7 +360,6 @@ github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRW
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/nacos-group/nacos-sdk-go/v2 v2.2.7 h1:wCC1f3/VzIR1WD30YKeJGZAOchYCK/35mLC8qWt6Q6o=
 github.com/nacos-group/nacos-sdk-go/v2 v2.2.7/go.mod h1:VYlyDPlQchPC31PmfBustu81vsOkdpCuO5k0dRdQcFc=
-github.com/ncraft-io/ncraft/go v0.0.0-20251109084049-258bda1d543d/go.mod h1:rzMzIRd+Que+B5+ZKaox8Z2cUt/UsIkRtSanfFXoLZ4=
 github.com/ncraft-io/ncraft/go v0.0.0-20260912020610-54aba377d3c6 h1:Y3I//9labheaWHMtZ2vDnf/vgaQBK2R4oO4mgcoZ7jM=
 github.com/ncraft-io/ncraft/go v0.0.0-20260912020610-54aba377d3c6/go.mod h1:e/EZGnbweyfeRf8L99HWQZdtZ6Cl3Xv2hW3yXigY7nw=
 github.com/nwaples/rardecode/v2 v2.2.0 h1:4ufPGHiNe1rYJxYfehALLjup4Ls3ck42CWwjKiOqu0A=
