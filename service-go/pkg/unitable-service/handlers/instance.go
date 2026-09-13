@@ -13,8 +13,9 @@ var unitableOnce sync.Once
 var ut *Instance
 
 type Instance struct {
-	Synchro *synchro.Synchro
-	Queries map[string]*unitable.DbQuery
+	schemaMu sync.Mutex
+	Synchro  *synchro.Synchro
+	Queries  map[string]*unitable.DbQuery
 }
 
 func (s unitableServer) Synchro() *synchro.Synchro {

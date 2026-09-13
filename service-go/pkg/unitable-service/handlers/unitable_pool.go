@@ -19,12 +19,14 @@ func GetUnitable() *Unitable {
 }
 
 func PutUnitable(ts *Unitable) {
-	unitablePool.Put(ts)
+	if ts != nil {
+		unitablePool.Put(ts)
+	}
 }
 
 type Unitable struct {
 }
 
 func NewUnitable() *Unitable {
-	return nil
+	return &Unitable{}
 }

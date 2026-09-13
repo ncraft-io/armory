@@ -2,14 +2,13 @@ package synchro
 
 import (
 	"context"
-	"fmt"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
-	"github.com/segmentio/ksuid"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strings"
@@ -23,7 +22,8 @@ type MetaTable struct {
 }
 
 type Synchro struct {
-	Tables sync.Map //map[string]*MetaTable
+	cacheMu sync.Mutex
+	Tables  sync.Map //map[string]*MetaTable
 }
 
 func TableId(database string, table string) string {
@@ -35,6 +35,8 @@ func New() *Synchro {
 }
 
 func (s *Synchro) GetMetaTable(tableId string, table *unitable.Table) *MetaTable {
+	s.cacheMu.Lock()
+	defer s.cacheMu.Unlock()
 	if table == nil { // if table not nil, will using user table, and not cache
 		if value, ok := s.Tables.Load(tableId); ok {
 			if mt, ok := value.(*MetaTable); ok {
@@ -58,6 +60,9 @@ func (s *Synchro) GetMetaTable(tableId string, table *unitable.Table) *MetaTable
 		tb = t
 	}
 
+	if GetDataDB(tb.Database) == nil {
+		return nil
+	}
 	meta := &MetaTable{
 		Table:      tb,
 		Struct:     NewDynamicStruct(tb),
@@ -75,72 +80,103 @@ func (s *Synchro) GetMetaTable(tableId string, table *unitable.Table) *MetaTable
 	return meta
 }
 
-const createSql = `CREATE TABLE %s (id varchar(255) NOT NULL PRIMARY KEY);`
+func (s *Synchro) InvalidateTable(id string) {
+	s.cacheMu.Lock()
+	defer s.cacheMu.Unlock()
+	s.Tables.Delete(id)
+}
 
 func (s *Synchro) CreateTable(ctx context.Context, table *unitable.Table) error {
-	if !GetDataDB(table.Database).Migrator().HasTable(table.Id) {
-		tx := GetDataDB(table.Database).WithContext(ctx).Exec(fmt.Sprintf(createSql, table.Id))
-		return tx.Error
-	}
-	return nil
+	return s.MigrateTable(ctx, table, nil, nil)
 }
 
 func (s *Synchro) MigrateTable(ctx context.Context, table *unitable.Table, renamedCols map[string]string, dropCols []string) error {
-	var meta *MetaTable
-	if len(renamedCols) > 0 {
-		meta = s.GetMetaTable(table.Id, nil)
-		if meta == nil {
-			return core.NewNotFoundError("the original table %s is not exist, can't to rename fields %v", table.Name, renamedCols)
+	d := GetDataDB(table.Database)
+	if d == nil {
+		return core.NewNotFoundError("database %s not found", table.Database)
+	}
+	// Some dialects implicitly commit DDL. Validate the complete request before
+	// entering here; always invalidate cached structs even after partial DDL.
+	defer s.InvalidateTable(table.Id)
+	tx := d.WithContext(ctx).Table(table.Name)
+	// AutoMigrate adds indexes but does not remove them when a flag is cleared.
+	if tx.Migrator().HasTable(table.Name) {
+		if old, err := model.GetTableModel().Get(ctx, table.Id); err == nil {
+			oldMeta := s.GetMetaTable(table.Id, old)
+			statement := &gorm.Statement{DB: tx}
+			if err := statement.ParseWithSpecialTableName(oldMeta.Struct.New(), table.Name); err != nil {
+				return err
+			}
+			current := map[string]*unitable.Column{}
+			for _, col := range table.Columns {
+				current[col.Id] = col
+			}
+			byName := old.ColumnIndex()
+			for _, index := range statement.Schema.ParseIndexes() {
+				if len(index.Fields) != 1 {
+					continue
+				}
+				previous := byName[index.Fields[0].DBName]
+				if previous == nil {
+					continue
+				}
+				next := current[previous.Id]
+				remove := next == nil || next.Name != previous.Name
+				if next != nil {
+					if index.Class == "UNIQUE" {
+						remove = remove || !next.Unique
+					} else {
+						remove = remove || !next.Indexed
+					}
+				}
+				if remove && tx.Migrator().HasIndex(oldMeta.Struct.New(), index.Name) {
+					if err := tx.Migrator().DropIndex(oldMeta.Struct.New(), index.Name); err != nil {
+						return err
+					}
+				}
+			}
 		}
-
+	}
+	if len(renamedCols) > 0 || len(dropCols) > 0 {
+		meta := s.GetMetaTable(table.Id, nil)
+		if meta == nil {
+			return core.NewNotFoundError("original table %s not found", table.Id)
+		}
 		obj := meta.Struct.New()
-		tx := GetDataDB(table.Database).WithContext(ctx).Table(table.Name)
-		for k, v := range renamedCols {
-			if err := tx.Migrator().RenameColumn(obj, k, v); err != nil {
+		for from, to := range renamedCols {
+			if err := tx.Migrator().RenameColumn(obj, from, to); err != nil {
+				return err
+			}
+		}
+		for _, name := range dropCols {
+			if err := tx.Migrator().DropColumn(obj, name); err != nil {
 				return err
 			}
 		}
 	}
-
-	{
-		s.Tables.Delete(table.Id)
-	}
-
-	meta = s.GetMetaTable(table.Id, table)
-	if meta == nil {
-		return core.NewNotFoundError("the table %s is not exist", table.Name)
-	}
-
-	d := GetDataDB(table.Database)
-	err := d.WithContext(ctx).Table(table.Name).AutoMigrate(meta.Struct.New())
-	if err != nil {
+	meta := s.GetMetaTable(table.Id, table)
+	if err := tx.AutoMigrate(meta.Struct.New()); err != nil {
 		return err
 	}
-
 	if d.Config.Driver == db.PostgresDriverName {
 		if geom := table.GetGeometryColumn(); geom != nil {
-			session := d.WithContext(ctx).Exec(fmt.Sprintf("CREATE INDEX IF NOT EXISTS idx_%s_geometry ON %s USING GIST (%s);", table.Name, table.Name, geom.Name))
-			if session != nil && session.Error != nil {
-				logs.Warnw("failed to create gist index", "table", table.Name, "column", geom.Name, "error", session.Error)
+			stmt := &gorm.Statement{DB: tx}
+			sql := "CREATE INDEX IF NOT EXISTS " + stmt.Quote("idx_"+table.Name+"_geometry") + " ON " + stmt.Quote(table.Name) + " USING GIST (" + stmt.Quote(geom.Name) + ")"
+			if err := tx.Exec(sql).Error; err != nil {
+				return err
 			}
 		}
 	}
-
 	return nil
 }
 
 func (s *Synchro) DropTable(ctx context.Context, table *unitable.Table) error {
-	meta := s.GetMetaTable(table.Id, nil)
-	if meta == nil {
-		return core.NewNotFoundError("the table %s is not exist", table.Id)
+	d := GetDataDB(table.Database)
+	if d == nil {
+		return core.NewNotFoundError("database %s not found", table.Database)
 	}
-
-	{
-		s.Tables.Delete(table.Id)
-	}
-
-	tx := GetDataDB(table.Database).WithContext(ctx).Exec("DROP TABLE " + table.Id)
-	return tx.Error
+	defer s.InvalidateTable(table.Id)
+	return d.WithContext(ctx).Migrator().DropTable(table.Name)
 }
 
 func (s *Synchro) GetRow(ctx context.Context, table string, id string) (*core.Object, error) {
@@ -173,7 +209,7 @@ func (s *Synchro) BatchGetRow(ctx context.Context, table string, ids ...string) 
 	}
 
 	rows := meta.Struct.NewSliceOf()
-	resul := GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name).Where(ids).Find(rows)
+	resul := GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name).Where("id IN ?", ids).Find(rows)
 	if resul.Error != nil {
 		return nil, core.NewNotFoundError("%s is not exist in %s, %s", ids, table, resul.Error.Error())
 	}
@@ -198,13 +234,17 @@ func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string
 		Struct: NewDynamicStruct(table),
 	}
 
-	tx := GetDataDB(database).WithContext(ctx).Table(table.Name).Raw(query.Sql, arguments...)
+	d := GetDataDB(database)
+	if d == nil {
+		return nil, core.NewNotFoundError("database %s not found", database)
+	}
+	tx := d.WithContext(ctx).Table(table.Name).Raw(query.Sql, arguments...)
 	rows, err := tx.Rows()
-	defer rows.Close()
 	if err != nil {
 		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
 	}
 
+	defer rows.Close()
 	var objs []*core.Object
 	for rows.Next() {
 		row := meta.Struct.New()
@@ -219,6 +259,9 @@ func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string
 		objs = append(objs, obj)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return objs, nil
 }
 
@@ -237,13 +280,13 @@ func (s *Synchro) QueryRows(ctx context.Context, table string, query *query.Quer
 	}
 
 	rows, err := tx.Rows()
-	defer rows.Close()
 	if err != nil {
 		return nil, 0, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
 	}
 
 	st := NewDynamicStructWith(query, meta)
 
+	defer rows.Close()
 	var objs []*core.Object
 	for rows.Next() {
 		row := st.New()
@@ -258,12 +301,20 @@ func (s *Synchro) QueryRows(ctx context.Context, table string, query *query.Quer
 		objs = append(objs, obj)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	if err := rows.Close(); err != nil {
+		return nil, 0, err
+	}
 	totalCnt := len(objs)
-	if query.PageSize > 0 { // pagination
+	if query != nil && query.PageSize > 0 { // pagination
 		// get the total count
 		tx = GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name)
 		if query != nil {
-			tx = query.TotalCount(tx, meta.FieldsInfo)
+			countQuery := *query
+			countQuery.Skip = 0
+			tx = countQuery.TotalCount(tx, meta.FieldsInfo)
 		} else {
 			tx = tx.Select("COUNT(*)")
 		}
@@ -316,8 +367,8 @@ func (s *Synchro) InsertRows(ctx context.Context, table string, rows ...*core.Ob
 			result := tx.Table(meta.Table.Name).Clauses(clause.OnConflict{UpdateAll: true}).Create(data)
 			if result.Error != nil {
 				// return any error will roll back
-				logs.Warnw("failed to create the row, will rollback", "row", row, "error", err)
-				return err
+				logs.Warnw("failed to create the row, will rollback", "row", row, "error", result.Error)
+				return result.Error
 			}
 			if result.RowsAffected > 0 {
 				irs[i] = 1
@@ -383,70 +434,35 @@ func (s *Synchro) UpdateRows(ctx context.Context, table string, rows ...*core.Ob
 	return int64(len(datas)), err
 }
 
+// UpdateInsertRows retains its historical name but updates only existing rows.
+// It writes the supplied fields, including zero values, in one transaction.
 func (s *Synchro) UpdateInsertRows(ctx context.Context, table string, rows ...*core.Object) (int64, []int, error) {
 	meta := s.GetMetaTable(table, nil)
 	if meta == nil {
-		return 0, nil, core.NewNotFoundError("the table %s is not exist", table)
+		return 0, nil, core.NewNotFoundError("table %s not found", table)
 	}
-
-	var data []interface{}
-	var dataIndex []int
-	var insertData []interface{}
-	var insertDataIndex []int
-	for i, row := range rows {
-		id := row.GetString("id")
-		if len(id) == 0 {
-			row.SetString("id", ksuid.New().String())
-			r, err := meta.Struct.NewOf(row)
-			if err != nil {
-				return 0, nil, err
-			}
-			insertData = append(insertData, r)
-			insertDataIndex = append(insertDataIndex, i)
-		} else {
-			r, err := meta.Struct.NewOf(row)
-			if err != nil {
-				return 0, nil, err
-			}
-			data = append(data, r)
-			dataIndex = append(dataIndex, i)
-		}
-	}
-
 	irs := make([]int, len(rows))
-
-	// Continuous session mode
-	tx := GetDataDB(meta.Table.Database).WithContext(ctx).Session(&db.Session{SkipDefaultTransaction: true})
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		for i, d := range insertData {
-			result := tx.Table(meta.Table.Name).Create(d)
+	var affected int64
+	err := GetDataDB(meta.Table.Database).WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for i, row := range rows {
+			data, err := meta.Struct.NewOf(row)
+			if err != nil {
+				return err
+			}
+			values := FilterOutId(row.ToMapInterface(), meta.Table)
+			result := tx.Table(meta.Table.Name).Model(data).Updates(values)
 			if result.Error != nil {
-				logs.ErrLogw("failed to create the row, will rollback", "index", insertDataIndex[i], "error", result.Error)
 				return result.Error
 			}
-
-			if result.RowsAffected > 0 {
-				irs[insertDataIndex[i]] = 1
-			}
+			irs[i] = int(result.RowsAffected)
+			affected += result.RowsAffected
 		}
-
-		for i, d := range data {
-			result := tx.Table(meta.Table.Name).Updates(d)
-			if result.Error != nil {
-				logs.ErrLogw("failed to update the row, will rollback", "index", dataIndex[i], "error", result.Error)
-				return result.Error
-			}
-
-			if result.RowsAffected > 0 {
-				irs[dataIndex[i]] = 1
-			}
-		}
-
-		// return nil will commit the whole transaction
 		return nil
 	})
-
-	return int64(len(data) + len(insertData)), irs, err
+	if err != nil {
+		return 0, nil, err
+	}
+	return affected, irs, nil
 }
 
 func (s *Synchro) DeleteRows(ctx context.Context, table string, ids ...string) (int64, error) {
@@ -455,7 +471,10 @@ func (s *Synchro) DeleteRows(ctx context.Context, table string, ids ...string) (
 		return 0, core.NewNotFoundError("the table %s is not exist", table)
 	}
 
-	result := GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name).Delete(meta.Struct.New(), ids)
+	if len(ids) == 0 {
+		return 0, nil
+	}
+	result := GetDataDB(meta.Table.Database).WithContext(ctx).Table(meta.Table.Name).Where("id IN ?", ids).Delete(meta.Struct.New())
 	return result.RowsAffected, result.Error
 }
 
@@ -473,13 +492,13 @@ func (s *Synchro) CalcStats(ctx context.Context, table string, query *query.Quer
 	tx = query.Apply(tx, meta.FieldsInfo)
 
 	rows, err := tx.Rows()
-	defer rows.Close()
 	if err != nil {
 		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
 	}
 
 	st := NewDynamicStructWith(query, meta)
 
+	defer rows.Close()
 	var objs []*core.Object
 	for rows.Next() {
 		row := st.New()
@@ -492,6 +511,9 @@ func (s *Synchro) CalcStats(ctx context.Context, table string, query *query.Quer
 			return nil, err
 		}
 		objs = append(objs, obj)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return objs, nil
 }

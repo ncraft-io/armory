@@ -60,6 +60,8 @@ func GetDataDB(name string) *db.DB {
 
 	if d, ok := ds[name]; ok {
 		return d
+	} else if name != "" {
+		return nil
 	} else if d, ok = ds[defaultDB]; ok {
 		return d
 	} else {

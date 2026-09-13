@@ -10,6 +10,7 @@ import (
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,6 +19,7 @@ const LowerCamel = "lowerCamel"
 type DynamicStruct struct {
 	Fields    []reflect.StructField
 	Type      reflect.Type
+	typeOnce  sync.Once
 	JsonStyle string
 }
 
@@ -28,21 +30,25 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 		field := reflect.StructField{}
 		field.Name = strcase.ToCamel(col.Name)
 		switch col.Type {
+		case "bool":
+			field.Type = reflect.TypeOf(false)
 		case "integer":
 			field.Type = reflect.TypeOf(int64(0))
 		case "float":
 			field.Type = reflect.TypeOf(float64(0))
 		case "string":
 			switch col.Format {
-			case "datetime", "time":
+			case "datetime", "time", "timestamp":
 				now := time.Now()
 				field.Type = reflect.TypeOf(&now)
+			case "bytes":
+				field.Type = reflect.TypeOf([]byte{})
 			case "geometry":
 				geo := &geom.Geometry{}
 				field.Type = reflect.TypeOf(geo)
 			default:
 				if col.Repeated {
-					field.Type = reflect.TypeOf([]string{})
+					field.Type = reflect.TypeOf(StringArray{})
 				} else {
 					field.Type = reflect.TypeOf("")
 				}
@@ -59,6 +65,15 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 		var gtags []string
 		gtags = append(gtags, fmt.Sprintf("column:%s", col.Name))
 
+		if col.Name == "id" {
+			gtags = append(gtags, "primaryKey")
+			if col.Type == "integer" {
+				gtags = append(gtags, "autoIncrement:false")
+			}
+		}
+		if col.Unique {
+			gtags = append(gtags, "uniqueIndex")
+		}
 		if col.Indexed {
 			gtags = append(gtags, "index")
 		}
@@ -80,12 +95,12 @@ func NewDynamicStruct(table *unitable.Table) *DynamicStruct {
 }
 
 func NewDynamicStructWith(qry *query.Query, meta *MetaTable) *DynamicStruct {
-	if len(qry.Fields) == 0 {
+	if qry == nil || len(qry.Fields) == 0 {
 		return NewDynamicStruct(meta.Table)
 	}
 
 	columnIndex := meta.Table.ColumnIndex()
-	table := &unitable.Table{}
+	table := &unitable.Table{JsonStyle: meta.Table.JsonStyle}
 	for name, field := range qry.Fields {
 		c := &unitable.Column{
 			Name:         name,
@@ -96,16 +111,20 @@ func NewDynamicStructWith(qry *query.Query, meta *MetaTable) *DynamicStruct {
 			if ci, ok := columnIndex[c.OriginalName]; ok {
 				c.Type = ci.Type
 				c.Format = ci.Format
+				c.Repeated = ci.Repeated
 			}
 		} else {
 			fun := field.GetFunction()
 			switch fun {
 			case "count":
 				c.Type = "integer"
-			case "sum", "avg", "min", "max":
+			case "avg":
+				c.Type = "float"
+			case "sum", "min", "max":
 				if ci, ok := columnIndex[c.OriginalName]; ok {
 					c.Type = ci.Type
 					c.Format = ci.Format
+					c.Repeated = ci.Repeated
 				}
 			default:
 				c.Type = "string"
@@ -117,9 +136,11 @@ func NewDynamicStructWith(qry *query.Query, meta *MetaTable) *DynamicStruct {
 }
 
 func (s *DynamicStruct) GetType() reflect.Type {
-	if s.Type == nil {
-		s.Type = reflect.StructOf(s.Fields)
-	}
+	s.typeOnce.Do(func() {
+		if s.Type == nil {
+			s.Type = reflect.StructOf(s.Fields)
+		}
+	})
 	return s.Type
 }
 
@@ -133,12 +154,15 @@ func (s *DynamicStruct) NewSliceOf() interface{} {
 }
 
 func (s *DynamicStruct) NewOf(object *core.Object) (interface{}, error) {
+	if object == nil {
+		return nil, fmt.Errorf("nil row")
+	}
 	instance := s.New()
 
 	var json []byte
 	var err error
 
-	if s.JsonStyle == LowerCamel {
+	if strings.EqualFold(s.JsonStyle, LowerCamel) {
 		json, err = jsoniter.Marshal(object.ToLowerCamelKeys())
 	} else {
 		json, err = jsoniter.Marshal(object.ToSnakeKeys())

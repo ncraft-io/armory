@@ -54,7 +54,7 @@ func (m *Table) Create(ctx context.Context, value *entity.Table) (int64, error) 
 
 func (m *Table) Get(ctx context.Context, id string) (*entity.Table, error) {
 	value := &entity.Table{}
-	err := m.DB.WithContext(ctx).Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
+	err := m.DB.WithContext(ctx).Preload("Columns").Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (m *Table) List(ctx context.Context, q *query.Query) ([]*entity.Table, erro
 			"id": {Type: query.FieldTypeString, Repeated: false}, "name": {Type: query.FieldTypeString, Repeated: false}, "display_name": {Type: query.FieldTypeString, Repeated: false}, "export_name": {Type: query.FieldTypeString, Repeated: false}, "tenant": {Type: query.FieldTypeString, Repeated: false}, "database": {Type: query.FieldTypeString, Repeated: false}, "json_style": {Type: query.FieldTypeString, Repeated: false}, "columns": {Type: query.FieldTypeJSON, Repeated: true}, "create_time": {Type: query.FieldTypeDatetime, Repeated: false}, "update_time": {Type: query.FieldTypeDatetime, Repeated: false},
 		})
 	}
-	if err := tx.Find(&values).Error; err != nil {
+	if err := tx.Preload("Columns").Find(&values).Error; err != nil {
 		return nil, err
 	}
 	return values, nil

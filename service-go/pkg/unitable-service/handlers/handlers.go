@@ -3,24 +3,20 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/iancoleman/strcase"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
-	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
 	"github.com/ncraft-io/armory/go/pkg/armory/unitable"
 	"github.com/ncraft-io/armory/service-go/pkg/hook"
-	"github.com/ncraft-io/armory/service-go/pkg/model"
 	"github.com/ncraft-io/armory/service-go/pkg/synchro"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
 	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"github.com/segmentio/ksuid"
 	"github.com/xuri/excelize/v2"
+	"google.golang.org/protobuf/proto"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-
-	_ "github.com/ncraft-io/armory/service-go/pkg/hook"
 
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/unitable/v1"
@@ -48,7 +44,9 @@ func NewService() pb.UnitableServer {
 		conf := &unitable.DbQueryConfig{}
 		_ = config.ScanFrom(conf, "dbQuery")
 		for _, dbQuery := range conf.Queries {
-			ut.Queries[dbQuery.Name] = dbQuery
+			if dbQuery != nil {
+				ut.Queries[dbQuery.Name] = dbQuery
+			}
 		}
 	})
 
@@ -57,394 +55,29 @@ func NewService() pb.UnitableServer {
 	}
 }
 
-// CreateTable implements Interface.
-func (s unitableServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*unitable.Table, error) {
-	if in.Table == nil {
-		return nil, core.NewInvalidArgumentError("not set the table body in request")
-	}
-	if len(in.Table.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database in request")
-	}
-	if len(in.Table.Name) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the table name in request")
-	}
-	if !nameRegex.MatchString(in.Table.Name) {
-		return nil, core.NewInvalidArgumentError("the table name (%s) is invalid in request", in.Table.Name)
-	}
-	if len(in.Table.Columns) == 0 {
-		return nil, core.NewInvalidArgumentError("the table has no columns in request")
-	}
-	for i, col := range in.Table.Columns {
-		if len(col.Name) == 0 {
-			return nil, core.NewInvalidArgumentError("the No. %d column in table has not set name", i)
-		}
-		if !col.IsTypeValid() {
-			return nil, core.NewInvalidArgumentError("the No. %d column (%s) in table type %s is invalid", i, col.Name, col.Type)
-		}
-	}
-	if len(in.Table.Id) == 0 {
-		in.Table.Id = in.Table.Database + "." + in.Table.Name
-	}
-	if table, err := model.GetTableModel().Get(ctx, in.Table.Id); err == nil && table != nil {
-		_, err = s.UpdateTable(ctx, &pb.UpdateTableRequest{Table: in.Table, Force: true})
-		if err != nil {
-			return nil, err
-		}
-		return &unitable.Table{Id: in.Table.Id}, nil
-	}
-
-	if in.Table.CreateTime == nil {
-		in.Table.CreateTime = core.Now()
-	}
-	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro().MigrateTable(ctx, in.Table, nil, nil); err != nil {
-		return nil, core.NewInternalError("failed to create table in %s", in.Table.Database)
-	}
-
-	for _, col := range in.Table.Columns {
-		if len(col.Id) == 0 {
-			col.Id = ksuid.New().String()
-		}
-		if col.CreateTime == nil {
-			col.CreateTime = core.Now()
-			col.UpdateTime = col.CreateTime
-		} else {
-			col.UpdateTime = core.Now()
-		}
-	}
-	if _, err := model.GetTableModel().Create(ctx, in.Table); err != nil {
-		return nil, err
-	}
-
-	resp := &unitable.Table{
-		Id: in.Table.Id,
-	}
-	return resp, nil
-}
-
-func MergeColumn(target *unitable.Column, src *unitable.Column) {
-	if len(target.Name) == 0 {
-		target.Name = src.Name
-	}
-	if len(target.Type) == 0 {
-		target.Type = src.Type
-		target.Format = src.Format
-	}
-	if len(target.TableId) == 0 {
-		target.TableId = src.TableId
-	}
-	if len(target.Database) == 0 {
-		target.Database = src.Database
-	}
-	if len(target.DisplayName) == 0 {
-		target.DisplayName = src.DisplayName
-	}
-	if len(target.ExportName) == 0 {
-		target.ExportName = src.ExportName
-	}
-	if !target.Indexed {
-		target.Indexed = src.Indexed
-	}
-}
-
-// UpdateTable implements Interface.
-func (s unitableServer) UpdateTable(ctx context.Context, in *pb.UpdateTableRequest) (*core.Null, error) {
-	if in.Table == nil {
-		return nil, core.NewInvalidArgumentError("not set the table body in request")
-	}
-	if len(in.Table.Database) == 0 {
-		if len(in.Database) > 0 {
-			in.Table.Database = in.Database
-		} else {
-			return nil, core.NewInvalidArgumentError("not set the database in request")
-		}
-	}
-	if len(in.Table.Name) == 0 {
-		if len(in.Id) > 0 {
-			in.Table.Id = in.Id
-			in.Table.Name = in.Id
-		} else if len(in.Table.Id) > 0 {
-			in.Table.Name = in.Table.Id
-		} else {
-			return nil, core.NewInvalidArgumentError("not set the table name or id in request")
-		}
-	}
-	if !nameRegex.MatchString(in.Table.Name) {
-		return nil, core.NewInvalidArgumentError("the table name (%s) is invalid in request", in.Table.Name)
-	}
-	if len(in.Table.Columns) == 0 {
-		return nil, core.NewInvalidArgumentError("the table has no columns in request")
-	}
-
-	if len(in.Table.Id) == 0 {
-		if len(in.Id) > 0 {
-			in.Table.Id = in.Id
-		} else {
-			in.Table.Id = in.Table.Database + "." + in.Table.Name
-		}
-	}
-
-	var dropCols []string
-	renamedCols := make(map[string]string)
-	if old, err := model.GetTableModel().Get(ctx, in.Table.Id); err != nil {
-		return nil, core.NewInvalidArgumentError("the table %s not found, err: %s", in.Table.Id, err.Error())
-	} else {
-		columns := make(map[string]*unitable.Column)
-		nameIndex := make(map[string]*unitable.Column)
-		for _, col := range old.Columns {
-			columns[col.Id] = col
-			nameIndex[col.Name] = col
-		}
-
-		for _, col := range in.Table.Columns {
-			if c, ok := nameIndex[col.Name]; ok {
-				if len(col.Id) > 0 && col.Id != c.Id {
-					return nil, core.NewInvalidArgumentError("the table %s update the column %s with different id, old: %s, new: %s", in.Table.Id, col.Name, c.Id, col.Id)
-				}
-
-				col.Id = c.Id
-				MergeColumn(col, c)
-				col.UpdateTime = core.Now()
-
-				// NOT allow to change type if not force mode
-				if col.Type != c.Type || (c.Type == "string" && c.Format != col.Format) {
-					if in.Force {
-						dropCols = append(dropCols, c.Name)
-					} else {
-						return nil, core.NewInvalidArgumentError("the table %s not to allow to change column %s type if not force mode", in.Table.Id, col.Name)
-					}
-				}
-			} else if len(col.Id) == 0 {
-				col.Id = ksuid.New().String()
-				col.CreateTime = core.Now()
-				col.UpdateTime = col.CreateTime
-			} else {
-				if c, ok := columns[col.Id]; ok {
-					if len(col.Name) > 0 && len(c.Name) > 0 && col.Name != c.Name {
-						renamedCols[c.Name] = col.Name
-					}
-
-					MergeColumn(col, c)
-					col.UpdateTime = core.Now()
-				} else {
-					if col.CreateTime == nil {
-						col.CreateTime = core.Now()
-					}
-					if col.UpdateTime == nil {
-						col.UpdateTime = core.Now()
-					}
-				}
-			}
-
-			col.TableId = in.Table.Id
-			if len(col.Type) == 0 {
-				return nil, core.NewInvalidArgumentError("the column %s in table %s has not type set", col.Name, in.Table.Id)
-			}
-		}
-	}
-
-	in.Table.UpdateTime = core.Now()
-	if err := s.Synchro().MigrateTable(ctx, in.Table, renamedCols, dropCols); err != nil {
-		return nil, core.NewInternalError("failed to update table in %s, err: %s", in.Table.Database, err.Error())
-	}
-
-	columns := in.Table.Columns
-	in.Table.Columns = nil
-	if _, err := model.GetColumnModel().BatchCreate(ctx, columns...); err != nil {
-		return nil, err
-	}
-
-	if _, err := model.GetTableModel().Update(ctx, in.Table); err != nil {
-		return nil, err
-	}
-
-	return &core.Null{}, nil
-}
-
-// GetTable implements Interface.
-func (s unitableServer) GetTable(ctx context.Context, in *pb.GetTableRequest) (*unitable.Table, error) {
-	if len(in.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database")
-	}
-	if len(in.Id) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the table name")
-	}
-
-	id := in.Id
-	if !strings.Contains(in.Id, ".") {
-		id = in.Database + "." + in.Id
-	}
-
-	return model.GetTableModel().Get(ctx, id)
-}
-
-// ListTables implements Interface.
-func (s unitableServer) ListTables(ctx context.Context, in *pb.ListTablesRequest) (*pb.ListTablesResponse, error) {
-	if len(in.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database")
-	}
-
-	qry, err := ParseQuery(in)
-	if err != nil {
-		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
-	}
-	if err = qry.Normalize(); err != nil {
-		return nil, core.NewInvalidArgumentError("invalid query parameters, error: %s", err.Error())
-	}
-
-	tables, err := model.GetTableModel().List(ctx, qry)
-	if err != nil {
-		return nil, err
-	}
-
-	resp := &pb.ListTablesResponse{
-		Tables: tables,
-	}
-	return resp, nil
-}
-
-// DeleteTable implements Interface.
-func (s unitableServer) DeleteTable(ctx context.Context, in *pb.DeleteTableRequest) (*core.Null, error) {
-	if len(in.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database")
-	}
-	if len(in.Id) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the table name")
-	}
-
-	if _, err := model.GetTableModel().Delete(ctx, in.Id); err != nil {
-		return nil, err
-	}
-	return &core.Null{}, nil
-}
-
-// SyncTable implements Interface.
-func (s unitableServer) SyncTable(ctx context.Context, in *pb.SyncTableRequest) (*unitable.Table, error) {
-	resp := &unitable.Table{
-		// Id:
-		// Name:
-		// DisplayName:
-		// ExportName:
-		// Tenant:
-		// Database:
-		// Columns:
-		// CreateTime:
-		// UpdateTime:
-		// DeleteTime:
-	}
-	return resp, nil
-}
-
-// CreateColumn implements Interface.
-func (s unitableServer) CreateColumn(ctx context.Context, in *pb.CreateColumnRequest) (*unitable.Column, error) {
-	resp := &unitable.Column{
-		// Id:
-		// Database:
-		// Table:
-		// Name:
-		// DisplayName:
-		// ExportName:
-		// GroupDisplayName:
-		// Type:
-		// Format:
-		// Indexed:
-		// Unique:
-		// Show:
-		// Editable:
-		// Filterable:
-		// Temporal:
-		// Dimensional:
-		// Referenced:
-		// CreateTime:
-		// UpdateTime:
-		// DeleteTime:
-	}
-	return resp, nil
-}
-
-// UpdateColumn implements Interface.
-func (s unitableServer) UpdateColumn(ctx context.Context, in *pb.UpdateColumnRequest) (*core.Null, error) {
-	resp := &core.Null{}
-	return resp, nil
-}
-
-// GetColumn implements Interface.
-func (s unitableServer) GetColumn(ctx context.Context, in *pb.GetColumnRequest) (*unitable.Column, error) {
-	resp := &unitable.Column{
-		// Id:
-		// Database:
-		// Table:
-		// Name:
-		// DisplayName:
-		// ExportName:
-		// GroupDisplayName:
-		// Type:
-		// Format:
-		// Indexed:
-		// Unique:
-		// Show:
-		// Editable:
-		// Filterable:
-		// Temporal:
-		// Dimensional:
-		// Referenced:
-		// CreateTime:
-		// UpdateTime:
-		// DeleteTime:
-	}
-	return resp, nil
-}
-
-// DeleteColumn implements Interface.
-func (s unitableServer) DeleteColumn(ctx context.Context, in *pb.DeleteColumnRequest) (*core.Null, error) {
-	resp := &core.Null{}
-	return resp, nil
-}
-
-// ListColumns implements Interface.
-func (s unitableServer) ListColumns(ctx context.Context, in *pb.ListColumnsRequest) (*pb.ListColumnsResponse, error) {
-	resp := &pb.ListColumnsResponse{
-		// Columns:
-		// TotalCount:
-		// NextPageToken:
-	}
-	return resp, nil
-}
-
-// BatchCreateColumns implements Interface.
-func (s unitableServer) BatchCreateColumns(ctx context.Context, in *pb.BatchCreateColumnsRequest) (*core.Null, error) {
-	resp := &core.Null{}
-	return resp, nil
-}
-
-// BatchUpdateColumn implements Interface.
-func (s unitableServer) BatchUpdateColumn(ctx context.Context, in *pb.BatchUpdateColumnRequest) (*core.Null, error) {
-	resp := &core.Null{}
-	return resp, nil
-}
-
-// BatchDeleteColumn implements Interface.
-func (s unitableServer) BatchDeleteColumn(ctx context.Context, in *pb.BatchDeleteColumnRequest) (*core.Null, error) {
-	resp := &core.Null{}
-	return resp, nil
-}
-
 // CreateRow implements Interface.
 func (s unitableServer) CreateRow(ctx context.Context, in *pb.CreateRowRequest) (*core.Object, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.CreateRowRequest)
+	in.Table = tableName
 	if in.Row == nil || len(in.Row.Vals) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
-	id := in.Row.GetString("id")
-	if len(id) == 0 {
-		id = ksuid.New().String()
-		in.Row.SetString("id", id)
+	if !validRowID(in.Row.GetValue("id")) {
+		in.Row.SetString("id", ksuid.New().String())
 	}
 
 	tableID := in.Database + "." + in.Table
@@ -455,18 +88,27 @@ func (s unitableServer) CreateRow(ctx context.Context, in *pb.CreateRowRequest) 
 	hook.GetHook().Run(ctx)
 
 	resp := &core.Object{}
-	resp.SetString("id", id)
+	resp.SetValue("id", in.Row.GetValue("id"))
 	return resp, nil
 }
 
 // UpdateRow implements Interface.
 func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) (*core.Null, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.UpdateRowRequest)
+	in.Table = tableName
 	if len(in.Id) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
@@ -474,9 +116,24 @@ func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) 
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
-	id := in.Row.GetString("id")
-	if len(id) == 0 {
-		in.Row.SetString("id", in.Id)
+	id := in.Row.GetValue("id")
+	if validRowID(id) && rowIDString(id) != in.Id {
+		return nil, core.NewInvalidArgumentError("row id differs from request path")
+	}
+	if !validRowID(id) {
+		meta := s.Synchro().GetMetaTable(in.Database+"."+in.Table, nil)
+		if meta == nil {
+			return nil, core.NewNotFoundError("table not found")
+		}
+		if col := meta.Table.ColumnIndex()["id"]; col != nil && col.Type == "integer" {
+			value, err := strconv.ParseInt(in.Id, 10, 64)
+			if err != nil || value == 0 {
+				return nil, core.NewInvalidArgumentError("invalid integer row id")
+			}
+			in.Row.SetInt64("id", value)
+		} else {
+			in.Row.SetString("id", in.Id)
+		}
 	}
 
 	tableId := in.Database + "." + in.Table
@@ -490,12 +147,21 @@ func (s unitableServer) UpdateRow(ctx context.Context, in *pb.UpdateRowRequest) 
 
 // GetRow implements Interface.
 func (s unitableServer) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core.Object, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.GetRowRequest)
+	in.Table = tableName
 	if len(in.Id) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
@@ -510,12 +176,21 @@ func (s unitableServer) GetRow(ctx context.Context, in *pb.GetRowRequest) (*core
 
 // BatchGetRow implements Interface.
 func (s unitableServer) BatchGetRow(ctx context.Context, in *pb.BatchGetRowRequest) (*pb.BatchGetRowResponse, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.BatchGetRowRequest)
+	in.Table = tableName
 	if len(in.Ids) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
@@ -541,12 +216,21 @@ func (s unitableServer) BatchGetRow(ctx context.Context, in *pb.BatchGetRowReque
 
 // DeleteRow implements Interface.
 func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) (*core.Null, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.DeleteRowRequest)
+	in.Table = tableName
 	if len(in.Id) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row id")
 	}
@@ -577,14 +261,26 @@ func isEmpty(values []interface{}) bool {
 
 // ListRow implements Interface.
 func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb.ListRowResponse, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.ListRowRequest)
+	in.Table = tableName
 
-	if q, ok := s.Queries()[in.Query]; ok && len(in.Query) > 0 {
+	if in.Query != "" && s.Queries()[in.Query] == nil {
+		return nil, core.NewInvalidArgumentError("unknown named query %s", in.Query)
+	}
+	if q, ok := s.Queries()[in.Query]; ok && q != nil && len(in.Query) > 0 {
 		var values []interface{}
 		query := &unitable.DbQuery{
 			Id:         q.Id,
@@ -600,6 +296,9 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 
 		if vals, ok := ctx.Value("http-request-query").(url.Values); ok {
 			for _, p := range query.Parameters {
+				if p == nil {
+					return nil, core.NewInternalError("nil named-query parameter")
+				}
 				if v, ok := vals[p.Name]; ok && len(v) > 0 {
 					if p.IsArray {
 						if len(v) == 1 {
@@ -642,7 +341,7 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 			}
 			return &pb.ListRowResponse{
 				Objects:    objs,
-				TotalCount: 1,
+				TotalCount: int32(len(objs)),
 			}, nil
 		}
 	}
@@ -659,31 +358,32 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 	if rows, totalCnt, err := s.Synchro().QueryRows(ctx, tableId, qry); err != nil {
 		return nil, core.NewInternalError("failed to query the row in %s, err: %s", tableId, err.Error())
 	} else {
-		index := ""
-		if len(in.PageToken) > 0 {
-			t, _ := strconv.ParseInt(in.PageToken, 10, 64)
-			t += 1
-			if t*int64(in.PageSize) < int64(totalCnt) {
-				index = fmt.Sprint(t)
-			}
-		}
 
 		return &pb.ListRowResponse{
 			Objects:       rows,
 			TotalCount:    int32(totalCnt),
-			NextPageToken: index,
+			NextPageToken: nextPageToken(qry, totalCnt),
 		}, nil
 	}
 }
 
 // ExportRow implements Interface.
 func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) (*pb.ExportRowResponse, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.ExportRowRequest)
+	in.Table = tableName
 
 	qry, err := ParseQuery(in)
 	if err != nil {
@@ -699,6 +399,9 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 	} else {
 		if len(in.Filename) > 0 {
 			meta := s.Synchro().GetMetaTable(synchro.TableId(in.Database, in.Table), nil)
+			if meta == nil || meta.Table == nil {
+				return nil, core.NewNotFoundError("table metadata not found")
+			}
 			columns := meta.Table.Columns
 
 			f := excelize.NewFile()
@@ -716,25 +419,45 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 
 			colIndex := make(map[string]int)
 			for i, col := range columns {
-				_ = f.SetCellValue(sname, getColIndex(i)+"1", col.DisplayName)
+				label := col.ExportName
+				if label == "" {
+					label = col.DisplayName
+				}
+				if label == "" {
+					label = col.Name
+				}
+				if err := f.SetCellValue(sname, getColIndex(i)+"1", label); err != nil {
+					return nil, err
+				}
 				colIndex[col.Name] = i
 			}
 
 			for i, row := range rows {
 				vals := row.GetVals()
 				for k, v := range vals {
-					col := colIndex[strcase.ToSnake(k)]
+					col, ok := colIndex[strcase.ToSnake(k)]
+					if !ok {
+						continue
+					}
 					cell := getColIndex(col) + strconv.Itoa(i+2)
 					switch v.GetKind() {
 					case core.ValueKind_VALUE_KIND_NULL:
 					case core.ValueKind_VALUE_KIND_BOOLEAN:
-						_ = f.SetCellValue(sname, cell, v.GetBoolVal())
+						if err := f.SetCellValue(sname, cell, v.GetBoolVal()); err != nil {
+							return nil, err
+						}
 					case core.ValueKind_VALUE_KIND_INTEGER:
-						_ = f.SetCellValue(sname, cell, v.GetInt64())
+						if err := f.SetCellValue(sname, cell, v.GetInt64()); err != nil {
+							return nil, err
+						}
 					case core.ValueKind_VALUE_KIND_NUMBER:
-						_ = f.SetCellValue(sname, cell, v.GetFloat64())
+						if err := f.SetCellValue(sname, cell, v.GetFloat64()); err != nil {
+							return nil, err
+						}
 					case core.ValueKind_VALUE_KIND_STRING:
-						_ = f.SetCellValue(sname, cell, v.GetStringVal())
+						if err := f.SetCellValue(sname, cell, v.GetStringVal()); err != nil {
+							return nil, err
+						}
 					}
 				}
 			}
@@ -759,26 +482,31 @@ func (s unitableServer) ExportRow(ctx context.Context, in *pb.ExportRowRequest) 
 
 // BatchCreateRows implements Interface.
 func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateRowsRequest) (*pb.BatchCreateRowsResponse, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.BatchCreateRowsRequest)
+	in.Table = tableName
 	if len(in.Rows) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
-	for _, row := range in.Rows {
-		idv := row.GetValue("id")
-		if idv != nil {
-			if idv.GetInt64() == 0 {
-				id := idv.GetString()
-				if len(id) == 0 {
-					id = ksuid.New().String()
-					row.SetString("id", id)
-				}
-			}
+	for i, row := range in.Rows {
+		if row == nil || len(row.Vals) == 0 {
+			return nil, core.NewInvalidArgumentError("empty row at index %d", i)
+		}
+		if !validRowID(row.GetValue("id")) {
+			row.SetString("id", ksuid.New().String())
 		}
 	}
 
@@ -790,32 +518,41 @@ func (s unitableServer) BatchCreateRows(ctx context.Context, in *pb.BatchCreateR
 	} else {
 		for i, ir := range irs {
 			if ir > 0 {
-				id := in.Rows[i].GetString("id")
-				resp.Objects = append(resp.Objects, core.NewObject().SetString("id", id))
+				resp.Objects = append(resp.Objects, core.NewObject().SetValue("id", in.Rows[i].GetValue("id")))
 			} else {
 				resp.Objects = append(resp.Objects, nil)
 			}
 		}
 	}
 
+	hook.GetHook().Run(ctx)
 	return resp, nil
 }
 
 // BatchUpdateRows implements Interface.
 func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateRowsRequest) (*pb.BatchUpdateRowsResponse, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.BatchUpdateRowsRequest)
+	in.Table = tableName
 	if len(in.Rows) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row")
 	}
 
 	for i, row := range in.Rows {
 		idv := row.GetValue("id")
-		if idv == nil || idv.GetInt64() == 0 || len(idv.GetString()) == 0 {
+		if !validRowID(idv) {
 			return nil, core.NewInvalidArgumentError("the No. %d (begin with 1) row have not set the id in batch", i+1)
 		}
 	}
@@ -826,27 +563,36 @@ func (s unitableServer) BatchUpdateRows(ctx context.Context, in *pb.BatchUpdateR
 		logs.ErrLogw("failed to batch update the rows ", "table", tableId)
 		return nil, core.NewInternalError("failed to batch update the rows in %s, err: %s", tableId, err.Error())
 	} else {
-		for _, ir := range irs {
+		for i, ir := range irs {
 			if ir > 0 {
-				id := in.Rows[ir].GetString("id")
-				resp.Objects = append(resp.Objects, core.NewObject().SetString("id", id))
+				resp.Objects = append(resp.Objects, core.NewObject().SetValue("id", in.Rows[i].GetValue("id")))
 			} else {
 				resp.Objects = append(resp.Objects, nil)
 			}
 		}
 	}
 
+	hook.GetHook().Run(ctx)
 	return resp, nil
 }
 
 // BatchDeleteRows implements Interface.
 func (s unitableServer) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteRowsRequest) (*core.Null, error) {
+	if in == nil {
+		return nil, core.NewInvalidArgumentError("nil request")
+	}
 	if len(in.Database) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the database")
 	}
 	if len(in.Table) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the table name")
 	}
+	_, tableName, identityErr := tableIdentity(in.Database, in.Table)
+	if identityErr != nil {
+		return nil, identityErr
+	}
+	in = proto.Clone(in).(*pb.BatchDeleteRowsRequest)
+	in.Table = tableName
 	if len(in.Ids) == 0 {
 		return nil, core.NewInvalidArgumentError("not set the row ids")
 	}
@@ -856,122 +602,26 @@ func (s unitableServer) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteR
 		return nil, core.NewInternalError("failed to batch delete the row in %s, err: %s", tableId, err.Error())
 	}
 
+	hook.GetHook().Run(ctx)
 	return &core.Null{}, nil
 }
 
-// ListDatabases implements Interface.
-func (s unitableServer) ListDatabases(ctx context.Context, in *pb.ListDatabasesRequest) (*pb.ListDatabasesResponse, error) {
-	resp := &pb.ListDatabasesResponse{
-		// Databases:
-		// TotalCount:
-		// NextPageToken:
+func validRowID(id *core.Value) bool {
+	if id == nil {
+		return false
 	}
-	return resp, nil
+	switch id.GetKind() {
+	case core.ValueKind_VALUE_KIND_STRING:
+		return id.GetStringVal() != ""
+	case core.ValueKind_VALUE_KIND_INTEGER:
+		return id.GetInt64() != 0
+	default:
+		return false
+	}
 }
-
-// GetRowStat implements Interface.
-func (s unitableServer) GetRowStat(ctx context.Context, in *pb.GetRowStatRequest) (*core.Object, error) {
-	if len(in.Database) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the database")
+func rowIDString(id *core.Value) string {
+	if id.GetKind() == core.ValueKind_VALUE_KIND_INTEGER {
+		return strconv.FormatInt(id.GetInt64(), 10)
 	}
-	if len(in.Table) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the table name")
-	}
-	if len(in.Stats) == 0 {
-		return nil, core.NewInvalidArgumentError("not set the stat expression")
-	}
-
-	stat := strings.Join(in.Stats, "|")
-
-	qry, err := ParseQuery(in)
-	if err != nil {
-		return nil, core.NewInvalidArgumentError("invalid the filter expression: %s", in.Filter)
-	}
-
-	exprs := strings.Split(stat, "|")
-	cals := make(map[string][]string)
-	for _, expr := range exprs {
-		expr = strings.TrimSpace(expr)
-		segments := strings.Split(expr, " ")
-		if len(segments) == 2 {
-			fun := strings.TrimSpace(segments[0])
-			op := strings.TrimSpace(segments[1])
-			if fun == "group" {
-				qry.Groups = append(qry.Groups, op)
-			} else {
-				cals[op] = append(cals[op], fun)
-			}
-		} else if len(segments) == 3 {
-		} else if len(segments) == 4 {
-		}
-	}
-
-	for op, funs := range cals {
-		prj := &query.FieldProjection{
-			Name:      op,
-			Functions: funs,
-			Alias:     nil,
-		}
-
-		qry.Projections = append(qry.Projections, prj)
-	}
-
-	if err = qry.Normalize(); err != nil {
-		return nil, core.NewInvalidArgumentError("invalid query or stats expressions, error: %s", err.Error())
-	}
-
-	tableId := in.Database + "." + in.Table
-	rows, err := s.Synchro().CalcStats(ctx, tableId, qry)
-	if err != nil {
-		return nil, core.NewInternalError("failed to get data from db, error: %s", err.Error())
-	}
-
-	if len(rows) == 0 {
-		return nil, core.NewNotFoundError("failed to found data from db")
-	} else if len(rows) > 0 {
-		resp := &core.Object{
-			Vals: make(map[string]*core.Value),
-		}
-
-		groups := make(map[string]bool)
-		for _, group := range qry.Groups {
-			groups[group] = true
-		}
-
-		fieldNames := make(map[string]bool)
-		for k := range rows[0].GetVals() {
-			if ok := groups[k]; ok {
-				continue
-			}
-
-			name := qry.GetField(k).GetName()
-			if len(name) > 0 {
-				fieldNames[name] = true
-			}
-		}
-
-		for field := range fieldNames {
-			var nrs []*core.Value
-			for _, row := range rows {
-				nr := core.NewObject()
-				for k, v := range row.GetVals() {
-					if ok := groups[k]; ok {
-						nr.SetValue(k, v)
-						continue
-					}
-
-					f := qry.GetField(k)
-					name, fun := f.GetName(), f.GetFunction()
-					if name == field {
-						nr.SetValue(fun, v)
-					}
-				}
-
-				nrs = append(nrs, core.NewObjectValue(nr))
-			}
-			resp.SetValue(field, core.NewArrayValue(nrs...))
-		}
-		return resp, nil
-	}
-	return nil, nil
+	return id.GetStringVal()
 }
