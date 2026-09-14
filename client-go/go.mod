@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/go-kit/kit v0.13.0
 	github.com/json-iterator/go v1.1.12
-	github.com/mojo-lang/mojo/go v0.0.0-20260910061414-ea791cd6c9f0
+	github.com/mojo-lang/mojo/go v0.0.0-20260912124635-2a15a6479264
 	github.com/ncraft-io/armory/go v0.0.0
 	github.com/ncraft-io/ncraft/go v0.0.0-20260912020610-54aba377d3c6
 	google.golang.org/grpc v1.83.2

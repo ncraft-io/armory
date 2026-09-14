@@ -9,6 +9,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.0
 	github.com/iancoleman/strcase v0.3.0
+	github.com/jackc/pgx/v5 v5.7.6
 	github.com/json-iterator/go v1.1.12
 	github.com/mojo-lang/mojo/go v0.0.0-20260910061414-ea791cd6c9f0
 	github.com/ncraft-io/armory/go v0.0.0
@@ -23,6 +24,7 @@ require (
 	github.com/zeebo/assert v1.3.0
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/grpc v1.58.3
+	google.golang.org/protobuf v1.36.10
 	gorm.io/gorm v1.31.0
 )
 
@@ -80,7 +82,6 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.7.6 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jellydator/ttlcache/v3 v3.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -143,7 +144,6 @@ require (
 	google.golang.org/genproto v0.0.0-20230913181813-007df8e322eb // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230803162519-f966b187b2e5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230920204549-e6e6cdab5c13 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/logs"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -20,6 +22,7 @@ type clientConfig struct {
 	httpClient        *http.Client
 	grpcOptions       []grpc.CallOption
 	middleware        []endpoint.Middleware
+	logger            log.Logger
 	enveloped         bool
 	serviceName       string
 	dialOptions       []grpc.DialOption
@@ -35,6 +38,16 @@ func WithServiceName(name string) ClientOption {
 			return fmt.Errorf("service name is empty")
 		}
 		c.serviceName = name
+		return nil
+	}
+}
+
+func WithLogger(logger log.Logger) ClientOption {
+	return func(c *clientConfig) error {
+		if logger == nil {
+			return fmt.Errorf("logger is nil")
+		}
+		c.logger = logger
 		return nil
 	}
 }
@@ -81,7 +94,7 @@ func WithEnvelope() ClientOption {
 }
 
 func newClientConfig(options []ClientOption) (clientConfig, error) {
-	config := clientConfig{httpClient: http.DefaultClient, serviceName: FullServiceName}
+	config := clientConfig{httpClient: http.DefaultClient, serviceName: FullServiceName, logger: logs.Logger()}
 	for _, option := range options {
 		if option == nil {
 			return config, fmt.Errorf("nil client option")
