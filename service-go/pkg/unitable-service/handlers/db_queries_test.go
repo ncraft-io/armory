@@ -2,16 +2,14 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/ncraft-io/armory/service-go/pkg/unitable-service/svc"
-	"gopkg.in/yaml.v3"
+	nconfig "github.com/ncraft-io/ncraft/go/pkg/ncraft/config"
+	"github.com/ncraft-io/ncraft/go/pkg/ncraft/config/source/file"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -281,14 +279,12 @@ func TestDbQueryHTTPRoutes(t *testing.T) {
 }
 
 func TestExistingQueryConfigurationCompatibility(t *testing.T) {
-	content, err := os.ReadFile("../../../configs/queries.yaml")
+	cfg, err := nconfig.NewConfig()
 	requireOK(t, err)
-	var document map[string]interface{}
-	requireOK(t, yaml.Unmarshal(content, &document))
-	encoded, err := json.Marshal(document["dbQuery"])
-	requireOK(t, err)
-	var config unitable.DbQueryConfig
-	requireOK(t, jsoniter.Unmarshal(encoded, &config))
+	defer cfg.Close()
+	requireOK(t, cfg.Load(file.NewSource(file.WithPath("../../../configs/queries.yaml"))))
+	var config DBQueryConfig
+	requireOK(t, cfg.Get("dbQuery").Scan(&config))
 	if len(config.Queries) == 0 {
 		t.Fatal("no configuration queries loaded")
 	}

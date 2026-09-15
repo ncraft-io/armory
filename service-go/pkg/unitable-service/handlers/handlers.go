@@ -39,7 +39,7 @@ func NewService() pb.UnitableServer {
 			Synchro: synchro.New(),
 			Queries: make(map[string]*unitable.DbQuery),
 		}
-		conf := &unitable.DbQueryConfig{}
+		conf := &DBQueryConfig{}
 		_ = config.ScanFrom(conf, "dbQuery")
 		for _, dbQuery := range conf.Queries {
 			if dbQuery != nil {

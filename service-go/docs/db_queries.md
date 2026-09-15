@@ -13,6 +13,11 @@ Database definitions are read on each execution, so updates and deletions take
 effect immediately. Definitions live in the service metadata database (`db`),
 while their SQL runs against the selected connection in `dataDB.dbs`.
 
+The `dbQuery.queries` configuration is loaded through the service-local
+`handlers.DBQueryConfig` Go struct. Its elements remain the shared `DbQuery`
+API entity. This wrapper is not part of the Mojo, Protobuf, or Java API;
+the YAML/JSON configuration format and parameter shorthand remain unchanged.
+
 ## API
 
 All paths below start with `/armory/unitable/v1/databases/{database}`.

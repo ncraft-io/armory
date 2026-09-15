@@ -413,16 +413,6 @@ components:
           type: string
       title: armory.unitable.DbQuery.Parameter
       type: object
-    armory.unitable.DbQueryConfig:
-      description: ""
-      properties:
-        queries:
-          items:
-            $ref: '#/components/schemas/armory.unitable.DbQuery'
-          title: mojo.core.Array
-          type: array
-      title: armory.unitable.DbQueryConfig
-      type: object
     armory.unitable.Table:
       description: 动态table的元信息
       properties:
