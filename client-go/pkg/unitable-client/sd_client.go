@@ -435,6 +435,66 @@ func newDiscoveryClient(ctx context.Context, instancer kitsd.Instancer, transpor
 		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.BatchDeleteRowsEndpoint }, request: request})
 	})
 
+	c.CreateDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.CreateDbQueryEndpoint }, request: request})
+	})
+
+	c.UpdateDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.UpdateDbQueryEndpoint }, request: request})
+	})
+
+	c.GetDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.GetDbQueryEndpoint }, request: request})
+	})
+
+	c.ListDbQueriesEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.ListDbQueriesEndpoint }, request: request})
+	})
+
+	c.DeleteDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.DeleteDbQueryEndpoint }, request: request})
+	})
+
+	c.RunDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		c.mu.Lock()
+		closed := c.closed
+		c.mu.Unlock()
+		if closed {
+			return nil, fmt.Errorf("discovery client is closed")
+		}
+		return call(ctx, discoveryRequest{selectEndpoint: func(e *Endpoints) endpoint.Endpoint { return e.RunDbQueryEndpoint }, request: request})
+	})
+
 	return c, nil
 }
 

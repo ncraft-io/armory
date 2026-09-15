@@ -114,6 +114,482 @@ GET /armory/unitable/v1/databases
 | `array` |  |  |
 
 
+## 分页查询数据库中保存的查询定义。
+
+### 请求路径
+```http
+GET /armory/unitable/v1/databases/{database}/queries
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+
+
+#### Query 参数
+| 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
+|---|---|---|---|---|---|
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
+
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<armory.unitable.DbQuery>` |  |
+
+
+#### `armory.unitable.Column`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
+| `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
+| `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
+| `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
+| `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry" |
+| `groupDisplayName` | `string` |  | N |  | 所属的列的组合名称 |
+| `id` | `string` |  | N |  | 列的ID |
+| `indexed` | `boolean` |  | N |  | 是否需要被索引 |
+| `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
+| `originalName` | `string` |  | N |  | 如果该列名为使用函数后的组合名称时，其为原始字段的名称 |
+| `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
+| `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
+| `tableId` | `string` |  | N |  | 所属的表单ID |
+| `temporal` | `boolean` |  | N |  | 是否是临时的 |
+| `type` | `string` |  | N |  | 列的数据库类型 "bool", "integer", "float", "string" |
+| `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `armory.unitable.DbQuery`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `sql` | `string` |  | N |  |
+| `parameters` | `Array<armory.unitable.DbQuery.Parameter>` |  | N |  |
+| `database` | `string` |  | N |  |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | the meta info of the column in the query |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+
+
+#### `armory.unitable.DbQuery.Parameter`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `name` | `string` |  | N |  |
+| `type` | `string` |  | N |  |
+| `isArray` | `boolean` |  | N |  |
+| `pgArray` | `boolean` |  | N |  |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
+
+
+## 保存数据库中的预定义查询；保存前验证 SQL、参数及结果列。
+
+### 请求路径
+```http
+POST /armory/unitable/v1/databases/{database}/queries
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+
+
+#### Body 请求对象
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `sql` | `string` |  | N |  |
+| `parameters` | `Array<armory.unitable.DbQuery.Parameter>` |  | N |  |
+| `database` | `string` |  | N |  |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | the meta info of the column in the query |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+
+
+#### `armory.unitable.Column`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
+| `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
+| `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
+| `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
+| `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry" |
+| `groupDisplayName` | `string` |  | N |  | 所属的列的组合名称 |
+| `id` | `string` |  | N |  | 列的ID |
+| `indexed` | `boolean` |  | N |  | 是否需要被索引 |
+| `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
+| `originalName` | `string` |  | N |  | 如果该列名为使用函数后的组合名称时，其为原始字段的名称 |
+| `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
+| `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
+| `tableId` | `string` |  | N |  | 所属的表单ID |
+| `temporal` | `boolean` |  | N |  | 是否是临时的 |
+| `type` | `string` |  | N |  | 列的数据库类型 "bool", "integer", "float", "string" |
+| `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `armory.unitable.DbQuery.Parameter`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `name` | `string` |  | N |  |
+| `type` | `string` |  | N |  |
+| `isArray` | `boolean` |  | N |  |
+| `pgArray` | `boolean` |  | N |  |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
+
+
+### 返回值
+
+#### 返回对象
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `sql` | `string` |  | N |  |
+| `parameters` | `Array<armory.unitable.DbQuery.Parameter>` |  | N |  |
+| `database` | `string` |  | N |  |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | the meta info of the column in the query |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+
+
+#### `armory.unitable.Column`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
+| `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
+| `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
+| `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
+| `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry" |
+| `groupDisplayName` | `string` |  | N |  | 所属的列的组合名称 |
+| `id` | `string` |  | N |  | 列的ID |
+| `indexed` | `boolean` |  | N |  | 是否需要被索引 |
+| `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
+| `originalName` | `string` |  | N |  | 如果该列名为使用函数后的组合名称时，其为原始字段的名称 |
+| `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
+| `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
+| `tableId` | `string` |  | N |  | 所属的表单ID |
+| `temporal` | `boolean` |  | N |  | 是否是临时的 |
+| `type` | `string` |  | N |  | 列的数据库类型 "bool", "integer", "float", "string" |
+| `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `armory.unitable.DbQuery.Parameter`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `name` | `string` |  | N |  |
+| `type` | `string` |  | N |  |
+| `isArray` | `boolean` |  | N |  |
+| `pgArray` | `boolean` |  | N |  |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
+
+
+## 获取数据库中保存的查询定义，不包含配置文件覆盖项。
+
+### 请求路径
+```http
+GET /armory/unitable/v1/databases/{database}/queries/{id}
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+| `id` | `string` |  |  |
+
+
+### 返回值
+
+#### 返回对象
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `sql` | `string` |  | N |  |
+| `parameters` | `Array<armory.unitable.DbQuery.Parameter>` |  | N |  |
+| `database` | `string` |  | N |  |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | the meta info of the column in the query |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+
+
+#### `armory.unitable.Column`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
+| `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
+| `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
+| `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
+| `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry" |
+| `groupDisplayName` | `string` |  | N |  | 所属的列的组合名称 |
+| `id` | `string` |  | N |  | 列的ID |
+| `indexed` | `boolean` |  | N |  | 是否需要被索引 |
+| `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
+| `originalName` | `string` |  | N |  | 如果该列名为使用函数后的组合名称时，其为原始字段的名称 |
+| `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
+| `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
+| `tableId` | `string` |  | N |  | 所属的表单ID |
+| `temporal` | `boolean` |  | N |  | 是否是临时的 |
+| `type` | `string` |  | N |  | 列的数据库类型 "bool", "integer", "float", "string" |
+| `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `armory.unitable.DbQuery.Parameter`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `name` | `string` |  | N |  |
+| `type` | `string` |  | N |  |
+| `isArray` | `boolean` |  | N |  |
+| `pgArray` | `boolean` |  | N |  |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
+
+
+## 更新数据库查询；id 为查询名称或 database.name。
+
+### 请求路径
+```http
+PUT /armory/unitable/v1/databases/{database}/queries/{id}
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+| `id` | `string` |  |  |
+
+
+#### Body 请求对象
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `id` | `string` |  | N |  |
+| `name` | `string` |  | N |  |
+| `sql` | `string` |  | N |  |
+| `parameters` | `Array<armory.unitable.DbQuery.Parameter>` |  | N |  |
+| `database` | `string` |  | N |  |
+| `jsonStyle` | `string` |  | N |  | 表格字段导出json的风格，默认与数据库一致为：snake，lower_camel |
+| `columns` | `Array<armory.unitable.Column>` |  | N |  | the meta info of the column in the query |
+| `createTime` | `string` | `Timestamp` | N |  |  |
+| `updateTime` | `string` | `Timestamp` | N |  |  |
+
+
+#### `armory.unitable.Column`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `createTime` | `string` | `Timestamp` | N |  | 表单列创建时间 |
+| `database` | `string` |  | N |  | 所属的表单所在的数据库名称 |
+| `dimensional` | `boolean` |  | N |  | 是否是维度相关的，即可枚举的值 |
+| `displayName` | `string` |  | N |  | 可以是显示中文的名称 |
+| `editable` | `boolean` |  | N |  | 字段是否可编辑，控制前端显示时，允许用户编辑，实际可否编辑还得检查相应权限 |
+| `example` | `mojo.core.Value` |  | N |  | 示例的值 |
+| `exportName` | `string` |  | N |  | 导出时使用的名称，比如Excel导出时 |
+| `filterable` | `boolean` |  | N |  | 字段能够进行过滤操作 |
+| `format` | `string` |  | N |  | 当列为String时，指定更详细的类型，比如时间、几何等 "time", "geometry" |
+| `groupDisplayName` | `string` |  | N |  | 所属的列的组合名称 |
+| `id` | `string` |  | N |  | 列的ID |
+| `indexed` | `boolean` |  | N |  | 是否需要被索引 |
+| `name` | `string` |  | N |  | 表单的列名，符合数据库的列名规格，采用 `[a-z][a-z_0-9]*` 规格 |
+| `originalName` | `string` |  | N |  | 如果该列名为使用函数后的组合名称时，其为原始字段的名称 |
+| `referenced` | `string` |  | N |  | 是否为引用字段，可以设置是否自动join |
+| `repeated` | `boolean` |  | N |  | is Array type |
+| `show` | `boolean` |  | N |  | 是否需要显示 |
+| `statistical` | `boolean` |  | N |  | 是否可以被统计 |
+| `tableId` | `string` |  | N |  | 所属的表单ID |
+| `temporal` | `boolean` |  | N |  | 是否是临时的 |
+| `type` | `string` |  | N |  | 列的数据库类型 "bool", "integer", "float", "string" |
+| `unique` | `boolean` |  | N |  | 是否需要在表内是唯一的 |
+| `updateTime` | `string` | `Timestamp` | N |  | 表单列更新时间 |
+
+
+#### `armory.unitable.DbQuery.Parameter`
+| field | type | format | required | default | description |
+|---|---|---|---|---|---|
+| `name` | `string` |  | N |  |
+| `type` | `string` |  | N |  |
+| `isArray` | `boolean` |  | N |  |
+| `pgArray` | `boolean` |  | N |  |
+
+
+#### `mojo.core.Value`
+| type | format | description |
+|---|---|---|
+| `null` |  |  |
+| `boolean` |  |  |
+| `string` |  |  |
+| `string` | `Bytes` | the format is: `b64.{base64 encoded bytes}` |
+| `integer` | `Int64` |  |
+| `number` | `Float64` |  |
+| `mojo.core.Object` |  |  |
+| `array` |  |  |
+
+
+### 返回值
+
+#### 返回对象
+对象为空
+
+## 删除数据库中保存的查询，不影响配置文件。
+
+### 请求路径
+```http
+DELETE /armory/unitable/v1/databases/{database}/queries/{id}
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+| `id` | `string` |  |  |
+
+
+### 返回值
+
+#### 返回对象
+对象为空
+
+## 按名称执行预定义查询：数据库专属配置优先，其次全局配置，最后数据库定义。
+
+### 请求路径
+```http
+POST /armory/unitable/v1/databases/{database}/queries/{id}:run
+```
+
+
+### 请求参数
+
+#### Path 参数
+| 参数名 | 参数类型 | 格式类型 | 说明 |
+|---|---|---|---|
+| `database` | `string` |  |  |
+| `id` | `string` |  |  |
+
+
+#### Query 参数
+| 参数名 | 参数类型 | 格式类型 | 是否必须 | 默认值 | 说明 |
+|---|---|---|---|---|---|
+| `page_size` | `integer` | `Int32` | 否 |  | the page size for pagination request |
+| `page_token` | `string` |  | 否 |  | the page token for pagination request, usually like "1", "2" ... |
+| `skip` | `integer` | `Int32` | 否 |  | skip the first items count for the request |
+| `filter` | `string` |  | 否 |  | the mojo expression for DB query |
+| `order` | `mojo.core.Ordering` |  | 否 |  | setting the order field for result, like "name desc" |
+| `field_mask` | `string` | `FieldMask` | 否 |  | control the fields which need to be retrieved |
+| `unique` | `boolean` |  | 否 |  | make the fields which returns are unique, equals to "SELECT DISTINCT" in sql |
+
+
+#### Body 请求对象
+
+### 返回值
+
+#### 返回对象
+| type | description |
+|---|---|
+| `Array<mojo.core.Object>` |  |
+
+
 ## 查询表单
 
 ### 请求路径

@@ -64,6 +64,7 @@ var (
 	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
+	_ = unitable.DbQuery{}
 )
 
 var cfg *nhttp.Config
@@ -328,6 +329,60 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 			EncodeHTTPGenericResponse,
 			addTracerOption("batch_delete_rows")...,
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "batch_delete_rows", logger)))...,
+		))
+
+	router.Methods("POST").Path("/armory/unitable/v1/databases/{database}/queries").Handler(
+		httptransport.NewServer(
+			endpoints.CreateDbQueryEndpoint,
+			DecodeHTTPCreateDbQueryZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("create_db_query")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "create_db_query", logger)))...,
+		))
+
+	router.Methods("PUT").Path("/armory/unitable/v1/databases/{database}/queries/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.UpdateDbQueryEndpoint,
+			DecodeHTTPUpdateDbQueryZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("update_db_query")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "update_db_query", logger)))...,
+		))
+
+	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/queries/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.GetDbQueryEndpoint,
+			DecodeHTTPGetDbQueryZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("get_db_query")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_db_query", logger)))...,
+		))
+
+	router.Methods("GET").Path("/armory/unitable/v1/databases/{database}/queries").Handler(
+		httptransport.NewServer(
+			endpoints.ListDbQueriesEndpoint,
+			DecodeHTTPListDbQueriesZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("list_db_queries")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "list_db_queries", logger)))...,
+		))
+
+	router.Methods("DELETE").Path("/armory/unitable/v1/databases/{database}/queries/{id}").Handler(
+		httptransport.NewServer(
+			endpoints.DeleteDbQueryEndpoint,
+			DecodeHTTPDeleteDbQueryZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("delete_db_query")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "delete_db_query", logger)))...,
+		))
+
+	router.Methods("POST").Path("/armory/unitable/v1/databases/{database}/queries/{id}:run").Handler(
+		httptransport.NewServer(
+			endpoints.RunDbQueryEndpoint,
+			DecodeHTTPRunDbQueryZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("run_db_query")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "run_db_query", logger)))...,
 		))
 }
 
@@ -2739,6 +2794,563 @@ func DecodeHTTPBatchDeleteRowsZeroRequest(_ context.Context, r *http.Request) (i
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Table, "table")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the table  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPCreateDbQueryZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded create_db_query request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateDbQueryZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.CreateDbQueryRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to CreateDbQueryRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.Query = &unitable.DbQuery{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.Query); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	queryInitialized := false
+	if req.Query == nil {
+		queryInitialized = true
+		req.Query = &unitable.DbQuery{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Query, "query")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if queryInitialized {
+				req.Query = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the query  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPUpdateDbQueryZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded update_db_query request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdateDbQueryZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.UpdateDbQueryRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to UpdateDbQueryRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.Query = &unitable.DbQuery{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.Query); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	queryInitialized := false
+	if req.Query == nil {
+		queryInitialized = true
+		req.Query = &unitable.DbQuery{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Query, "query")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if queryInitialized {
+				req.Query = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the query  query parameter")
+		}
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPGetDbQueryZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded get_db_query request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPGetDbQueryZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.GetDbQueryRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetDbQueryRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPListDbQueriesZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded list_db_queries request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPListDbQueriesZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.ListDbQueriesRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to ListDbQueriesRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPDeleteDbQueryZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded delete_db_query request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPDeleteDbQueryZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.DeleteDbQueryRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to DeleteDbQueryRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPRunDbQueryZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded run_db_query request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPRunDbQueryZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.RunDbQueryRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to RunDbQueryRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		req.Parameters = &core.Object{}
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, req.Parameters); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	fieldMaskInitialized := false
+	if req.FieldMask == nil {
+		fieldMaskInitialized = true
+		req.FieldMask = &core.FieldMask{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.FieldMask, "field_mask")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if fieldMaskInitialized {
+				req.FieldMask = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the field_mask  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Filter, "filter")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the filter  query parameter")
+	}
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
+	}
+
+	orderInitialized := false
+	if req.Order == nil {
+		orderInitialized = true
+		req.Order = &core.Ordering{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Order, "order")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if orderInitialized {
+				req.Order = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the order  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageSize, "page_size")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_size  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.PageToken, "page_token")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the page_token  query parameter")
+	}
+
+	parametersInitialized := false
+	if req.Parameters == nil {
+		parametersInitialized = true
+		req.Parameters = &core.Object{}
+	}
+	err = mjhttp.UnmarshalQueryParam(queryParams, req.Parameters, "parameters")
+	if err != nil {
+		if core.IsNotFoundError(err) {
+			if parametersInitialized {
+				req.Parameters = nil
+			}
+		} else {
+			return nil, nhttp.WrapError(err, 400, "cannot unmarshal the parameters  query parameter")
+		}
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Skip, "skip")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the skip  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Unique, "unique")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the unique  query parameter")
 	}
 
 	return &req, nil

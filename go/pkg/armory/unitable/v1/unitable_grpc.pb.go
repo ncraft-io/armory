@@ -49,6 +49,12 @@ const (
 	Unitable_BatchCreateRows_FullMethodName    = "/armory.unitable.v1.Unitable/batch_create_rows"
 	Unitable_BatchUpdateRows_FullMethodName    = "/armory.unitable.v1.Unitable/batch_update_rows"
 	Unitable_BatchDeleteRows_FullMethodName    = "/armory.unitable.v1.Unitable/batch_delete_rows"
+	Unitable_CreateDbQuery_FullMethodName      = "/armory.unitable.v1.Unitable/create_db_query"
+	Unitable_UpdateDbQuery_FullMethodName      = "/armory.unitable.v1.Unitable/update_db_query"
+	Unitable_GetDbQuery_FullMethodName         = "/armory.unitable.v1.Unitable/get_db_query"
+	Unitable_ListDbQueries_FullMethodName      = "/armory.unitable.v1.Unitable/list_db_queries"
+	Unitable_DeleteDbQuery_FullMethodName      = "/armory.unitable.v1.Unitable/delete_db_query"
+	Unitable_RunDbQuery_FullMethodName         = "/armory.unitable.v1.Unitable/run_db_query"
 )
 
 // UnitableClient is the client API for Unitable service.
@@ -81,6 +87,12 @@ type UnitableClient interface {
 	BatchCreateRows(ctx context.Context, in *BatchCreateRowsRequest, opts ...grpc.CallOption) (*BatchCreateRowsResponse, error)
 	BatchUpdateRows(ctx context.Context, in *BatchUpdateRowsRequest, opts ...grpc.CallOption) (*BatchUpdateRowsResponse, error)
 	BatchDeleteRows(ctx context.Context, in *BatchDeleteRowsRequest, opts ...grpc.CallOption) (*core.Null, error)
+	CreateDbQuery(ctx context.Context, in *CreateDbQueryRequest, opts ...grpc.CallOption) (*unitable.DbQuery, error)
+	UpdateDbQuery(ctx context.Context, in *UpdateDbQueryRequest, opts ...grpc.CallOption) (*core.Null, error)
+	GetDbQuery(ctx context.Context, in *GetDbQueryRequest, opts ...grpc.CallOption) (*unitable.DbQuery, error)
+	ListDbQueries(ctx context.Context, in *ListDbQueriesRequest, opts ...grpc.CallOption) (*ListDbQueriesResponse, error)
+	DeleteDbQuery(ctx context.Context, in *DeleteDbQueryRequest, opts ...grpc.CallOption) (*core.Null, error)
+	RunDbQuery(ctx context.Context, in *RunDbQueryRequest, opts ...grpc.CallOption) (*RunDbQueryResponse, error)
 }
 
 type unitableClient struct {
@@ -325,6 +337,60 @@ func (c *unitableClient) BatchDeleteRows(ctx context.Context, in *BatchDeleteRow
 	return out, nil
 }
 
+func (c *unitableClient) CreateDbQuery(ctx context.Context, in *CreateDbQueryRequest, opts ...grpc.CallOption) (*unitable.DbQuery, error) {
+	out := new(unitable.DbQuery)
+	err := c.cc.Invoke(ctx, Unitable_CreateDbQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *unitableClient) UpdateDbQuery(ctx context.Context, in *UpdateDbQueryRequest, opts ...grpc.CallOption) (*core.Null, error) {
+	out := new(core.Null)
+	err := c.cc.Invoke(ctx, Unitable_UpdateDbQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *unitableClient) GetDbQuery(ctx context.Context, in *GetDbQueryRequest, opts ...grpc.CallOption) (*unitable.DbQuery, error) {
+	out := new(unitable.DbQuery)
+	err := c.cc.Invoke(ctx, Unitable_GetDbQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *unitableClient) ListDbQueries(ctx context.Context, in *ListDbQueriesRequest, opts ...grpc.CallOption) (*ListDbQueriesResponse, error) {
+	out := new(ListDbQueriesResponse)
+	err := c.cc.Invoke(ctx, Unitable_ListDbQueries_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *unitableClient) DeleteDbQuery(ctx context.Context, in *DeleteDbQueryRequest, opts ...grpc.CallOption) (*core.Null, error) {
+	out := new(core.Null)
+	err := c.cc.Invoke(ctx, Unitable_DeleteDbQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *unitableClient) RunDbQuery(ctx context.Context, in *RunDbQueryRequest, opts ...grpc.CallOption) (*RunDbQueryResponse, error) {
+	out := new(RunDbQueryResponse)
+	err := c.cc.Invoke(ctx, Unitable_RunDbQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UnitableServer is the server API for Unitable service.
 // All implementations must embed UnimplementedUnitableServer
 // for forward compatibility
@@ -355,6 +421,12 @@ type UnitableServer interface {
 	BatchCreateRows(context.Context, *BatchCreateRowsRequest) (*BatchCreateRowsResponse, error)
 	BatchUpdateRows(context.Context, *BatchUpdateRowsRequest) (*BatchUpdateRowsResponse, error)
 	BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*core.Null, error)
+	CreateDbQuery(context.Context, *CreateDbQueryRequest) (*unitable.DbQuery, error)
+	UpdateDbQuery(context.Context, *UpdateDbQueryRequest) (*core.Null, error)
+	GetDbQuery(context.Context, *GetDbQueryRequest) (*unitable.DbQuery, error)
+	ListDbQueries(context.Context, *ListDbQueriesRequest) (*ListDbQueriesResponse, error)
+	DeleteDbQuery(context.Context, *DeleteDbQueryRequest) (*core.Null, error)
+	RunDbQuery(context.Context, *RunDbQueryRequest) (*RunDbQueryResponse, error)
 	mustEmbedUnimplementedUnitableServer()
 }
 
@@ -439,6 +511,24 @@ func (UnimplementedUnitableServer) BatchUpdateRows(context.Context, *BatchUpdate
 }
 func (UnimplementedUnitableServer) BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*core.Null, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteRows not implemented")
+}
+func (UnimplementedUnitableServer) CreateDbQuery(context.Context, *CreateDbQueryRequest) (*unitable.DbQuery, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDbQuery not implemented")
+}
+func (UnimplementedUnitableServer) UpdateDbQuery(context.Context, *UpdateDbQueryRequest) (*core.Null, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDbQuery not implemented")
+}
+func (UnimplementedUnitableServer) GetDbQuery(context.Context, *GetDbQueryRequest) (*unitable.DbQuery, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDbQuery not implemented")
+}
+func (UnimplementedUnitableServer) ListDbQueries(context.Context, *ListDbQueriesRequest) (*ListDbQueriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDbQueries not implemented")
+}
+func (UnimplementedUnitableServer) DeleteDbQuery(context.Context, *DeleteDbQueryRequest) (*core.Null, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDbQuery not implemented")
+}
+func (UnimplementedUnitableServer) RunDbQuery(context.Context, *RunDbQueryRequest) (*RunDbQueryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunDbQuery not implemented")
 }
 func (UnimplementedUnitableServer) mustEmbedUnimplementedUnitableServer() {}
 
@@ -921,6 +1011,114 @@ func _Unitable_BatchDeleteRows_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Unitable_CreateDbQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDbQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).CreateDbQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_CreateDbQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).CreateDbQuery(ctx, req.(*CreateDbQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Unitable_UpdateDbQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDbQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).UpdateDbQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_UpdateDbQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).UpdateDbQuery(ctx, req.(*UpdateDbQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Unitable_GetDbQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDbQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).GetDbQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_GetDbQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).GetDbQuery(ctx, req.(*GetDbQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Unitable_ListDbQueries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDbQueriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).ListDbQueries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_ListDbQueries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).ListDbQueries(ctx, req.(*ListDbQueriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Unitable_DeleteDbQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDbQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).DeleteDbQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_DeleteDbQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).DeleteDbQuery(ctx, req.(*DeleteDbQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Unitable_RunDbQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunDbQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UnitableServer).RunDbQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Unitable_RunDbQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UnitableServer).RunDbQuery(ctx, req.(*RunDbQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Unitable_ServiceDesc is the grpc.ServiceDesc for Unitable service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1031,6 +1229,30 @@ var Unitable_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "batch_delete_rows",
 			Handler:    _Unitable_BatchDeleteRows_Handler,
+		},
+		{
+			MethodName: "create_db_query",
+			Handler:    _Unitable_CreateDbQuery_Handler,
+		},
+		{
+			MethodName: "update_db_query",
+			Handler:    _Unitable_UpdateDbQuery_Handler,
+		},
+		{
+			MethodName: "get_db_query",
+			Handler:    _Unitable_GetDbQuery_Handler,
+		},
+		{
+			MethodName: "list_db_queries",
+			Handler:    _Unitable_ListDbQueries_Handler,
+		},
+		{
+			MethodName: "delete_db_query",
+			Handler:    _Unitable_DeleteDbQuery_Handler,
+		},
+		{
+			MethodName: "run_db_query",
+			Handler:    _Unitable_RunDbQuery_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

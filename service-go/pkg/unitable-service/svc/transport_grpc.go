@@ -33,6 +33,7 @@ var (
 	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
+	_ = unitable.DbQuery{}
 )
 
 // MakeGRPCServer makes a set of endpoints available as a gRPC UnitableServer.
@@ -234,6 +235,48 @@ func MakeGRPCServer(endpoints Endpoints, tracer stdopentracing.Tracer, logger lo
 			addTracerOption("batch_delete_rows")...,
 		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "batch_delete_rows", logger)))...,
 		),
+		createDbQuery: grpctransport.NewServer(
+			endpoints.CreateDbQueryEndpoint,
+			DecodeGRPCCreateDbQueryRequest,
+			EncodeGRPCCreateDbQueryResponse,
+			addTracerOption("create_db_query")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "create_db_query", logger)))...,
+		),
+		updateDbQuery: grpctransport.NewServer(
+			endpoints.UpdateDbQueryEndpoint,
+			DecodeGRPCUpdateDbQueryRequest,
+			EncodeGRPCUpdateDbQueryResponse,
+			addTracerOption("update_db_query")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "update_db_query", logger)))...,
+		),
+		getDbQuery: grpctransport.NewServer(
+			endpoints.GetDbQueryEndpoint,
+			DecodeGRPCGetDbQueryRequest,
+			EncodeGRPCGetDbQueryResponse,
+			addTracerOption("get_db_query")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "get_db_query", logger)))...,
+		),
+		listDbQueries: grpctransport.NewServer(
+			endpoints.ListDbQueriesEndpoint,
+			DecodeGRPCListDbQueriesRequest,
+			EncodeGRPCListDbQueriesResponse,
+			addTracerOption("list_db_queries")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "list_db_queries", logger)))...,
+		),
+		deleteDbQuery: grpctransport.NewServer(
+			endpoints.DeleteDbQueryEndpoint,
+			DecodeGRPCDeleteDbQueryRequest,
+			EncodeGRPCDeleteDbQueryResponse,
+			addTracerOption("delete_db_query")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "delete_db_query", logger)))...,
+		),
+		runDbQuery: grpctransport.NewServer(
+			endpoints.RunDbQueryEndpoint,
+			DecodeGRPCRunDbQueryRequest,
+			EncodeGRPCRunDbQueryResponse,
+			addTracerOption("run_db_query")...,
+		//append(serverOptions, grpctransport.ServerBefore(opentracing.GRPCToContext(tracer, "run_db_query", logger)))...,
+		),
 	}
 }
 
@@ -267,6 +310,12 @@ type grpcServer struct {
 	batchCreateRows    grpctransport.Handler
 	batchUpdateRows    grpctransport.Handler
 	batchDeleteRows    grpctransport.Handler
+	createDbQuery      grpctransport.Handler
+	updateDbQuery      grpctransport.Handler
+	getDbQuery         grpctransport.Handler
+	listDbQueries      grpctransport.Handler
+	deleteDbQuery      grpctransport.Handler
+	runDbQuery         grpctransport.Handler
 }
 
 // Methods for grpcServer to implement UnitableServer interface
@@ -479,6 +528,54 @@ func (s *grpcServer) BatchDeleteRows(ctx context.Context, req *pb.BatchDeleteRow
 	return rep.(*core.Null), nil
 }
 
+func (s *grpcServer) CreateDbQuery(ctx context.Context, req *pb.CreateDbQueryRequest) (*unitable.DbQuery, error) {
+	_, rep, err := s.createDbQuery.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*unitable.DbQuery), nil
+}
+
+func (s *grpcServer) UpdateDbQuery(ctx context.Context, req *pb.UpdateDbQueryRequest) (*core.Null, error) {
+	_, rep, err := s.updateDbQuery.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
+}
+
+func (s *grpcServer) GetDbQuery(ctx context.Context, req *pb.GetDbQueryRequest) (*unitable.DbQuery, error) {
+	_, rep, err := s.getDbQuery.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*unitable.DbQuery), nil
+}
+
+func (s *grpcServer) ListDbQueries(ctx context.Context, req *pb.ListDbQueriesRequest) (*pb.ListDbQueriesResponse, error) {
+	_, rep, err := s.listDbQueries.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.ListDbQueriesResponse), nil
+}
+
+func (s *grpcServer) DeleteDbQuery(ctx context.Context, req *pb.DeleteDbQueryRequest) (*core.Null, error) {
+	_, rep, err := s.deleteDbQuery.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*core.Null), nil
+}
+
+func (s *grpcServer) RunDbQuery(ctx context.Context, req *pb.RunDbQueryRequest) (*pb.RunDbQueryResponse, error) {
+	_, rep, err := s.runDbQuery.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.RunDbQueryResponse), nil
+}
+
 // Server Decode
 
 // DecodeGRPCListDatabasesRequest is a transport/grpc.DecodeRequestFunc that converts a
@@ -663,6 +760,48 @@ func DecodeGRPCBatchDeleteRowsRequest(_ context.Context, grpcReq interface{}) (i
 	return req, nil
 }
 
+// DecodeGRPCCreateDbQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC CreateDbQuery request to a user-domain CreateDbQuery request. Primarily useful in a server.
+func DecodeGRPCCreateDbQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.CreateDbQueryRequest)
+	return req, nil
+}
+
+// DecodeGRPCUpdateDbQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC UpdateDbQuery request to a user-domain UpdateDbQuery request. Primarily useful in a server.
+func DecodeGRPCUpdateDbQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.UpdateDbQueryRequest)
+	return req, nil
+}
+
+// DecodeGRPCGetDbQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC GetDbQuery request to a user-domain GetDbQuery request. Primarily useful in a server.
+func DecodeGRPCGetDbQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.GetDbQueryRequest)
+	return req, nil
+}
+
+// DecodeGRPCListDbQueriesRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ListDbQueries request to a user-domain ListDbQueries request. Primarily useful in a server.
+func DecodeGRPCListDbQueriesRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ListDbQueriesRequest)
+	return req, nil
+}
+
+// DecodeGRPCDeleteDbQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC DeleteDbQuery request to a user-domain DeleteDbQuery request. Primarily useful in a server.
+func DecodeGRPCDeleteDbQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.DeleteDbQueryRequest)
+	return req, nil
+}
+
+// DecodeGRPCRunDbQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC RunDbQuery request to a user-domain RunDbQuery request. Primarily useful in a server.
+func DecodeGRPCRunDbQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.RunDbQueryRequest)
+	return req, nil
+}
+
 // Server Encode
 
 // EncodeGRPCListDatabasesResponse is a transport/grpc.EncodeResponseFunc that converts a
@@ -844,6 +983,48 @@ func EncodeGRPCBatchUpdateRowsResponse(_ context.Context, response interface{}) 
 // user-domain BatchDeleteRows response to a gRPC BatchDeleteRows reply. Primarily useful in a server.
 func EncodeGRPCBatchDeleteRowsResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCCreateDbQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain CreateDbQuery response to a gRPC CreateDbQuery reply. Primarily useful in a server.
+func EncodeGRPCCreateDbQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*unitable.DbQuery)
+	return resp, nil
+}
+
+// EncodeGRPCUpdateDbQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain UpdateDbQuery response to a gRPC UpdateDbQuery reply. Primarily useful in a server.
+func EncodeGRPCUpdateDbQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCGetDbQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain GetDbQuery response to a gRPC GetDbQuery reply. Primarily useful in a server.
+func EncodeGRPCGetDbQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*unitable.DbQuery)
+	return resp, nil
+}
+
+// EncodeGRPCListDbQueriesResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ListDbQueries response to a gRPC ListDbQueries reply. Primarily useful in a server.
+func EncodeGRPCListDbQueriesResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.ListDbQueriesResponse)
+	return resp, nil
+}
+
+// EncodeGRPCDeleteDbQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain DeleteDbQuery response to a gRPC DeleteDbQuery reply. Primarily useful in a server.
+func EncodeGRPCDeleteDbQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*core.Null)
+	return resp, nil
+}
+
+// EncodeGRPCRunDbQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain RunDbQuery response to a gRPC RunDbQuery reply. Primarily useful in a server.
+func EncodeGRPCRunDbQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.RunDbQueryResponse)
 	return resp, nil
 }
 

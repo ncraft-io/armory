@@ -54,7 +54,7 @@ func (m *Role) Create(ctx context.Context, value *entity.Role) (int64, error) {
 
 func (m *Role) Get(ctx context.Context, id string) (*entity.Role, error) {
 	value := &entity.Role{}
-	err := m.DB.WithContext(ctx).Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
+	err := m.DB.WithContext(ctx).Preload(clause.Associations).Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (m *Role) updateAll(tx *gorm.DB, value *entity.Role, keyColumn string, keyV
 
 func (m *Role) List(ctx context.Context, q *query.Query) ([]*entity.Role, error) {
 	values := make([]*entity.Role, 0)
-	tx := m.DB.WithContext(ctx).Model(&entity.Role{})
+	tx := m.DB.WithContext(ctx).Model(&entity.Role{}).Preload(clause.Associations)
 	if q != nil {
 		if err := q.Normalize(); err != nil {
 			return nil, err
@@ -151,7 +151,7 @@ func (m *Role) BatchGet(ctx context.Context, ids ...string) ([]*entity.Role, err
 	for i, id := range ids {
 		keys[i] = id
 	}
-	err := m.DB.WithContext(ctx).Where(clause.IN{Column: clause.Column{Name: m.keyColumn}, Values: keys}).Find(&values).Error
+	err := m.DB.WithContext(ctx).Preload(clause.Associations).Where(clause.IN{Column: clause.Column{Name: m.keyColumn}, Values: keys}).Find(&values).Error
 	if err != nil {
 		return nil, err
 	}

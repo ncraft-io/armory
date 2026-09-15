@@ -39,6 +39,12 @@ type Client interface {
 	BatchCreateRows(context.Context, *pb.BatchCreateRowsRequest) (*pb.BatchCreateRowsResponse, error)
 	BatchUpdateRows(context.Context, *pb.BatchUpdateRowsRequest) (*pb.BatchUpdateRowsResponse, error)
 	BatchDeleteRows(context.Context, *pb.BatchDeleteRowsRequest) (*core.Null, error)
+	CreateDbQuery(context.Context, *pb.CreateDbQueryRequest) (*unitable.DbQuery, error)
+	UpdateDbQuery(context.Context, *pb.UpdateDbQueryRequest) (*core.Null, error)
+	GetDbQuery(context.Context, *pb.GetDbQueryRequest) (*unitable.DbQuery, error)
+	ListDbQueries(context.Context, *pb.ListDbQueriesRequest) (*pb.ListDbQueriesResponse, error)
+	DeleteDbQuery(context.Context, *pb.DeleteDbQueryRequest) (*core.Null, error)
+	RunDbQuery(context.Context, *pb.RunDbQueryRequest) (*pb.RunDbQueryResponse, error)
 }
 
 type Endpoints struct {
@@ -68,6 +74,12 @@ type Endpoints struct {
 	BatchCreateRowsEndpoint    endpoint.Endpoint
 	BatchUpdateRowsEndpoint    endpoint.Endpoint
 	BatchDeleteRowsEndpoint    endpoint.Endpoint
+	CreateDbQueryEndpoint      endpoint.Endpoint
+	UpdateDbQueryEndpoint      endpoint.Endpoint
+	GetDbQueryEndpoint         endpoint.Endpoint
+	ListDbQueriesEndpoint      endpoint.Endpoint
+	DeleteDbQueryEndpoint      endpoint.Endpoint
+	RunDbQueryEndpoint         endpoint.Endpoint
 }
 
 var _ Client = Endpoints{}
@@ -800,5 +812,173 @@ func MakeBatchDeleteRowsEndpoint(client Client) endpoint.Endpoint {
 			return nil, fmt.Errorf("BatchDeleteRows: invalid request type %T", request)
 		}
 		return client.BatchDeleteRows(ctx, req)
+	}
+}
+
+func (e Endpoints) CreateDbQuery(ctx context.Context, request *pb.CreateDbQueryRequest) (*unitable.DbQuery, error) {
+	if request == nil {
+		return nil, fmt.Errorf("CreateDbQuery: nil request")
+	}
+	if e.CreateDbQueryEndpoint == nil {
+		return nil, fmt.Errorf("CreateDbQuery: endpoint is not configured")
+	}
+	result, err := e.CreateDbQueryEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*unitable.DbQuery)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("CreateDbQuery: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeCreateDbQueryEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.CreateDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("CreateDbQuery: invalid request type %T", request)
+		}
+		return client.CreateDbQuery(ctx, req)
+	}
+}
+
+func (e Endpoints) UpdateDbQuery(ctx context.Context, request *pb.UpdateDbQueryRequest) (*core.Null, error) {
+	if request == nil {
+		return nil, fmt.Errorf("UpdateDbQuery: nil request")
+	}
+	if e.UpdateDbQueryEndpoint == nil {
+		return nil, fmt.Errorf("UpdateDbQuery: endpoint is not configured")
+	}
+	result, err := e.UpdateDbQueryEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*core.Null)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("UpdateDbQuery: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeUpdateDbQueryEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.UpdateDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("UpdateDbQuery: invalid request type %T", request)
+		}
+		return client.UpdateDbQuery(ctx, req)
+	}
+}
+
+func (e Endpoints) GetDbQuery(ctx context.Context, request *pb.GetDbQueryRequest) (*unitable.DbQuery, error) {
+	if request == nil {
+		return nil, fmt.Errorf("GetDbQuery: nil request")
+	}
+	if e.GetDbQueryEndpoint == nil {
+		return nil, fmt.Errorf("GetDbQuery: endpoint is not configured")
+	}
+	result, err := e.GetDbQueryEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*unitable.DbQuery)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("GetDbQuery: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeGetDbQueryEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.GetDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("GetDbQuery: invalid request type %T", request)
+		}
+		return client.GetDbQuery(ctx, req)
+	}
+}
+
+func (e Endpoints) ListDbQueries(ctx context.Context, request *pb.ListDbQueriesRequest) (*pb.ListDbQueriesResponse, error) {
+	if request == nil {
+		return nil, fmt.Errorf("ListDbQueries: nil request")
+	}
+	if e.ListDbQueriesEndpoint == nil {
+		return nil, fmt.Errorf("ListDbQueries: endpoint is not configured")
+	}
+	result, err := e.ListDbQueriesEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*pb.ListDbQueriesResponse)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("ListDbQueries: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeListDbQueriesEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.ListDbQueriesRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("ListDbQueries: invalid request type %T", request)
+		}
+		return client.ListDbQueries(ctx, req)
+	}
+}
+
+func (e Endpoints) DeleteDbQuery(ctx context.Context, request *pb.DeleteDbQueryRequest) (*core.Null, error) {
+	if request == nil {
+		return nil, fmt.Errorf("DeleteDbQuery: nil request")
+	}
+	if e.DeleteDbQueryEndpoint == nil {
+		return nil, fmt.Errorf("DeleteDbQuery: endpoint is not configured")
+	}
+	result, err := e.DeleteDbQueryEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*core.Null)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("DeleteDbQuery: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeDeleteDbQueryEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.DeleteDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("DeleteDbQuery: invalid request type %T", request)
+		}
+		return client.DeleteDbQuery(ctx, req)
+	}
+}
+
+func (e Endpoints) RunDbQuery(ctx context.Context, request *pb.RunDbQueryRequest) (*pb.RunDbQueryResponse, error) {
+	if request == nil {
+		return nil, fmt.Errorf("RunDbQuery: nil request")
+	}
+	if e.RunDbQueryEndpoint == nil {
+		return nil, fmt.Errorf("RunDbQuery: endpoint is not configured")
+	}
+	result, err := e.RunDbQueryEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	response, ok := result.(*pb.RunDbQueryResponse)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("RunDbQuery: invalid response type %T", result)
+	}
+	return response, nil
+}
+
+func MakeRunDbQueryEndpoint(client Client) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.RunDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("RunDbQuery: invalid request type %T", request)
+		}
+		return client.RunDbQuery(ctx, req)
 	}
 }

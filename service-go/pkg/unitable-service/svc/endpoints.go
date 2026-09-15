@@ -30,6 +30,7 @@ var (
 	_ = core.Null{}
 	_ = unitable.Column{}
 	_ = core.Object{}
+	_ = unitable.DbQuery{}
 )
 
 // Endpoints collects all of the endpoints that compose an add service. It's
@@ -72,6 +73,12 @@ type Endpoints struct {
 	BatchCreateRowsEndpoint    endpoint.Endpoint
 	BatchUpdateRowsEndpoint    endpoint.Endpoint
 	BatchDeleteRowsEndpoint    endpoint.Endpoint
+	CreateDbQueryEndpoint      endpoint.Endpoint
+	UpdateDbQueryEndpoint      endpoint.Endpoint
+	GetDbQueryEndpoint         endpoint.Endpoint
+	ListDbQueriesEndpoint      endpoint.Endpoint
+	DeleteDbQueryEndpoint      endpoint.Endpoint
+	RunDbQueryEndpoint         endpoint.Endpoint
 }
 
 // Endpoints
@@ -282,6 +289,54 @@ func (e Endpoints) BatchDeleteRows(ctx context.Context, in *pb.BatchDeleteRowsRe
 		return nil, err
 	}
 	return response.(*core.Null), nil
+}
+
+func (e Endpoints) CreateDbQuery(ctx context.Context, in *pb.CreateDbQueryRequest) (*unitable.DbQuery, error) {
+	response, err := e.CreateDbQueryEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*unitable.DbQuery), nil
+}
+
+func (e Endpoints) UpdateDbQuery(ctx context.Context, in *pb.UpdateDbQueryRequest) (*core.Null, error) {
+	response, err := e.UpdateDbQueryEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
+}
+
+func (e Endpoints) GetDbQuery(ctx context.Context, in *pb.GetDbQueryRequest) (*unitable.DbQuery, error) {
+	response, err := e.GetDbQueryEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*unitable.DbQuery), nil
+}
+
+func (e Endpoints) ListDbQueries(ctx context.Context, in *pb.ListDbQueriesRequest) (*pb.ListDbQueriesResponse, error) {
+	response, err := e.ListDbQueriesEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.ListDbQueriesResponse), nil
+}
+
+func (e Endpoints) DeleteDbQuery(ctx context.Context, in *pb.DeleteDbQueryRequest) (*core.Null, error) {
+	response, err := e.DeleteDbQueryEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*core.Null), nil
+}
+
+func (e Endpoints) RunDbQuery(ctx context.Context, in *pb.RunDbQueryRequest) (*pb.RunDbQueryResponse, error) {
+	response, err := e.RunDbQueryEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.RunDbQueryResponse), nil
 }
 
 // Make Endpoints
@@ -572,6 +627,72 @@ func MakeBatchDeleteRowsEndpoint(s pb.UnitableServer) endpoint.Endpoint {
 	}
 }
 
+func MakeCreateDbQueryEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.CreateDbQueryRequest)
+		v, err := s.CreateDbQuery(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeUpdateDbQueryEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.UpdateDbQueryRequest)
+		v, err := s.UpdateDbQuery(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeGetDbQueryEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.GetDbQueryRequest)
+		v, err := s.GetDbQuery(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeListDbQueriesEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ListDbQueriesRequest)
+		v, err := s.ListDbQueries(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeDeleteDbQueryEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.DeleteDbQueryRequest)
+		v, err := s.DeleteDbQuery(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeRunDbQueryEndpoint(s pb.UnitableServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.RunDbQueryRequest)
+		v, err := s.RunDbQuery(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 // WrapAllExcept wraps each Endpoint field of struct Endpoints with a
 // go-kit/kit/endpoint.Middleware.
 // Use this for applying a set of middlewares to every endpoint in the service.
@@ -605,6 +726,12 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
 		"batch_delete_rows":    struct{}{},
+		"create_db_query":      struct{}{},
+		"update_db_query":      struct{}{},
+		"get_db_query":         struct{}{},
+		"list_db_queries":      struct{}{},
+		"delete_db_query":      struct{}{},
+		"run_db_query":         struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -693,6 +820,24 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "batch_delete_rows" {
 			e.BatchDeleteRowsEndpoint = middleware(e.BatchDeleteRowsEndpoint)
 		}
+		if inc == "create_db_query" {
+			e.CreateDbQueryEndpoint = middleware(e.CreateDbQueryEndpoint)
+		}
+		if inc == "update_db_query" {
+			e.UpdateDbQueryEndpoint = middleware(e.UpdateDbQueryEndpoint)
+		}
+		if inc == "get_db_query" {
+			e.GetDbQueryEndpoint = middleware(e.GetDbQueryEndpoint)
+		}
+		if inc == "list_db_queries" {
+			e.ListDbQueriesEndpoint = middleware(e.ListDbQueriesEndpoint)
+		}
+		if inc == "delete_db_query" {
+			e.DeleteDbQueryEndpoint = middleware(e.DeleteDbQueryEndpoint)
+		}
+		if inc == "run_db_query" {
+			e.RunDbQueryEndpoint = middleware(e.RunDbQueryEndpoint)
+		}
 	}
 }
 
@@ -733,6 +878,12 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"batch_create_rows":    struct{}{},
 		"batch_update_rows":    struct{}{},
 		"batch_delete_rows":    struct{}{},
+		"create_db_query":      struct{}{},
+		"update_db_query":      struct{}{},
+		"get_db_query":         struct{}{},
+		"list_db_queries":      struct{}{},
+		"delete_db_query":      struct{}{},
+		"run_db_query":         struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -820,6 +971,24 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "batch_delete_rows" {
 			e.BatchDeleteRowsEndpoint = middleware("batch_delete_rows", e.BatchDeleteRowsEndpoint)
+		}
+		if inc == "create_db_query" {
+			e.CreateDbQueryEndpoint = middleware("create_db_query", e.CreateDbQueryEndpoint)
+		}
+		if inc == "update_db_query" {
+			e.UpdateDbQueryEndpoint = middleware("update_db_query", e.UpdateDbQueryEndpoint)
+		}
+		if inc == "get_db_query" {
+			e.GetDbQueryEndpoint = middleware("get_db_query", e.GetDbQueryEndpoint)
+		}
+		if inc == "list_db_queries" {
+			e.ListDbQueriesEndpoint = middleware("list_db_queries", e.ListDbQueriesEndpoint)
+		}
+		if inc == "delete_db_query" {
+			e.DeleteDbQueryEndpoint = middleware("delete_db_query", e.DeleteDbQueryEndpoint)
+		}
+		if inc == "run_db_query" {
+			e.RunDbQueryEndpoint = middleware("run_db_query", e.RunDbQueryEndpoint)
 		}
 	}
 }

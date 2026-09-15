@@ -2,6 +2,7 @@ package synchro
 
 import (
 	"context"
+	"database/sql"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/core"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db"
 	"github.com/mojo-lang/mojo/go/pkg/mojo/db/query"
@@ -223,6 +224,17 @@ func (s *Synchro) BatchGetRow(ctx context.Context, table string, ids ...string) 
 }
 
 func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string, query *unitable.DbQuery, arguments []interface{}) ([]*core.Object, error) {
+	return s.queryBy(ctx, database, tableName, query, arguments, false)
+}
+
+// QueryPrepared executes SQL with native dialect placeholders, preserving literal
+// question marks. Arguments must be bound separately by the caller.
+func (s *Synchro) QueryPrepared(ctx context.Context, database, tableName string, query *unitable.DbQuery, arguments []interface{}) ([]*core.Object, error) {
+	return s.queryBy(ctx, database, tableName, query, arguments, true)
+}
+
+func (s *Synchro) queryBy(ctx context.Context, database, tableName string, query *unitable.DbQuery, arguments []interface{}, prepared bool) ([]*core.Object, error) {
+
 	table := &unitable.Table{
 		Database:  database,
 		Name:      tableName,
@@ -238,8 +250,17 @@ func (s *Synchro) QueryBy(ctx context.Context, database string, tableName string
 	if d == nil {
 		return nil, core.NewNotFoundError("database %s not found", database)
 	}
-	tx := d.WithContext(ctx).Table(table.Name).Raw(query.Sql, arguments...)
-	rows, err := tx.Rows()
+	var rows *sql.Rows
+	var err error
+	if prepared {
+		native, nativeErr := d.DB.DB()
+		if nativeErr != nil {
+			return nil, nativeErr
+		}
+		rows, err = native.QueryContext(ctx, query.Sql, arguments...)
+	} else {
+		rows, err = d.WithContext(ctx).Table(table.Name).Raw(query.Sql, arguments...).Rows()
+	}
 	if err != nil {
 		return nil, core.NewNotFoundError("failed to query the rows in %s, %s", table, err.Error())
 	}

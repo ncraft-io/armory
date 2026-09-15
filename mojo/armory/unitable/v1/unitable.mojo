@@ -140,13 +140,32 @@ interface Unitable {
     @http.delete("/armory/unitable/v1/databases/{database}/tables/{table}/rows:batch")
     batch_delete_rows(database: String @1, table: String @2, ids: [String] @3)
 
-    ///// Create the Database query
-    //@entity("DBQuery")
-    //@http.post("/armory/unitable/v1/databases/{database}/queries")
-    //create_db_query(query: DBQuery @2 @http.body) -> DBQuery
+    /// 保存数据库中的预定义查询；保存前验证 SQL、参数及结果列。
+    @entity("DbQuery")
+    @http.post("/armory/unitable/v1/databases/{database}/queries")
+    create_db_query(database: String @1, query: DbQuery @2 @http.body) -> DbQuery
 
-    ///// Run the Database query
-    //@entity("DBQuery")
-    //@http.post("/armory/unitable/v1/databases/{database}/queries:run")
-    //run_db_query(database: String @1, query: DBQuery @2 @http.body) -> [Object]
+    /// 更新数据库查询；id 为查询名称或 database.name。
+    @entity("DbQuery")
+    @http.put("/armory/unitable/v1/databases/{database}/queries/{id}")
+    update_db_query(database: String @1, id: String @2, query: DbQuery @3 @http.body)
+
+    /// 获取数据库中保存的查询定义，不包含配置文件覆盖项。
+    @entity("DbQuery")
+    @http.get("/armory/unitable/v1/databases/{database}/queries/{id}")
+    get_db_query(database: String @1, id: String @2) -> DbQuery
+
+    /// 分页查询数据库中保存的查询定义。
+    @entity("DbQuery")
+    @http.get("/armory/unitable/v1/databases/{database}/queries")
+    list_db_queries(database: String @1) -> [DbQuery]
+
+    /// 删除数据库中保存的查询，不影响配置文件。
+    @entity("DbQuery")
+    @http.delete("/armory/unitable/v1/databases/{database}/queries/{id}")
+    delete_db_query(database: String @1, id: String @2)
+
+    /// 按名称执行预定义查询：数据库专属配置优先，其次全局配置，最后数据库定义。
+    @http.post("/armory/unitable/v1/databases/{database}/queries/{id}:run")
+    run_db_query(database: String @1, id: String @2, parameters: Object @3 @http.body) -> [Object]
 }

@@ -54,7 +54,7 @@ func (m *Table) Create(ctx context.Context, value *entity.Table) (int64, error) 
 
 func (m *Table) Get(ctx context.Context, id string) (*entity.Table, error) {
 	value := &entity.Table{}
-	err := m.DB.WithContext(ctx).Preload("Columns").Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
+	err := m.DB.WithContext(ctx).Preload(clause.Associations).Where(clause.Eq{Column: clause.Column{Name: m.keyColumn}, Value: id}).First(value).Error
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (m *Table) updateAll(tx *gorm.DB, value *entity.Table, keyColumn string, ke
 
 func (m *Table) List(ctx context.Context, q *query.Query) ([]*entity.Table, error) {
 	values := make([]*entity.Table, 0)
-	tx := m.DB.WithContext(ctx).Model(&entity.Table{})
+	tx := m.DB.WithContext(ctx).Model(&entity.Table{}).Preload(clause.Associations)
 	if q != nil {
 		if err := q.Normalize(); err != nil {
 			return nil, err
@@ -123,7 +123,7 @@ func (m *Table) List(ctx context.Context, q *query.Query) ([]*entity.Table, erro
 			"id": {Type: query.FieldTypeString, Repeated: false}, "name": {Type: query.FieldTypeString, Repeated: false}, "display_name": {Type: query.FieldTypeString, Repeated: false}, "export_name": {Type: query.FieldTypeString, Repeated: false}, "tenant": {Type: query.FieldTypeString, Repeated: false}, "database": {Type: query.FieldTypeString, Repeated: false}, "json_style": {Type: query.FieldTypeString, Repeated: false}, "columns": {Type: query.FieldTypeJSON, Repeated: true}, "create_time": {Type: query.FieldTypeDatetime, Repeated: false}, "update_time": {Type: query.FieldTypeDatetime, Repeated: false},
 		})
 	}
-	if err := tx.Preload("Columns").Find(&values).Error; err != nil {
+	if err := tx.Find(&values).Error; err != nil {
 		return nil, err
 	}
 	return values, nil
@@ -151,7 +151,7 @@ func (m *Table) BatchGet(ctx context.Context, ids ...string) ([]*entity.Table, e
 	for i, id := range ids {
 		keys[i] = id
 	}
-	err := m.DB.WithContext(ctx).Where(clause.IN{Column: clause.Column{Name: m.keyColumn}, Values: keys}).Find(&values).Error
+	err := m.DB.WithContext(ctx).Preload(clause.Associations).Where(clause.IN{Column: clause.Column{Name: m.keyColumn}, Values: keys}).Find(&values).Error
 	if err != nil {
 		return nil, err
 	}

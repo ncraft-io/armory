@@ -620,6 +620,235 @@ paths:
                 type: array
           description: OK
       summary: 查询服务范围内的所有数据库及表单
+  /armory/unitable/v1/databases/{database}/queries:
+    get:
+      description: ""
+      operationId: list_db_queries
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: the page size for pagination request
+        in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the page token for pagination request, usually like "1", "2"
+          ...
+        in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: skip the first items count for the request
+        in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the mojo expression for DB query
+        in: query
+        name: filter
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: setting the order field for result, like "name desc"
+        in: query
+        name: order
+        schema:
+          $ref: '#/components/schemas/mojo.core.Ordering'
+      - description: control the fields which need to be retrieved
+        in: query
+        name: field_mask
+        schema:
+          $ref: '#/components/schemas/mojo.core.FieldMask'
+      - description: make the fields which returns are unique, equals to "SELECT DISTINCT"
+          in sql
+        in: query
+        name: unique
+        schema:
+          title: mojo.core.Bool
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/armory.unitable.DbQuery'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 分页查询数据库中保存的查询定义。
+    post:
+      description: ""
+      operationId: create_db_query
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.DbQuery'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.DbQuery'
+          description: OK
+      summary: 保存数据库中的预定义查询；保存前验证 SQL、参数及结果列。
+  /armory/unitable/v1/databases/{database}/queries/{id}:
+    delete:
+      description: ""
+      operationId: delete_db_query
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          description: OK
+      summary: 删除数据库中保存的查询，不影响配置文件。
+    get:
+      description: ""
+      operationId: get_db_query
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/armory.unitable.DbQuery'
+          description: OK
+      summary: 获取数据库中保存的查询定义，不包含配置文件覆盖项。
+    put:
+      description: ""
+      operationId: update_db_query
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/armory.unitable.DbQuery'
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: 更新数据库查询；id 为查询名称或 database.name。
+  /armory/unitable/v1/databases/{database}/queries/{id}:run:
+    post:
+      description: ""
+      operationId: run_db_query
+      parameters:
+      - in: path
+        name: database
+        schema:
+          title: mojo.core.String
+          type: string
+      - in: path
+        name: id
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: the page size for pagination request
+        in: query
+        name: page_size
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the page token for pagination request, usually like "1", "2"
+          ...
+        in: query
+        name: page_token
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: skip the first items count for the request
+        in: query
+        name: skip
+        schema:
+          format: Int32
+          title: mojo.core.Int32
+          type: integer
+      - description: the mojo expression for DB query
+        in: query
+        name: filter
+        schema:
+          title: mojo.core.String
+          type: string
+      - description: setting the order field for result, like "name desc"
+        in: query
+        name: order
+        schema:
+          $ref: '#/components/schemas/mojo.core.Ordering'
+      - description: control the fields which need to be retrieved
+        in: query
+        name: field_mask
+        schema:
+          $ref: '#/components/schemas/mojo.core.FieldMask'
+      - description: make the fields which returns are unique, equals to "SELECT DISTINCT"
+          in sql
+        in: query
+        name: unique
+        schema:
+          title: mojo.core.Bool
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mojo.core.Object'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/mojo.core.Object'
+                title: mojo.core.Array
+                type: array
+          description: OK
+      summary: 按名称执行预定义查询：数据库专属配置优先，其次全局配置，最后数据库定义。
   /armory/unitable/v1/databases/{database}/tables:
     get:
       description: ""

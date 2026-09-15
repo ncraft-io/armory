@@ -85,6 +85,12 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		batchCreateRowsEndpoint    = svc.MakeBatchCreateRowsEndpoint(service)
 		batchUpdateRowsEndpoint    = svc.MakeBatchUpdateRowsEndpoint(service)
 		batchDeleteRowsEndpoint    = svc.MakeBatchDeleteRowsEndpoint(service)
+		createDbQueryEndpoint      = svc.MakeCreateDbQueryEndpoint(service)
+		updateDbQueryEndpoint      = svc.MakeUpdateDbQueryEndpoint(service)
+		getDbQueryEndpoint         = svc.MakeGetDbQueryEndpoint(service)
+		listDbQueriesEndpoint      = svc.MakeListDbQueriesEndpoint(service)
+		deleteDbQueryEndpoint      = svc.MakeDeleteDbQueryEndpoint(service)
+		runDbQueryEndpoint         = svc.MakeRunDbQueryEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
@@ -114,6 +120,12 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 		BatchCreateRowsEndpoint:    batchCreateRowsEndpoint,
 		BatchUpdateRowsEndpoint:    batchUpdateRowsEndpoint,
 		BatchDeleteRowsEndpoint:    batchDeleteRowsEndpoint,
+		CreateDbQueryEndpoint:      createDbQueryEndpoint,
+		UpdateDbQueryEndpoint:      updateDbQueryEndpoint,
+		GetDbQueryEndpoint:         getDbQueryEndpoint,
+		ListDbQueriesEndpoint:      listDbQueriesEndpoint,
+		DeleteDbQueryEndpoint:      deleteDbQueryEndpoint,
+		RunDbQueryEndpoint:         runDbQueryEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

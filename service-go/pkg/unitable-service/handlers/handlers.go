@@ -14,9 +14,7 @@ import (
 	"github.com/xuri/excelize/v2"
 	"google.golang.org/protobuf/proto"
 	"net/url"
-	"regexp"
 	"strconv"
-	"strings"
 
 	// this service api
 	pb "github.com/ncraft-io/armory/go/pkg/armory/unitable/v1"
@@ -45,7 +43,7 @@ func NewService() pb.UnitableServer {
 		_ = config.ScanFrom(conf, "dbQuery")
 		for _, dbQuery := range conf.Queries {
 			if dbQuery != nil {
-				ut.Queries[dbQuery.Name] = dbQuery
+				ut.Queries[queryConfigKey(dbQuery)] = dbQuery
 			}
 		}
 	})
@@ -244,21 +242,6 @@ func (s unitableServer) DeleteRow(ctx context.Context, in *pb.DeleteRowRequest) 
 	}
 }
 
-var optStr = regexp.MustCompile(`\[[^\[\]]+]`)
-
-func isEmpty(values []interface{}) bool {
-	if len(values) == 0 {
-		return true
-	}
-	allNil := true
-	for _, v := range values {
-		if v != nil {
-			allNil = false
-		}
-	}
-	return allNil
-}
-
 // ListRow implements Interface.
 func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb.ListRowResponse, error) {
 	if in == nil {
@@ -277,73 +260,22 @@ func (s unitableServer) ListRow(ctx context.Context, in *pb.ListRowRequest) (*pb
 	in = proto.Clone(in).(*pb.ListRowRequest)
 	in.Table = tableName
 
-	if in.Query != "" && s.Queries()[in.Query] == nil {
-		return nil, core.NewInvalidArgumentError("unknown named query %s", in.Query)
-	}
-	if q, ok := s.Queries()[in.Query]; ok && q != nil && len(in.Query) > 0 {
-		var values []interface{}
-		query := &unitable.DbQuery{
-			Id:         q.Id,
-			Name:       q.Name,
-			Sql:        q.Sql,
-			Parameters: q.Parameters,
-			Columns:    q.Columns,
-			JsonStyle:  q.JsonStyle,
-		}
-		if len(query.JsonStyle) == 0 {
-			query.JsonStyle = synchro.LowerCamel
-		}
-
+	if in.Query != "" {
+		values := map[string]interface{}{}
 		if vals, ok := ctx.Value("http-request-query").(url.Values); ok {
-			for _, p := range query.Parameters {
-				if p == nil {
-					return nil, core.NewInternalError("nil named-query parameter")
-				}
-				if v, ok := vals[p.Name]; ok && len(v) > 0 {
-					if p.IsArray {
-						if len(v) == 1 {
-							v = strings.Split(v[0], ",")
-						}
-
-						if p.PgArray {
-							//values = append(values, pgtype.FlatArray[string](v))
-							values = append(values, core.NewStringValues(v...))
-						} else {
-							values = append(values, v)
-						}
-					} else {
-						values = append(values, v[0])
-					}
-				} else {
-					values = append(values, nil)
+			for key, vals := range vals {
+				if len(vals) == 1 {
+					values[key] = vals[0]
+				} else if len(vals) > 1 {
+					values[key] = vals
 				}
 			}
 		}
-
-		if len(query.Sql) == 0 {
-			example := query.Example()
-			return &pb.ListRowResponse{
-				Objects:    []*core.Object{example},
-				TotalCount: 1,
-			}, nil
-		} else {
-			if isEmpty(values) {
-				query.Sql = string(optStr.ReplaceAll([]byte(query.Sql), []byte("")))
-				values = []interface{}{}
-			} else {
-				query.Sql = strings.Replace(query.Sql, "[", "", -1)
-				query.Sql = strings.Replace(query.Sql, "]", "", -1)
-			}
-
-			objs, err := s.Synchro().QueryBy(ctx, in.Database, in.Table, query, values)
-			if err != nil {
-				return nil, err
-			}
-			return &pb.ListRowResponse{
-				Objects:    objs,
-				TotalCount: int32(len(objs)),
-			}, nil
+		objects, err := s.runQuery(ctx, in.Database, in.Query, values)
+		if err != nil {
+			return nil, err
 		}
+		return &pb.ListRowResponse{Objects: objects, TotalCount: int32(len(objects))}, nil
 	}
 
 	qry, err := ParseQuery(in)

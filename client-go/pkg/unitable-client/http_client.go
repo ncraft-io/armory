@@ -255,6 +255,54 @@ func newHTTP(instance string, config clientConfig) (*Endpoints, error) {
 		clientOptions...,
 	).Endpoint())
 
+	endpoints.CreateDbQueryEndpoint = config.wrap(httptransport.NewClient(
+		"POST", base, EncodeHTTPCreateDbQueryZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPCreateDbQueryResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
+	endpoints.UpdateDbQueryEndpoint = config.wrap(httptransport.NewClient(
+		"PUT", base, EncodeHTTPUpdateDbQueryZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPUpdateDbQueryResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
+	endpoints.GetDbQueryEndpoint = config.wrap(httptransport.NewClient(
+		"GET", base, EncodeHTTPGetDbQueryZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPGetDbQueryResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
+	endpoints.ListDbQueriesEndpoint = config.wrap(httptransport.NewClient(
+		"GET", base, EncodeHTTPListDbQueriesZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPListDbQueriesResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
+	endpoints.DeleteDbQueryEndpoint = config.wrap(httptransport.NewClient(
+		"DELETE", base, EncodeHTTPDeleteDbQueryZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPDeleteDbQueryResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
+	endpoints.RunDbQueryEndpoint = config.wrap(httptransport.NewClient(
+		"POST", base, EncodeHTTPRunDbQueryZeroRequest,
+		func(_ context.Context, response *http.Response) (interface{}, error) {
+			return decodeHTTPRunDbQueryResponse(response, config.enveloped)
+		},
+		clientOptions...,
+	).Endpoint())
+
 	return endpoints, nil
 }
 
@@ -1424,6 +1472,280 @@ func EncodeHTTPBatchDeleteRowsZeroRequest(_ context.Context, r *http.Request, re
 
 	r.URL.RawQuery = values.Encode()
 	r.Header.Set("Accept", "application/json")
+
+	return nil
+}
+
+func DecodeHTTPCreateDbQueryResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPCreateDbQueryResponse(r, false)
+}
+func decodeHTTPCreateDbQueryResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(unitable.DbQuery)
+	if err := decodeHTTPResponse(r, response, enveloped, false); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPCreateDbQueryZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.CreateDbQueryRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("CreateDbQueryZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	body, err := jsoniter.Marshal(req.GetQuery())
+	if err != nil {
+		return err
+	}
+	r.Header.Set("Content-Type", "application/json; charset=utf-8")
+
+	setRequestBody(r, body)
+
+	return nil
+}
+
+func DecodeHTTPUpdateDbQueryResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPUpdateDbQueryResponse(r, false)
+}
+func decodeHTTPUpdateDbQueryResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(core.Null)
+	if err := decodeHTTPResponse(r, response, enveloped, true); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPUpdateDbQueryZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.UpdateDbQueryRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("UpdateDbQueryZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries/{id}"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{id}", url.PathEscape(fmt.Sprint(req.GetId())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	body, err := jsoniter.Marshal(req.GetQuery())
+	if err != nil {
+		return err
+	}
+	r.Header.Set("Content-Type", "application/json; charset=utf-8")
+
+	setRequestBody(r, body)
+
+	return nil
+}
+
+func DecodeHTTPGetDbQueryResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPGetDbQueryResponse(r, false)
+}
+func decodeHTTPGetDbQueryResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(unitable.DbQuery)
+	if err := decodeHTTPResponse(r, response, enveloped, false); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPGetDbQueryZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.GetDbQueryRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("GetDbQueryZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries/{id}"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{id}", url.PathEscape(fmt.Sprint(req.GetId())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	return nil
+}
+
+func DecodeHTTPListDbQueriesResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPListDbQueriesResponse(r, false)
+}
+func decodeHTTPListDbQueriesResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(pb.ListDbQueriesResponse)
+	if err := decodeHTTPResponse(r, response, enveloped, false); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPListDbQueriesZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.ListDbQueriesRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("ListDbQueriesZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	if err := addQueryValue(values, "field_mask", req.GetFieldMask()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "filter", req.GetFilter()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "order", req.GetOrder()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "page_size", req.GetPageSize()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "page_token", req.GetPageToken()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "skip", req.GetSkip()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "unique", req.GetUnique()); err != nil {
+		return err
+	}
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	return nil
+}
+
+func DecodeHTTPDeleteDbQueryResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPDeleteDbQueryResponse(r, false)
+}
+func decodeHTTPDeleteDbQueryResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(core.Null)
+	if err := decodeHTTPResponse(r, response, enveloped, true); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPDeleteDbQueryZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.DeleteDbQueryRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("DeleteDbQueryZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries/{id}"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{id}", url.PathEscape(fmt.Sprint(req.GetId())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	return nil
+}
+
+func DecodeHTTPRunDbQueryResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	return decodeHTTPRunDbQueryResponse(r, false)
+}
+func decodeHTTPRunDbQueryResponse(r *http.Response, enveloped bool) (interface{}, error) {
+	response := new(pb.RunDbQueryResponse)
+	if err := decodeHTTPResponse(r, response, enveloped, false); err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func EncodeHTTPRunDbQueryZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	req, ok := request.(*pb.RunDbQueryRequest)
+	if !ok || req == nil {
+		return fmt.Errorf("RunDbQueryZero: invalid request type %T", request)
+	}
+	escapedPath := "/armory/unitable/v1/databases/{database}/queries/{id}:run"
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{database}", url.PathEscape(fmt.Sprint(req.GetDatabase())))
+
+	escapedPath = strings.ReplaceAll(escapedPath, "{id}", url.PathEscape(fmt.Sprint(req.GetId())))
+
+	if err := setRequestPath(r, escapedPath); err != nil {
+		return err
+	}
+	values := r.URL.Query()
+
+	if err := addQueryValue(values, "field_mask", req.GetFieldMask()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "filter", req.GetFilter()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "order", req.GetOrder()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "page_size", req.GetPageSize()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "page_token", req.GetPageToken()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "skip", req.GetSkip()); err != nil {
+		return err
+	}
+
+	if err := addQueryValue(values, "unique", req.GetUnique()); err != nil {
+		return err
+	}
+
+	r.URL.RawQuery = values.Encode()
+	r.Header.Set("Accept", "application/json")
+
+	body, err := jsoniter.Marshal(req.GetParameters())
+	if err != nil {
+		return err
+	}
+	r.Header.Set("Content-Type", "application/json; charset=utf-8")
+
+	setRequestBody(r, body)
 
 	return nil
 }

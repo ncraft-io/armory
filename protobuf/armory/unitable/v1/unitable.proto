@@ -6,6 +6,7 @@ package armory.unitable.v1;
 
 import "armory/unitable/column.proto";
 import "armory/unitable/database.proto";
+import "armory/unitable/db_query.proto";
 import "armory/unitable/table.proto";
 import "mojo/core/field_mask.proto";
 import "mojo/core/null.proto";
@@ -246,6 +247,63 @@ message BatchDeleteRowsRequest {
     repeated string ids = 3;
 }
 
+message CreateDbQueryRequest {
+    string database = 1;
+    armory.unitable.DbQuery query = 2;
+}
+
+message UpdateDbQueryRequest {
+    string database = 1;
+    string id = 2;
+    armory.unitable.DbQuery query = 3;
+}
+
+message GetDbQueryRequest {
+    string database = 1;
+    string id = 2;
+}
+
+message ListDbQueriesRequest {
+    string database = 1;
+    int32 page_size = 2000;
+    string page_token = 2001;
+    int32 skip = 2002;
+    string filter = 2011;
+    mojo.core.Ordering order = 2012;
+    mojo.core.FieldMask field_mask = 2013;
+    bool unique = 2014;
+}
+
+message ListDbQueriesResponse {
+    repeated armory.unitable.DbQuery db_queries = 1;
+    int32 total_count = 2000;
+    string next_page_token = 2001;
+}
+
+message DeleteDbQueryRequest {
+    string database = 1;
+    string id = 2;
+}
+
+message RunDbQueryRequest {
+    string database = 1;
+    string id = 2;
+    mojo.core.Object parameters = 3;
+    int32 page_size = 2000;
+    string page_token = 2001;
+    int32 skip = 2002;
+    string filter = 2011;
+    mojo.core.Ordering order = 2012;
+    mojo.core.FieldMask field_mask = 2013;
+    bool unique = 2014;
+}
+
+message RunDbQueryResponse {
+    repeated mojo.core.Object objects = 1;
+    int32 total_count = 2000;
+    string next_page_token = 2001;
+}
+
 service Unitable {
     rpc list_databases(ListDatabasesRequest) returns (ListDatabasesResponse);
     rpc create_table(CreateTableRequest) returns (armory.unitable.Table);
@@ -273,4 +331,10 @@ service Unitable {
     rpc batch_create_rows(BatchCreateRowsRequest) returns (BatchCreateRowsResponse);
     rpc batch_update_rows(BatchUpdateRowsRequest) returns (BatchUpdateRowsResponse);
     rpc batch_delete_rows(BatchDeleteRowsRequest) returns (mojo.core.Null);
+    rpc create_db_query(CreateDbQueryRequest) returns (armory.unitable.DbQuery);
+    rpc update_db_query(UpdateDbQueryRequest) returns (mojo.core.Null);
+    rpc get_db_query(GetDbQueryRequest) returns (armory.unitable.DbQuery);
+    rpc list_db_queries(ListDbQueriesRequest) returns (ListDbQueriesResponse);
+    rpc delete_db_query(DeleteDbQueryRequest) returns (mojo.core.Null);
+    rpc run_db_query(RunDbQueryRequest) returns (RunDbQueryResponse);
 }

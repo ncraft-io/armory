@@ -1,5 +1,6 @@
 
 /// Database Query Entity
+@entity
 type DbQuery {
     type Parameter {
         name: String @1

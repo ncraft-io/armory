@@ -370,6 +370,84 @@ func newGrpc(conn grpc.ClientConnInterface, config clientConfig) *Endpoints {
 		return response, nil
 	})
 
+	endpoints.CreateDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.CreateDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("CreateDbQuery: invalid request type %T", request)
+		}
+		var response *unitable.DbQuery
+		response, err := remote.CreateDbQuery(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
+	endpoints.UpdateDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.UpdateDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("UpdateDbQuery: invalid request type %T", request)
+		}
+		var response *core.Null
+		response, err := remote.UpdateDbQuery(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
+	endpoints.GetDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.GetDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("GetDbQuery: invalid request type %T", request)
+		}
+		var response *unitable.DbQuery
+		response, err := remote.GetDbQuery(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
+	endpoints.ListDbQueriesEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.ListDbQueriesRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("ListDbQueries: invalid request type %T", request)
+		}
+		var response *pb.ListDbQueriesResponse
+		response, err := remote.ListDbQueries(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
+	endpoints.DeleteDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.DeleteDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("DeleteDbQuery: invalid request type %T", request)
+		}
+		var response *core.Null
+		response, err := remote.DeleteDbQuery(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
+	endpoints.RunDbQueryEndpoint = config.wrap(func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(*pb.RunDbQueryRequest)
+		if !ok || req == nil {
+			return nil, fmt.Errorf("RunDbQuery: invalid request type %T", request)
+		}
+		var response *pb.RunDbQueryResponse
+		response, err := remote.RunDbQuery(config.grpcContext(ctx), req, config.grpcOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+	})
+
 	return endpoints
 }
 
