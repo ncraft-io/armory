@@ -21,8 +21,8 @@ All paths below start with `/armory/unitable/v1/databases/{database}`.
 | --- | --- | --- |
 | POST | `/queries` | Create a persisted definition; duplicates return AlreadyExists. |
 | PUT | `/queries/{id}` | Replace a persisted definition after validation. |
-| GET | `/queries/{id}` | Read a persisted definition. |
-| GET | `/queries` | List persisted definitions with normal filter and pagination fields. |
+| GET | `/queries/{id}` | Read a persisted definition, or the effective definition with `effective=true`. |
+| GET | `/queries` | List persisted definitions, or the merged effective view with `effective=true`. |
 | DELETE | `/queries/{id}` | Delete a persisted definition. |
 | POST | `/queries/{id}:run` | Execute the effective definition with a JSON parameter object. |
 
@@ -32,9 +32,35 @@ hyphens, must start with a letter, and have a maximum length of 128 characters.
 The path selects the database; supplied body identifiers must agree with it.
 Names and databases cannot be changed by update.
 
-Management endpoints always address persisted records, including records
-currently overridden by configuration. Deleting a record does not remove its
-configuration override. The existing `ListRow` API also resolves database-backed
+Get and List default to persisted records, including records currently overridden
+by configuration. Set the optional `effective` boolean to `true` to read the same
+definitions used by execution:
+
+```http
+GET /armory/unitable/v1/databases/main/queries/sales-summary?effective=true
+GET /armory/unitable/v1/databases/main/queries?effective=true&pageSize=20
+```
+
+Go/gRPC callers set `GetDbQueryRequest.Effective` or
+`ListDbQueriesRequest.Effective`. Omitting the flag or using `false` preserves
+the existing database-only behavior.
+
+Effective List merges by query name within the selected database, applying the
+same precedence as execution. It includes configuration-only entries and removes
+shadowed database records **before** filtering, sorting, projection and pagination.
+`totalCount` and `nextPageToken` describe the merged, filtered view. Normal filter,
+order, field-mask and unique parameters remain available. A name tie-breaker
+provides stable pagination when distinct projections are not requested.
+
+Configuration-backed results are copies: their `id` is `database.name`, their
+`database` is the selected database, and an unspecified JSON style is returned
+as `lowerCamel`, matching execution. Nested configuration data is not mutated.
+Effective reads never persist configuration entries. List still requires access
+to the metadata database to include stored definitions; it does not silently
+return an incomplete list when that database is unavailable.
+
+Create, Update and Delete always operate on persisted records. Deleting a record
+does not remove its configuration override. The existing `ListRow` API also resolves database-backed
 queries through its `query` parameter and binds parameters from the HTTP query
 string. The new run endpoint supports HTTP and gRPC parameter objects directly.
 

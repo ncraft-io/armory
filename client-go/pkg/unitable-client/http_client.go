@@ -1583,6 +1583,10 @@ func EncodeHTTPGetDbQueryZeroRequest(_ context.Context, r *http.Request, request
 	}
 	values := r.URL.Query()
 
+	if err := addQueryValue(values, "effective", req.GetEffective()); err != nil {
+		return err
+	}
+
 	r.URL.RawQuery = values.Encode()
 	r.Header.Set("Accept", "application/json")
 
@@ -1613,6 +1617,10 @@ func EncodeHTTPListDbQueriesZeroRequest(_ context.Context, r *http.Request, requ
 		return err
 	}
 	values := r.URL.Query()
+
+	if err := addQueryValue(values, "effective", req.GetEffective()); err != nil {
+		return err
+	}
 
 	if err := addQueryValue(values, "field_mask", req.GetFieldMask()); err != nil {
 		return err

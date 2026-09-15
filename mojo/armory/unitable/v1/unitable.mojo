@@ -150,15 +150,15 @@ interface Unitable {
     @http.put("/armory/unitable/v1/databases/{database}/queries/{id}")
     update_db_query(database: String @1, id: String @2, query: DbQuery @3 @http.body)
 
-    /// 获取数据库中保存的查询定义，不包含配置文件覆盖项。
+    /// 获取查询定义；effective=true 时返回结合配置后实际生效的定义。
     @entity("DbQuery")
     @http.get("/armory/unitable/v1/databases/{database}/queries/{id}")
-    get_db_query(database: String @1, id: String @2) -> DbQuery
+    get_db_query(database: String @1, id: String @2, effective: Bool @3) -> DbQuery
 
-    /// 分页查询数据库中保存的查询定义。
+    /// 分页查询定义；effective=true 时先合并配置覆盖，再筛选、排序及分页。
     @entity("DbQuery")
     @http.get("/armory/unitable/v1/databases/{database}/queries")
-    list_db_queries(database: String @1) -> [DbQuery]
+    list_db_queries(database: String @1, effective: Bool @2) -> [DbQuery]
 
     /// 删除数据库中保存的查询，不影响配置文件。
     @entity("DbQuery")

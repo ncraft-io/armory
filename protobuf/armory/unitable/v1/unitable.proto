@@ -261,10 +261,12 @@ message UpdateDbQueryRequest {
 message GetDbQueryRequest {
     string database = 1;
     string id = 2;
+    bool effective = 3;
 }
 
 message ListDbQueriesRequest {
     string database = 1;
+    bool effective = 2;
     int32 page_size = 2000;
     string page_token = 2001;
     int32 skip = 2002;

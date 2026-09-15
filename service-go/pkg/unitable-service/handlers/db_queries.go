@@ -53,16 +53,12 @@ func storedQuery(ctx context.Context, database, name string) (*unitable.DbQuery,
 	return q, tx.Error
 }
 func (s unitableServer) resolveQuery(ctx context.Context, database, name string) (*unitable.DbQuery, error) {
-	id, name, err := queryIdentity(database, name)
+	_, name, err := queryIdentity(database, name)
 	if err != nil {
 		return nil, err
 	}
-	q := s.Queries()[id]
-	if q == nil {
-		q = s.Queries()[name]
-	}
-	if q != nil && (q.Database == "" || q.Database == database) {
-		return proto.Clone(q).(*unitable.DbQuery), nil
+	if q := s.configuredQuery(database, name); q != nil {
+		return q, nil
 	}
 	return storedQuery(ctx, database, name)
 }
@@ -316,6 +312,9 @@ func (s unitableServer) GetDbQuery(ctx context.Context, in *pb.GetDbQueryRequest
 	if in == nil {
 		return nil, core.NewInvalidArgumentError("nil request")
 	}
+	if in.Effective {
+		return s.resolveQuery(ctx, in.Database, in.Id)
+	}
 	return storedQuery(ctx, in.Database, in.Id)
 }
 func (s unitableServer) ListDbQueries(ctx context.Context, in *pb.ListDbQueriesRequest) (*pb.ListDbQueriesResponse, error) {
@@ -328,6 +327,9 @@ func (s unitableServer) ListDbQueries(ctx context.Context, in *pb.ListDbQueriesR
 	qry, err := ParseQuery(in)
 	if err != nil {
 		return nil, err
+	}
+	if in.Effective {
+		return s.listEffectiveDbQueries(ctx, in, qry)
 	}
 	qry.AddFieldQuery("database", in.Database)
 	values, err := model.GetDbQueryModel().List(ctx, qry)

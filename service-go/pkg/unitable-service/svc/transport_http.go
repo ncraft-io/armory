@@ -3021,6 +3021,11 @@ func DecodeHTTPGetDbQueryZeroRequest(_ context.Context, r *http.Request) (interf
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
 	}
 
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Effective, "effective")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the effective  query parameter")
+	}
+
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Id, "id")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the id  query parameter")
@@ -3086,6 +3091,11 @@ func DecodeHTTPListDbQueriesZeroRequest(_ context.Context, r *http.Request) (int
 	err = mjhttp.UnmarshalPathParam(pathParams, &req.Database, "database")
 	if err != nil && !core.IsNotFoundError(err) {
 		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the database  query parameter")
+	}
+
+	err = mjhttp.UnmarshalQueryParam(queryParams, &req.Effective, "effective")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the effective  query parameter")
 	}
 
 	fieldMaskInitialized := false

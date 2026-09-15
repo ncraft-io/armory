@@ -630,6 +630,11 @@ paths:
         schema:
           title: mojo.core.String
           type: string
+      - in: query
+        name: effective
+        schema:
+          title: mojo.core.Bool
+          type: boolean
       - description: the page size for pagination request
         in: query
         name: page_size
@@ -684,7 +689,7 @@ paths:
                 title: mojo.core.Array
                 type: array
           description: OK
-      summary: 分页查询数据库中保存的查询定义。
+      summary: 分页查询定义；effective=true 时先合并配置覆盖，再筛选、排序及分页。
     post:
       description: ""
       operationId: create_db_query
@@ -741,6 +746,11 @@ paths:
         schema:
           title: mojo.core.String
           type: string
+      - in: query
+        name: effective
+        schema:
+          title: mojo.core.Bool
+          type: boolean
       responses:
         "200":
           content:
@@ -748,7 +758,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/armory.unitable.DbQuery'
           description: OK
-      summary: 获取数据库中保存的查询定义，不包含配置文件覆盖项。
+      summary: 获取查询定义；effective=true 时返回结合配置后实际生效的定义。
     put:
       description: ""
       operationId: update_db_query
