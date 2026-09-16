@@ -1,0 +1,20 @@
+# Replace configs/file.yaml with this file to select S3/MinIO.
+file:
+  provider: s3
+  rootUrl: "http://localhost:20171"
+  # This is ncraft storage.Config, shared with other object-storage users.
+  s3Provider:
+    vendor: minio
+    endpoint: "http://localhost:9000"
+    bucketName: "armory-files"
+    region: "us-east-1"
+    prefix: "files"
+    createBucket: false
+    # Omit credentials here to use AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+    # and optional AWS_SESSION_TOKEN from the process environment.
+    # accessKey: "your-access-key"
+    # secretKey: "your-secret-key"
+    # sessionToken: "your-session-token"
+    # For a bare endpoint (localhost:9000), secure controls TLS.
+    # An explicit http:// or https:// scheme takes precedence.
+    # secure: false

@@ -7,6 +7,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net"
@@ -14,7 +15,10 @@ import (
 	"github.com/rs/cors"
 	"net/http"
 	"net/http/pprof"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	// 3d Party
@@ -48,11 +52,15 @@ var _ nclient.Config
 
 const FullServiceName = "armory.unitable.v1.Unitable"
 
-func NewEndpoints(options map[string]interface{}) svc.Endpoints {
+func NewEndpoints(options map[string]interface{}, services ...pb.UnitableServer) svc.Endpoints {
 	// Business domain.
 	var service pb.UnitableServer
 	{
-		service = handlers.NewService()
+		if len(services) > 0 {
+			service = services[0]
+		} else {
+			service = handlers.NewService()
+		}
 		// Wrap Service with middlewares. See handlers/middlewares.go
 		service = handlers.WrapService(service, options)
 	}
@@ -134,7 +142,7 @@ func NewEndpoints(options map[string]interface{}) svc.Endpoints {
 	return endpoints
 }
 
-func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server) svc.Endpoints {
+func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server, services ...pb.UnitableServer) svc.Endpoints {
 	// tracing init
 	tracer, c := tracing.New(FullServiceName)
 	if c != nil {
@@ -170,7 +178,18 @@ func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server) svc.Endp
 		options["latency"] = latency
 	}
 
-	endpoints := NewEndpoints(options)
+	var service pb.UnitableServer
+	if len(services) > 0 {
+		service = services[0]
+	} else {
+		service = handlers.NewService()
+	}
+	// Optional custom routes live in the handlers package, which regeneration preserves.
+	// Register them before generated routes so specialized transports can take precedence.
+	if registrar, ok := service.(interface{ RegisterHTTPHandlers(*mux.Router) }); ok {
+		registrar.RegisterHTTPHandlers(r)
+	}
+	endpoints := NewEndpoints(options, service)
 
 	svc.RegisterHttpHandler(r, endpoints, tracer, logger)
 	pb.RegisterUnitableServer(s, svc.MakeGRPCServer(endpoints, tracer, logger))
@@ -181,67 +200,112 @@ func RegisterService(cfg nserver.Config, r *mux.Router, s *grpc.Server) svc.Endp
 // Run starts a new http server, gRPC server, and a debug server with the
 // passed config and logger
 func Run(cfg nserver.Config) {
-	// Mechanical domain.
-	errc := make(chan error)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	// Interrupt handler.
-	go handlers.InterruptHandler(errc)
-
-	// Debug listener.
-	go func() {
-		logs.Infow("begin debug server", "transport", "debug", "address", cfg.DebugAddr)
-
-		m := http.NewServeMux()
-		m.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
-		m.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
-		m.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
-		m.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
-		m.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
-
-		m.Handle("/metrics", promhttp.Handler())
-
-		m.Handle("/health", healthcheck.Handler(
-			// WithTimeout allows you to set a max overall timeout.
-			healthcheck.WithTimeout(5*time.Second),
-			healthcheck.WithChecker("alive", healthcheck.CheckerFunc(func(ctx context.Context) error {
-				conn, err := net.DialTimeout("tcp", cfg.HttpAddr, time.Second)
-				if err != nil {
-					return err
-				}
-				return conn.Close()
-			})),
-		))
-
-		errc <- http.ListenAndServe(cfg.DebugAddr, m)
-	}()
+	// Each transport can report once without blocking during shutdown.
+	errc := make(chan error, 3)
+	service := handlers.NewService()
+	services := []interface{}{service}
+	var started []interface{}
 
 	s := grpc.NewServer(grpc.UnaryInterceptor(unaryServerFilter))
 	r := mux.NewRouter()
-	endpoints := RegisterService(cfg, r, s)
+	httpServer := &http.Server{Addr: cfg.HttpAddr, Handler: cors.AllowAll().Handler(r)}
+	m := http.NewServeMux()
+	m.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+	m.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+	m.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+	m.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+	m.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+
+	m.Handle("/metrics", promhttp.Handler())
+
+	m.Handle("/health", healthcheck.Handler(
+		// WithTimeout allows you to set a max overall timeout.
+		healthcheck.WithTimeout(5*time.Second),
+		healthcheck.WithChecker("alive", healthcheck.CheckerFunc(func(ctx context.Context) error {
+			conn, err := net.DialTimeout("tcp", cfg.HttpAddr, time.Second)
+			if err != nil {
+				return err
+			}
+			return conn.Close()
+		})),
+	))
+
+	debugServer := &http.Server{Addr: cfg.DebugAddr, Handler: m}
+
+	// Stop transports before releasing dependencies used by in-flight requests.
+	// Successfully started services shut down in reverse order, including after
+	// partial startup failure. A failing Start must clean up its own resources.
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), nserver.DefaultShutdownTimeout)
+		defer cancel()
+		if err := nserver.ShutdownServers(shutdownCtx, s, httpServer, debugServer); err != nil {
+			logs.Errorw("shutdown transports", "error", err)
+		}
+		for i := len(started) - 1; i >= 0; i-- {
+			if shutdowner, ok := started[i].(nserver.Shutdowner); ok {
+				if err := shutdowner.Shutdown(shutdownCtx); err != nil {
+					logs.Errorw("shutdown service", "service", fmt.Sprintf("%T", started[i]), "error", err)
+				}
+			}
+		}
+		logs.Info("unitable.UnitableServer", " closed.")
+	}()
+
+	for _, service := range services {
+		if starter, ok := service.(nserver.Starter); ok {
+			if err := starter.Start(cfg); err != nil {
+				logs.Errorw("start service", "service", fmt.Sprintf("%T", service), "error", err)
+				return
+			}
+		}
+		started = append(started, service)
+	}
+	endpoints := RegisterService(cfg, r, s, service)
+
+	// Bind all listeners before accepting requests; roll back on any bind error.
+	httpListener, err := net.Listen("tcp", cfg.HttpAddr)
+	if err != nil {
+		logs.Errorw("listen HTTP", "error", err)
+		return
+	}
+	defer httpListener.Close()
+	grpcListener, err := net.Listen("tcp", cfg.GrpcAddr)
+	if err != nil {
+		logs.Errorw("listen gRPC", "error", err)
+		return
+	}
+	defer grpcListener.Close()
+	debugListener, err := net.Listen("tcp", cfg.DebugAddr)
+	if err != nil {
+		logs.Errorw("listen debug", "error", err)
+		return
+	}
+	defer debugListener.Close()
 
 	// HTTP transport.
 	go func() {
 		logs.Infow("begin http server", "transport", "HTTP", "address", cfg.HttpAddr)
-		h := cors.AllowAll().Handler(r)
-		errc <- http.ListenAndServe(cfg.HttpAddr, h)
+		if err := httpServer.Serve(httpListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errc <- fmt.Errorf("HTTP server: %w", err)
+		}
 	}()
-
 	// gRPC transport.
 	go func() {
 		logs.Infow("begin grpc server", "transport", "gRPC", "address", cfg.GrpcAddr)
-		ln, err := net.Listen("tcp", cfg.GrpcAddr)
-		if err != nil {
-			errc <- err
-			return
+		if err := s.Serve(grpcListener); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			errc <- fmt.Errorf("gRPC server: %w", err)
 		}
-		errc <- s.Serve(ln)
 	}()
-
-	//if watchObj, err := config.WatchFunc(level.ChangeLogLevel, level.LevelPath); err == nil {
-	//    defer func() { _ = watchObj.Close() }()
-	//} else {
-	//    panic(err.Error())
-	//}
+	// Debug transport.
+	go func() {
+		logs.Infow("begin debug server", "transport", "debug", "address", cfg.DebugAddr)
+		if err := debugServer.Serve(debugListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errc <- fmt.Errorf("debug server: %w", err)
+		}
+	}()
 	_ = endpoints
 
 	sdConfig := sd.NewConfig("sd")
@@ -254,16 +318,18 @@ func Run(cfg nserver.Config) {
 		url := network.GetHost() + ":" + getServerPort(addr)
 		err := sdClient.Register(url, FullServiceName, []string{})
 		if err != nil {
-			panic(err)
+			logs.Errorw("register service discovery", "error", err)
+			return
 		}
 		defer sdClient.Deregister()
 	}
 
-	// Run!
 	logs.Info("unitable.UnitableServer", " started.")
-	logs.Info("unitable.UnitableServer", <-errc)
-
-	logs.Info("unitable.UnitableServer", " closed.")
+	// ErrorSource channels are service-owned; nil/closed channels and nil errors
+	// are ignored. Cancellation is a normal shutdown, not a service failure.
+	if err := nserver.WaitForError(ctx, errc, started...); err != nil {
+		logs.Errorw("server stopped after an error", "error", err)
+	}
 }
 
 func getServerPort(addr string) string {

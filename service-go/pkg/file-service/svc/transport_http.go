@@ -70,7 +70,7 @@ func init() {
 // RegisterHttpHandler register a set of endpoints available on predefined paths to the router.
 func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopentracing.Tracer, logger log.Logger) {
 	serverOptions := []httptransport.ServerOption{
-		httptransport.ServerBefore(headersToContext, queryToContext),
+		httptransport.ServerBefore(nhttp.RequestToContext, headersToContext, queryToContext),
 		httptransport.ServerErrorEncoder(errorEncoder),
 		httptransport.ServerErrorLogger(logger),
 		httptransport.ServerAfter(httptransport.SetContentType(contentType)),
@@ -87,6 +87,14 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		httptransport.NewServer(
 			endpoints.GetFileEndpoint,
 			DecodeHTTPGetFileZeroRequest,
+			EncodeHTTPGenericResponse,
+			addTracerOption("get_file")...,
+		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_file", logger)))...,
+		))
+	router.Methods("HEAD").Path("/armory/file/v1/files/{name}").Handler(
+		httptransport.NewServer(
+			endpoints.GetFileEndpoint,
+			DecodeHTTPGetFileOneRequest,
 			EncodeHTTPGenericResponse,
 			addTracerOption("get_file")...,
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_file", logger)))...,
@@ -191,6 +199,68 @@ func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 // decodes a JSON-encoded get_file request from the HTTP request
 // body. Primarily useful in a server.
 func DecodeHTTPGetFileZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.GetFileRequest
+
+	ri := interface{}(&req)
+	if decoder, ok := ri.(nhttp.RequestDecoder); ok {
+		if err := decoder.DecodeHttpRequest(r); err != nil {
+			return nil, nhttp.WrapError(err, 400, fmt.Sprintf("cannot decode the request to GetFileRequest by customized RequestDecoder, err:%s", err.Error()))
+		}
+		return &req, nil
+	}
+
+	// to support gzip input
+	var reader io.ReadCloser
+	var err error
+	switch r.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(r.Body)
+		defer reader.Close()
+		if err != nil {
+			return nil, nhttp.WrapError(err, 400, "failed to read the gzip content")
+		}
+	default:
+		reader = r.Body
+	}
+
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, nhttp.WrapError(err, 400, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = jsoniter.ConfigFastest.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, nhttp.WrapError(err,
+				http.StatusBadRequest,
+				fmt.Sprintf("request body '%s': cannot parse non-json request body", buf),
+			)
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := core.NewUrlQueryFrom(r.URL.Query())
+	_ = queryParams
+
+	parsedQueryParams := make(map[string]bool)
+	_ = parsedQueryParams
+
+	err = mjhttp.UnmarshalPathParam(pathParams, &req.Name, "name")
+	if err != nil && !core.IsNotFoundError(err) {
+		return nil, nhttp.WrapError(err, 400, "cannot unmarshal the name  query parameter")
+	}
+
+	return &req, nil
+}
+
+// DecodeHTTPGetFileOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded get_file request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPGetFileOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req pb.GetFileRequest
 
 	ri := interface{}(&req)
@@ -389,6 +459,10 @@ func DecodeHTTPBatchCreateFileZeroRequest(_ context.Context, r *http.Request) (i
 // EncodeHTTPGenericResponse is a transport/http.EncodeResponseFunc that encodes
 // the response as JSON to the response writer. Primarily useful in a server.
 func EncodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	if writer, ok := nhttp.BoundResponseWriter(ctx, response); ok {
+		return writer.WriteHttpResponse(ctx, w)
+	}
+
 	if writer, ok := response.(nhttp.ResponseWriter); ok {
 		return writer.WriteHttpResponse(ctx, w)
 	}

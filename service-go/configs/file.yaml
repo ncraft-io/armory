@@ -1,4 +1,8 @@
 file:
+  # Empty provider also selects local storage for existing configurations.
+  provider: local
   rootUrl: "https://xx.xddigital.cn"
   staticProvider:
     root: /opt/data/file/
+
+# See ../examples/file-s3.yaml to use S3/MinIO through ncraft storage.
