@@ -83,7 +83,7 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 		return serverOptions
 	}
 
-	router.Methods("GET").Path("/armory/file/v1/files/{name}").Handler(
+	router.Methods("GET").Path("/armory/file/v1/files/{name:.+}").Handler(
 		httptransport.NewServer(
 			endpoints.GetFileEndpoint,
 			DecodeHTTPGetFileZeroRequest,
@@ -91,7 +91,7 @@ func RegisterHttpHandler(router *mux.Router, endpoints Endpoints, tracer stdopen
 			addTracerOption("get_file")...,
 		//append(serverOptions, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "get_file", logger)))...,
 		))
-	router.Methods("HEAD").Path("/armory/file/v1/files/{name}").Handler(
+	router.Methods("HEAD").Path("/armory/file/v1/files/{name:.+}").Handler(
 		httptransport.NewServer(
 			endpoints.GetFileEndpoint,
 			DecodeHTTPGetFileOneRequest,

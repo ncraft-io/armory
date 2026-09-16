@@ -44,6 +44,13 @@ func TestLocalFileRoundTripAndDownloads(t *testing.T) {
 
 func testRoundTrip(t *testing.T, s *fileServer) {
 	t.Helper()
+	for _, name := range []string{"文件 #?%.txt", "nested/deep/文件 #?%.txt", "nested/literal%2F.txt"} {
+		t.Run(name, func(t *testing.T) { testNamedRoundTrip(t, s, name) })
+	}
+}
+
+func testNamedRoundTrip(t *testing.T, s *fileServer, name string) {
+	t.Helper()
 	ctx := context.Background()
 	router := mux.NewRouter()
 	svc.RegisterHttpHandler(router, svc.Endpoints{
@@ -52,7 +59,6 @@ func testRoundTrip(t *testing.T, s *fileServer) {
 		BatchCreateFileEndpoint: svc.MakeBatchCreateFileEndpoint(s),
 	}, nil, log.NewNopLogger())
 	handler := cors.AllowAll().Handler(router)
-	name := "文件 #?.txt"
 	created, err := s.CreateFile(ctx, &pb.CreateFileRequest{File: &file.BinaryFile{Name: name, Content: []byte("0123456789"), Size: 999}})
 	if err != nil {
 		t.Fatal(err)

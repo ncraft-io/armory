@@ -1,8 +1,8 @@
 /// 文件服务
 interface File {
     /// 下载文件，支持 HTTP HEAD 和 Range 请求
-    @http.get("/armory/file/v1/files/{name}")
-    @http.head("/armory/file/v1/files/{name}")
+    @http.get("/armory/file/v1/files/{name:.+}")
+    @http.head("/armory/file/v1/files/{name:.+}")
     get_file(name: String @1) //< 文件名称
             -> BinaryFile
 

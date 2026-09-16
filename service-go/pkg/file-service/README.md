@@ -64,10 +64,10 @@ fails. No public bucket policy or object ACL is applied.
   JSON. Endpoint timing excludes encoding; use HTTP-level metrics for downloads.
 - Downloads use the main HTTP port. There is no separate Range listener.
   CORS preflight OPTIONS is handled by the host's existing CORS middleware.
-- Spaces, Unicode, `#` and `?` are escaped in returned URLs. Storage and RPCs
-  continue to accept nested names, but the generated HTTP route remains
-  `/armory/file/v1/files/{name}` (one path segment). Multi-segment HTTP routing
-  is deferred to a separate change.
+- Nested names, spaces, Unicode, `#`, `?` and `%` are escaped in returned URLs.
+  GET and HEAD bind `/armory/file/v1/files/{name:.+}`, allowing a non-empty name
+  containing multiple path segments. Storage validation still rejects absolute
+  paths, dot segments and attempts to escape the configured root.
 - Batch uploads validate all inputs before writing, preserve input order, and
   stop at the first storage failure. Earlier successful writes are retained;
   batches are not transactional.
